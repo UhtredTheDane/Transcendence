@@ -1,28 +1,26 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-	<title>Bootstrap Example</title>
-	<meta charset="utf-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+	<title>Pong</title>
+	<meta charset="UTF-8">
 </head>
 <body>
-
-<div class="container">
 	<h1>Canvas</h1>
-	<canvas id="field" width="500px" style="border: 1px solid black;">
+	<canvas id="field" width="802px" height="455" style="border: 1px solid black;">
 		Votre Navigateur ne supporte pas la balise canvas.
 	</canvas>  
-</div>
-
-<script type="text/javascript">
-	var canevas = document.getElementByIder("field");
-	var contexte = canevas.getContext("2d");
-	var player1 = new Image();
-
-	player1.src = 'Computer.png';
-	contexte.drawImage(player1, 5, 5):
+<script>
+	let canevas = document.getElementById("field");
+	let contexte = canevas.getContext("2d");
+	let player1 = new Image();
+	player1.addEventListener(
+	  "load",
+	  function() {
+		document.getElementById("field").getConetext("2d").drawImage(player1, 100, 50):
+	  },
+	  false,
+	);
+	player1.src = 'textures/Player1.png';
 </script>
 </body>
 </html> 
