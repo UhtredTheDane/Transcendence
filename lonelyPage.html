@@ -5,22 +5,29 @@
 	<meta charset="UTF-8">
 </head>
 <body>
-	<h1>Canvas</h1>
+<h1>Canvas</h1>
 	<canvas id="field" width="802px" height="455" style="border: 1px solid black;">
 		Votre Navigateur ne supporte pas la balise canvas.
-	</canvas>  
+	</canvas>
+	<img src="textures/Player1.png" style="visibility: hidden;">
+	<img src="textures/Player2.png" style="visibility: hidden;">
 <script>
-	let canevas = document.getElementById("field");
-	let contexte = canevas.getContext("2d");
-	let player1 = new Image();
-	player1.addEventListener(
-	  "load",
-	  function() {
-		document.getElementById("field").getConetext("2d").drawImage(player1, 100, 50):
-	  },
-	  false,
-	);
+	var canevas = document.getElementById("field");
+	var contexte = canevas.getContext("2d");
+	var images_nb = 3;
+	var player1 = new Image();
+	var player2 = new Image();
+	var ball = new Image();
+
+	player1.onload = player2.onload = ball.onload = function() {
+			if (--images_nb > 0) return;
+			contexte.drawImage(player1, 0, 167.5);
+			contexte.drawImage(player2, 785, 167.5);
+			contexte.drawImage(ball, 384, 212.5);
+				};
 	player1.src = 'textures/Player1.png';
+	player2.src = 'textures/Player2.png';
+	ball.src = 'textures/Ball.png';
 </script>
 </body>
 </html> 
