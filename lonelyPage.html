@@ -18,6 +18,8 @@
 	var pos2y = 167.5;
 	var ballx = 384;
 	var bally = 212.5;
+	var ballSpeedx = -1;
+	var ballSpeedy = 1;
 	var speed1y = 0;
 	var speed2y = 0;
 	var canevas = document.getElementById("field");
@@ -26,6 +28,7 @@
 	var player1 = new Image();
 	var player2 = new Image();
 	var ball = new Image();
+
 	player1.onload = player2.onload = ball.onload = function() {
 		if (--images_nb > 0) return;
 			contexte.drawImage(player1, pos1x, pos1y);
@@ -66,12 +69,19 @@
 	window.main = function () {
 		window.requestAnimationFrame(main);
 		contexte.clearRect(0, 0, canevas.width, canevas.height);
+		if (ballx + ballSpeedx * 2.5 < 0 || ballx + 30 + ballSpeedx * 2.5 > 802)
+		{
+			ballSpeedx *= -1;
+		}
+		if (bally + 30 + ballSpeedy * 2.5 > 455 || bally + ballSpeedy * 2.5 < 0)
+			ballSpeedy *= -1;
 		pos1y += speed1y;
 		pos2y += speed2y;
+		ballx += ballSpeedx * 2.5;
+		bally += ballSpeedy * 2.5;
 		contexte.drawImage(player1, pos1x, pos1y);
 		contexte.drawImage(player2, pos2x, pos2y);
-		contexte.drawImage(ball, bally, ballx);
-
+		contexte.drawImage(ball, ballx, bally);
 	};
 	main();
 </script>
