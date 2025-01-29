@@ -9,6 +9,8 @@ services:
     build:
       context: ./backend/django/
       dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
 #    depends_on:
 
     env_file: .env
