@@ -34,6 +34,12 @@ class User(AbstractUser):
 	def get_user_avatar(self):
 		return self.avatar.url
 
+	def set_user(self, field_name, value):
+		if hasattr(self, field_name):
+			setattr(self, field_name, value)
+		else:
+			raise AttributeError(f"'{self.__class__.__name__}' object has no attribute '{field_name}'")
+
 	def __str__(self):
 		return f"{self.username} ({self.id})"
 
@@ -68,6 +74,9 @@ class Game(models.Model):
 
 	def get_type_display(self):
 		return dict(self.TYPE_CHOICES)[self.type]
+
+	def setGame(table, value):
+		self[table] = value
 
 	def __str__(self):
 		return f"Game {self.id} - {self.get_type_display()}"

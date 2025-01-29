@@ -4,7 +4,7 @@
 <div>{% include 'form.html' with action='/' %}</div>
 
 <div>
-    {% for message in messages %}
+    {% for user in users %}
         <div>{% include 'message.html' with message=message %}</div>
     {% endfor %}
 </div>

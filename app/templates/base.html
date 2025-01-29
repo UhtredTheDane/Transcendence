@@ -16,7 +16,7 @@
             {% if request.user.is_authenticated %}
             <div class="avatar_container">
                 <span>{{ request.user.username }}</span>
-                <img class="user_avatar" src="{% static 'images/commentcoder.com.jpg' %}" alt="{{ request.user.username }}" />
+                <img class="user_avatar" src="{% static 'images/default.png' %}" alt="{{ request.user.username }}" />
             </div>
             {% else %}
             <a href="/admin/login/?next=/">Se connecter</a>

@@ -1,12 +1,12 @@
 {% load static %}
-<a href="/{{ message.id }}/" class="message_container">
-    <img class="message_avatar" src="{% static 'images/commentcoder.com.jpg' %}" alt="{{ request.user.username }}" />
+<a href="/{{ user.id }}/" class="message_container">
+    <img class="message_avatar" src="{% static 'images/default.png' %}" alt="{{ request.user.username }}" />
     <div>
         <div class="message_header">
-            <div class="message_username">{{ message.user.username }}</div>
-            <div class="message_created_at">{{ message.created_at }}</div>
+            <div class="message_username">{{ user.username }}</div>
+            <div class="message_created_at">{{ user.date_joined }}</div>
         </div>
-        <div class="message_content">{{ message.content }}</div>
+        <div class="message_content">{{ user.bio }}</div>
     </div>
 </a>
 
