@@ -1,6 +1,8 @@
 # Installer les dépendances Django
 
-- pip install -r requirements.txt
+```py
+pip install -r requirements.txt
+```
 
 # Lancer le site web
 
@@ -15,4 +17,4 @@ python manage.py runserver
 	- username: admin
 	- password: 7526
 
-+ Vous pouvez créer des comptes !
+Vous pouvez créer vos propre compte !
