@@ -4,6 +4,7 @@
 
 # Lancer le site web
 
+- cd backend
 - python manage.py runserver
 
 # Logins des comptes
