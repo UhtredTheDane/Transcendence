@@ -13,6 +13,7 @@ class User(AbstractUser):
 	bio = models.CharField(max_length=280, blank=True, null=True)
 	avatar = models.ImageField(upload_to='avatars/', default='avatars/default.png', validators=[FileExtensionValidator(allowed_extensions=['jpg', 'jpeg', 'png'])])
 	friends = models.ManyToManyField('self', symmetrical=True, blank=True)
+	blocked = models.ManyToManyField(Blocked, symmetrical=False, related_name="blocked_users", blank=True)
 	status = models.CharField(max_length=50, choices=STATUS_CHOICES, default='off')
 	visual_impairment_level = models.IntegerField(default=0, validators=[MinValueValidator(0), MaxValueValidator(5)]) # Visually Impaired User (daltonisme)
 	is_waiting = models.BooleanField(default=False)
@@ -24,6 +25,10 @@ class User(AbstractUser):
 
 class Friend(models.Model):
 	user_id = models.ForeignKey(User, on_delete=models.CASCADE)
+
+class Blocked(models.Model):
+	blocker_id = models.ForeignKey(User, on_delete=models.CASCADE, related_name='blocker')
+	user_id = models.ForeignKey(User, on_delete=models.CASCADE, related_name='blocked')
 
 class Game(models.Model):
 	TYPE_CHOICES = [
