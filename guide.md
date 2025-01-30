@@ -5,3 +5,11 @@
 # Lancer le site web
 
 - python manage.py runserver
+
+# Logins des comptes
+
+- Admin:
+	- username: admin
+	- password: 7526
+
++ Vous pouvez créer des comptes !
