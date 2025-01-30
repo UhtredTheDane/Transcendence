@@ -17,4 +17,4 @@ python manage.py runserver
 	- username: admin
 	- password: 7526
 
-Vous pouvez créer vos propre compte !
+**Vous pouvez créer vos propre compte !**
