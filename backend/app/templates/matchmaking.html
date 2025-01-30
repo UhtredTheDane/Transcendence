@@ -14,21 +14,18 @@
         );
 
         matchmakingSocket.onopen = function () {
-            console.log("WebSocket connecté !");
+            console.log("WebSocket matchmaking connecté !");
         };
 
         matchmakingSocket.onmessage = function (e) {
             const data = JSON.parse(e.data);
-            console.log("Message reçu :", data);
 
-            if (data.type === "match_found") {
-                console.log("Match trouvé !");
+            if (data.type === "match_found") 
                 document.getElementById("parag").innerHTML = `Match trouvé !<br>ID du match : ${data.game_id}<br>Joueurs : ${data.player1} vs ${data.player2}`;
-			}
         };
 
         matchmakingSocket.onclose = function (e) {
-            console.error("WebSocket fermé :", e);
+            console.error("WebSocket matchmaking fermé :", e);
         };
 
         matchmakingSocket.onerror = function (e) {

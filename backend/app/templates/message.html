@@ -1,3 +1,5 @@
+<!-- message.html -->
+
 {% load static %}
 <a href="/{{ user.id }}/" class="message_container">
     <img class="message_avatar" src="{% static 'images/default.png' %}" alt="{{ request.user.username }}" />
@@ -8,6 +10,6 @@
         </div>
         <div class="message_content">{{ user.bio }}</div>
     </div>
-    <a href="">Contacter</a>
+    <a href="{% url 'create_or_get_channel' user.id %}">Contacter</a>
 </a>
 <hr />

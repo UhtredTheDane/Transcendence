@@ -21,7 +21,9 @@ from app import views
 urlpatterns = [
 	path('', views.index, name='index'),
     path('admin/', admin.site.urls),
-	path('chat/', views.chat, name='chat'),
+	path('create_channel/<int:user_id>/', views.create_or_get_channel, name='create_or_get_channel'),
+	path('channel/<int:channel_id>/', views.channel_page, name='channel_page'),
+	path('send_message/<int:channel_id>/', views.send_message, name='send_message'),
 	path('matchmaking/', views.matchmaking, name='matchmaking'),
 	path('accounts/', include('allauth.urls')),
     path('details/', views.details, name='details'),
