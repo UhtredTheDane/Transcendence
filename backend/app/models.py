@@ -13,7 +13,7 @@ class User(AbstractUser):
 	bio = models.CharField(max_length=280, blank=True, null=True)
 	avatar = models.ImageField(upload_to='avatars/', default='avatars/default.png', validators=[FileExtensionValidator(allowed_extensions=['jpg', 'jpeg', 'png'])])
 	friends = models.ManyToManyField('self', symmetrical=True, blank=True)
-	blocked = models.ManyToManyField(Blocked, symmetrical=False, related_name="blocked_users", blank=True)
+	blocked = models.ManyToManyField('self', symmetrical=False, related_name="blocked_by", blank=True)
 	status = models.CharField(max_length=50, choices=STATUS_CHOICES, default='off')
 	visual_impairment_level = models.IntegerField(default=0, validators=[MinValueValidator(0), MaxValueValidator(5)]) # Visually Impaired User (daltonisme)
 	is_waiting = models.BooleanField(default=False)
@@ -22,13 +22,6 @@ class User(AbstractUser):
 
 	def __str__(self):
 		return f"{self.username} ({self.id})"
-
-class Friend(models.Model):
-	user_id = models.ForeignKey(User, on_delete=models.CASCADE)
-
-class Blocked(models.Model):
-	blocker_id = models.ForeignKey(User, on_delete=models.CASCADE, related_name='blocker')
-	user_id = models.ForeignKey(User, on_delete=models.CASCADE, related_name='blocked')
 
 class Game(models.Model):
 	TYPE_CHOICES = [
@@ -40,6 +33,8 @@ class Game(models.Model):
 	type = models.IntegerField(choices=TYPE_CHOICES, default=1)
 	player1 = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True, related_name='games_as_player1')
 	player2 = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True, related_name='games_as_player2')
+	player1_score = models.IntegerField(default=0)
+	player2_score = models.IntegerField(default=0)
 	winner = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True, related_name='games_won')
 	loser = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True, related_name='games_lost')
 	created_at = models.DateTimeField(auto_now_add=True)
@@ -84,7 +79,6 @@ class Channel(models.Model):
 	name = models.CharField(max_length=100, unique=True)
 	topic = models.CharField(max_length=280, blank=True, null=True)
 	created_at = models.DateTimeField(auto_now_add=True)
-	is_private = models.BooleanField(default=False)  # Indique si le salon est privé
 	participants = models.ManyToManyField(User, related_name="private_channels", blank=True)  # Pour les salons privés
 
 	def __str__(self):
@@ -104,6 +98,7 @@ class Message(models.Model):
 	channel = models.ForeignKey(Channel, on_delete=models.CASCADE, related_name="messages")
 	user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="messages")
 	content = models.TextField()
+	is_read = models.BooleanField(default=False)
 	created_at = models.DateTimeField(auto_now_add=True)
 
 	def __str__(self):

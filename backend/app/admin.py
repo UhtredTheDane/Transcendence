@@ -19,7 +19,7 @@ class TournamentGameAdmin(admin.ModelAdmin):
 	list_display = ['id', 'tournament', 'game']
 
 class ChannelAdmin(admin.ModelAdmin):
-	list_display = ['id', 'name', 'is_private', 'topic', 'created_at']
+	list_display = ['id', 'name', 'topic', 'created_at']
 
 class ChannelUserAdmin(admin.ModelAdmin):
 	list_display = ['id', 'channel', 'user', 'joined_at']
