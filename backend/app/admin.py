@@ -7,7 +7,7 @@ class UserAdmin(admin.ModelAdmin):
 	list_display = ['id', 'username', "first_name", "last_name", 'email', 'is_active', 'channel_name', 'is_staff', 'is_superuser', 'date_joined']
 
 class GameAdmin(admin.ModelAdmin):
-	list_display = ['id', 'type', 'player1', 'player2', 'winner', 'loser', 'created_at']
+	list_display = ['id', 'is_active', 'mode', 'player1', 'player2', 'score_player1', 'score_player2', 'created_at']
 
 class TournamentAdmin(admin.ModelAdmin):
 	list_display = ['id', 'name', 'creator', 'created_at']

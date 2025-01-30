@@ -24,23 +24,25 @@ class User(AbstractUser):
 		return f"{self.username} ({self.id})"
 
 class Game(models.Model):
-	TYPE_CHOICES = [
-		(1, 'Two Players'),
-		(2, 'AI'),
-		(3, 'Tournament'),
-	]
+    MODE_CHOICES = [
+        ('solo', 'Solo (contre IA)'),
+        ('multiplayer', 'Multijoueur'),
+    ]
 
-	type = models.IntegerField(choices=TYPE_CHOICES, default=1)
-	player1 = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True, related_name='games_as_player1')
-	player2 = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True, related_name='games_as_player2')
-	player1_score = models.IntegerField(default=0)
-	player2_score = models.IntegerField(default=0)
-	winner = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True, related_name='games_won')
-	loser = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True, related_name='games_lost')
-	created_at = models.DateTimeField(auto_now_add=True)
+    player1 = models.ForeignKey(User, on_delete=models.CASCADE, related_name='games_as_player1')
+    player2 = models.ForeignKey(User, on_delete=models.CASCADE, related_name='games_as_player2', null=True, blank=True)
+    mode = models.CharField(max_length=50, choices=MODE_CHOICES, default='multiplayer')  # Mode de jeu
+    ball_x = models.FloatField(default=0.5)  # Position X de la balle (normalisée entre 0 et 1)
+    ball_y = models.FloatField(default=0.5)  # Position Y de la balle (normalisée entre 0 et 1)
+    player1_y = models.FloatField(default=0.5)  # Position Y de la raquette du joueur 1
+    player2_y = models.FloatField(default=0.5)  # Position Y de la raquette du joueur 2
+    score_player1 = models.IntegerField(default=0)
+    score_player2 = models.IntegerField(default=0)
+    is_active = models.BooleanField(default=True)  # Indique si la partie est en cours
+    created_at = models.DateTimeField(auto_now_add=True)
 
-	def __str__(self):
-		return f"Game {self.id} - {self.get_type_display()}"
+    def __str__(self):
+        return f"Game {self.id} - {self.player1.username} vs {self.player2.username if self.player2 else 'IA'}"
 
 
 class Tournament(models.Model):

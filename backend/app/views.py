@@ -1,6 +1,6 @@
 from django.shortcuts import get_object_or_404, render, redirect
 from django.http import HttpResponse, HttpResponseNotFound, HttpResponseRedirect, JsonResponse
-from .models import User, Channel, ChannelUser, Message
+from .models import User, Channel, ChannelUser, Message, Game
 from app.tests import Test
 
 # Create your views here.
@@ -55,14 +55,25 @@ def send_message(request, channel_id):
     
     return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
 
-def chat(request):
-	return render(request, 'chat/index.html')
+def create_game(request):
+    mode = request.GET.get('mode', 'multiplayer')  # Par défaut, mode multijoueur
+    player1 = request.user  # Joueur 1 est l'utilisateur connecté
+
+    if mode == 'solo':
+        # Mode solo : pas de joueur 2
+        game = Game.objects.create(player1=player1, mode='solo')
+    else:
+        # Mode multijoueur : récupérer le joueur 2 via le matchmaking
+        player2_id = request.GET.get('player2_id')
+        if not player2_id:
+            return JsonResponse({'error': 'player2_id is required for multiplayer mode'}, status=400)
+        player2 = User.objects.get(id=player2_id)
+        game = Game.objects.create(player1=player1, player2=player2, mode='multiplayer')
+
+    return JsonResponse({'game_id': game.id})
+
+def game(request):
+	return render(request, 'game.html')
 
 def matchmaking(request):
 	return render(request, 'matchmaking.html')
-
-def success(request):
-	return render(request, 'game/success.html')
-
-def details(request):
-	return HttpResponse('Details page')

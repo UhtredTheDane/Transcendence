@@ -25,7 +25,7 @@ urlpatterns = [
 	path('channel/<int:channel_id>/', views.channel_page, name='channel_page'),
 	path('send_message/<int:channel_id>/', views.send_message, name='send_message'),
 	path('matchmaking/', views.matchmaking, name='matchmaking'),
+	path('create-game/', views.create_game, name='create_game'),
+	path('game/', views.game, name='game'),
 	path('accounts/', include('allauth.urls')),
-    path('details/', views.details, name='details'),
-	path('success/', views.success, name='success'),
 ]
