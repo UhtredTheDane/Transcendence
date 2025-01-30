@@ -3,12 +3,6 @@ from django.contrib.auth.models import AbstractUser
 from django.core.validators import FileExtensionValidator, MaxValueValidator, MinValueValidator
 from django.utils.translation import gettext_lazy as _
 
-# Create your models here.
-# class Message(models.Model):
-#     content = models.CharField(max_length=280)
-#     created_at = models.DateTimeField(auto_now_add=True)
-#     user = models.ForeignKey(User, on_delete=models.CASCADE)
-
 class User(AbstractUser):
 	STATUS_CHOICES = [
 		('on', 'online'),
@@ -21,6 +15,9 @@ class User(AbstractUser):
 	friends = models.ManyToManyField('self', symmetrical=True, blank=True)
 	status = models.CharField(max_length=50, choices=STATUS_CHOICES, default='off')
 	visual_impairment_level = models.IntegerField(default=0, validators=[MinValueValidator(0), MaxValueValidator(5)]) # Visually Impaired User (daltonisme)
+	is_waiting = models.BooleanField(default=False)
+	elo_rating = models.IntegerField(default=1000)
+	channel_name = models.CharField(max_length=255, blank=True, null=True)
 
 	def __str__(self):
 		return f"{self.username} ({self.id})"
@@ -76,9 +73,14 @@ class TournamentGame(models.Model):
 
 # Live Chat
 class Channel(models.Model):
+	class Meta:
+		ordering = ['-created_at']
+		
 	name = models.CharField(max_length=100, unique=True)
 	topic = models.CharField(max_length=280, blank=True, null=True)
 	created_at = models.DateTimeField(auto_now_add=True)
+	is_private = models.BooleanField(default=False)  # Indique si le salon est privé
+	participants = models.ManyToManyField(User, related_name="private_channels", blank=True)  # Pour les salons privés
 
 	def __str__(self):
 		return f"Channel {self.name}"

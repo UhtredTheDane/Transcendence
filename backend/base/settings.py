@@ -55,12 +55,12 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 	'app',
-	'rest_framework',
 	'allauth',
 	'allauth.account',
 	'allauth.socialaccount',
 	'allauth.socialaccount.providers.google',
-	'crispy_forms',
+	'channels',
+	#'allauth.socialaccount.providers.oauth2',
 ]
 
 MIDDLEWARE = [
@@ -79,7 +79,7 @@ ROOT_URLCONF = 'base.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+		'DIRS': [],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -93,6 +93,7 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'base.wsgi.application'
+ASGI_APPLICATION = 'base.asgi.application'
 
 
 # Database
@@ -146,7 +147,14 @@ SOCIALACCOUNT_PROVIDERS = {
 			'secret': config('GOOGLE_CLIENT_SECRET'),
 			'key': ''
 		}
-	}
+	},
+	# '42': {
+    #     'APP': {
+    #         'client_id': config('42API_UID'),
+    #         'secret': config('42API_SECRET'),
+    #         'key': ''
+    #     }
+    # },
 }
 
 LOGIN_REDIRECT_URL = '/'
@@ -154,7 +162,12 @@ ACCOUNT_LOGOUT_REDIRECT_URL ='/accounts/login'
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 ACCOUNT_EMAIL_REQUIRED = True
 SOCIALACCOUNT_QUERY_EMAIL = True
-ACCOUNT_SESSION_REMEMBER = True
+
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND': 'channels.layers.InMemoryChannelLayer',  # Utilise le bon backend
+    },
+}
 
 
 # Internationalization

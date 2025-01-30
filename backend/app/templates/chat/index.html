@@ -1,0 +1,40 @@
+<!-- chat/templates/chat/index.html -->
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8"/>
+    <title>Live Chat</title>
+</head>
+<body>
+    <input id="message-input" type="text" placeholder="Envoyer un message" size="100"><br>
+    <input id="message-submit" type="button" value="Enter">
+	<p id="log"></p>
+
+    <script>
+        const chatSocket = new WebSocket(
+			'ws://'
+			+ window.location.host
+			+ '/ws/chat/general/'
+		);
+
+		console.log(chatSocket);
+		chatSocket.onmessage = function(e) {
+			const data = JSON.parse(e.data);
+			console.log(data);
+			document.querySelector('#log').value += (data.message + '<br>');
+		}
+
+		chatSocket.onclose = function(e) {
+			console.error('Chat socket closed unexpectedly:\n', e);
+		}
+
+		document.querySelector('#message-submit').onclick = function(e) {
+			const message = document.querySelector('#message-input').value;
+			chatSocket.send(JSON.stringify({
+				'message': message
+			}));
+		}
+        
+    </script>
+</body>
+</html>

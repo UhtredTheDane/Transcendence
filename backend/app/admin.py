@@ -4,7 +4,7 @@ from app import models
 # Register your models here.
 
 class UserAdmin(admin.ModelAdmin):
-	list_display = ['id', 'username', "first_name", "last_name", 'email', 'is_active', 'is_staff', 'is_superuser', 'date_joined']
+	list_display = ['id', 'username', "first_name", "last_name", 'email', 'is_active', 'channel_name', 'is_staff', 'is_superuser', 'date_joined']
 
 class GameAdmin(admin.ModelAdmin):
 	list_display = ['id', 'type', 'player1', 'player2', 'winner', 'loser', 'created_at']
@@ -19,7 +19,7 @@ class TournamentGameAdmin(admin.ModelAdmin):
 	list_display = ['id', 'tournament', 'game']
 
 class ChannelAdmin(admin.ModelAdmin):
-	list_display = ['id', 'name', 'topic', 'created_at']
+	list_display = ['id', 'name', 'is_private', 'topic', 'created_at']
 
 class ChannelUserAdmin(admin.ModelAdmin):
 	list_display = ['id', 'channel', 'user', 'joined_at']
