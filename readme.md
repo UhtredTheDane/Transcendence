@@ -1,12 +1,12 @@
 # Installer les dépendances Django
 
-```py
+```bash
 pip install -r requirements.txt
 ```
 
 # Lancer le site web
 
-```py
+```bash
 cd backend
 python manage.py runserver
 ```
