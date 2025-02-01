@@ -27,5 +27,6 @@ urlpatterns = [
 	path('matchmaking/', views.matchmaking, name='matchmaking'),
 	path('create-game/', views.create_game, name='create_game'),
 	path('game/', views.game, name='game'),
+	path('game-ia/', views.game_ia, name='game-ia'),
 	path('accounts/', include('allauth.urls')),
 ]

@@ -70,10 +70,14 @@ def create_game(request):
         player2 = User.objects.get(id=player2_id)
         game = Game.objects.create(player1=player1, player2=player2, mode='multiplayer')
 
-    return JsonResponse({'game_id': game.id})
+    return JsonResponse({ 'game_id': game.id })
 
 def game(request):
 	return render(request, 'game.html')
+
+def game_ia(request):
+	mode = request.GET.get('mode', 'medium')
+	return render(request, 'game-ia.html', { 'mode': mode })
 
 def matchmaking(request):
 	return render(request, 'matchmaking.html')
