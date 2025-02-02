@@ -1,6 +1,7 @@
 # Installer les dépendances Django
 
 ```bash
+# Vérifiez que vous avez Python 3 et pas une autre version (pyhon --version) 
 pip install -r requirements.txt
 ```
 
