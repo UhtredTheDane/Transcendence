@@ -14,6 +14,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
 		channel = await sync_to_async(Channel.objects.get)(id=self.channel_id)
 		participants = await sync_to_async(list)(channel.participants.all())
+		print(participants)
 		if self.scope['user'] not in participants:
 			await self.close()
 
