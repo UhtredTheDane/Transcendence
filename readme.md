@@ -1,15 +1,7 @@
 # Installer les dépendances Django
 
 ```bash
-# Vérifiez que vous avez Python 3 et pas une autre version (pyhon --version) 
-pip install -r requirements.txt
-```
-
-# Lancer le site web
-
-```bash
-cd backend
-python manage.py runserver
+Make
 ```
 
 # Logins des comptes
