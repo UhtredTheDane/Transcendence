@@ -1,4 +1,4 @@
-# Installer les dépendances Django
+# Lancer le site web
 
 ```bash
 Make
