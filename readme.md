@@ -2,7 +2,9 @@
 
 ```bash
 Make
+google-chrome localhost:8000
 ```
+
 
 # Logins des comptes
 
