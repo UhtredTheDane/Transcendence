@@ -89,7 +89,6 @@
             user-select: none;
             z-index: -1;
 
-            /* Fading effect from bottom to top for beeaaautiful effect*/
             background: linear-gradient(to top, rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0));
 
             -webkit-background-clip: text;
@@ -127,11 +126,21 @@
             font-weight: bold;
             color: #17a2b8;
         }
+
+        /* Modal style */
+        .modal-header, .modal-footer {
+            background-color: #343a40;
+            color: white;
+        }
+
+        .modal-body {
+            background-color: #222;
+        }
     </style>
 </head>
 <body>
 
-    <!-- Navbar at the top - classic buttons to make the user play around -->
+    <!-- Navbar at the top -->
     <nav class="navbar navbar-expand-lg navbar-dark">
         <div class="container-fluid">
             <div class="navbar-nav">
@@ -142,7 +151,7 @@
             <!-- Profile button aligned to the far right -->
             <div class="navbar-nav" style="margin-left: auto;">
                 <div class="profile-btn" onclick="redirectToProfile()">
-                    <span>👤</span> <!-- Default human icon perhaps something else needed ? -->
+                    <span>👤</span>
                 </div>
             </div>
         </div>
@@ -155,13 +164,46 @@
         <h1 class="mb-3">GAME MODES</h1>
         <p class="mb-4">Select your Game Mode</p>
 
-        <button class="game-mode" onclick="setGameMode('AI')">AI Mode</button>
-        <button class="game-mode" onclick="setGameMode('Unranked')">Unranked Mode</button>
-        <button class="game-mode" onclick="setGameMode('Ranked')">Ranked Mode</button>
-        <button class="game-mode" onclick="setGameMode('Tournament')">Tournament Mode</button>
-        <button class="game-mode" onclick="setGameMode('Custom')">Custom Mode</button>
+        <button class="game-mode" onclick="setGameMode('AI')">AI</button>
+        <button class="game-mode" onclick="setGameMode('Unranked')">Unranked</button>
+        <button class="game-mode" onclick="setGameMode('Ranked')">Ranked</button>
+        <button class="game-mode" onclick="setGameMode('Tournament')">Tournament</button>
+        <button class="game-mode" onclick="setGameMode('Custom')">Custom</button>
 
         <p class="selected-mode" id="selectedMode">Current Mode: None</p>
+    </div>
+
+    <!-- Modal for Tournament -->
+    <div class="modal fade" id="tournamentModal" tabindex="-1" aria-labelledby="tournamentModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="tournamentModalLabel">Tournament Options</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <button class="game-mode" onclick="window.location.href='InviteTournament.html'">Invite to Tournament</button>
+                    <button class="game-mode" onclick="window.location.href='JoinTournament.html'">Join Existing Tournament</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal for Custom -->
+    <div class="modal fade" id="customModal" tabindex="-1" aria-labelledby="customModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="customModalLabel">Custom Mode Options</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <button class="game-mode" onclick="window.location.href='PvPMaxScore.html'">PvP Max Score</button>
+                    <button class="game-mode" onclick="window.location.href='PvPMaxTime.html'">PvP Max Time</button>
+                    <button class="game-mode" onclick="window.location.href='PvPRush.html'">PvP Rush</button>
+                </div>
+            </div>
+        </div>
     </div>
 
     <script>
@@ -176,7 +218,32 @@
         function setGameMode(mode) {
             document.getElementById("selectedMode").textContent = "Current Mode: " + mode;
             console.log("Game mode set to:", mode);
+
+            switch (mode) {
+                case 'AI':
+                    window.location.href = 'AIMode.html';
+                    break;
+                case 'Unranked':
+                    window.location.href = 'UnrankedMode.html';
+                    break;
+                case 'Ranked':
+                    window.location.href = 'RankedMode.html';
+                    break;
+                case 'Tournament':
+                    // Open the tournament modal
+                    var tournamentModal = new bootstrap.Modal(document.getElementById('tournamentModal'));
+                    tournamentModal.show();
+                    break;
+                case 'Custom':
+                    // Open the custom modal
+                    var customModal = new bootstrap.Modal(document.getElementById('customModal'));
+                    customModal.show();
+                    break;
+            }
         }
     </script>
+
+    <!-- Bootstrap JS (ensure to include this for modal functionality) -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
