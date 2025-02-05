@@ -19,7 +19,11 @@
 
             <div class="navbar-nav profile-container">
 				<div class="profile-btn" onclick="redirectToProfile()">
-					<span>👤</span> <!-- Change for the icon of the user -->
+					{% if user.is_authenticated and user.avatar %}
+						<img id="navAvatar" src="{{ user.avatar.url }}" alt="Profile" class="profile-avatar-n34563">
+					{% else %}
+						<span>👤</span> <!-- Default icon if no avatar -->
+					{% endif %}
 				</div>
 			</div>
         </div>

@@ -71,11 +71,13 @@
 				console.log(data);
 				if (data.status === 'success') {
 					const profilePicture = document.getElementById('profilePicture');
-					const timestamp = new Date().getTime(); // Ajoute un timestamp unique
-					profilePicture.style.backgroundImage = `url('${data.image_url}?t=${timestamp}')`;
-					profilePicture.style.backgroundSize = "cover";
-					profilePicture.style.backgroundPosition = "center";
-					profilePicture.textContent = ""; // Supprime le texte
+					const timestamp = new Date().getTime();
+					const newAvatarUrl = `${data.image_url}?t=${timestamp}`;
+					profilePicture.style.backgroundImage = `url('${newAvatarUrl}')`;
+					const navAvatar = document.getElementById('navAvatar');
+					if (navAvatar) {
+						navAvatar.src = newAvatarUrl;
+					}
 				} else {
 					alert('Error uploading image: ' + (data.errors || data.message));
 				}

@@ -31,6 +31,14 @@
     letter-spacing: 1px; /* Espacement entre les lettres */
 }
 
+.profile-avatar-n34563 {
+    display: block;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
 .profile-container {
     margin-left: auto;
 }
