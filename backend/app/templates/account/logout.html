@@ -1,0 +1,18 @@
+{% extends "account/base.html" %}
+{% load i18n %}
+{% load allauth account %}
+
+
+{% block head_title %}Sign Out{% endblock head_title %}
+
+{% block content %}
+<div class="container">
+    <h1>Sign Out</h1>
+    <p>Are you sure you want to log out?</p>
+    
+    <form method="POST" action="{% url 'account_logout' %}">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-danger">Sign Out</button>
+    </form>
+</div>
+{% endblock %}

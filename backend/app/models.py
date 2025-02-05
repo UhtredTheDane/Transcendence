@@ -24,25 +24,28 @@ class User(AbstractUser):
 		return f"{self.username} ({self.id})"
 
 class Game(models.Model):
-    MODE_CHOICES = [
-        ('solo', 'Solo (contre IA)'),
-        ('multiplayer', 'Multijoueur'),
-    ]
+	MODE_CHOICES = [
+		('solo', 'Solo (contre IA)'),
+		('multiplayer', 'Multijoueur'),
+	]
 
-    player1 = models.ForeignKey(User, on_delete=models.CASCADE, related_name='games_as_player1')
-    player2 = models.ForeignKey(User, on_delete=models.CASCADE, related_name='games_as_player2', null=True, blank=True)
-    mode = models.CharField(max_length=50, choices=MODE_CHOICES, default='multiplayer')  # Mode de jeu
-    ball_x = models.FloatField(default=0.5)  # Position X de la balle (normalisée entre 0 et 1)
-    ball_y = models.FloatField(default=0.5)  # Position Y de la balle (normalisée entre 0 et 1)
-    player1_y = models.FloatField(default=0.5)  # Position Y de la raquette du joueur 1
-    player2_y = models.FloatField(default=0.5)  # Position Y de la raquette du joueur 2
-    score_player1 = models.IntegerField(default=0)
-    score_player2 = models.IntegerField(default=0)
-    is_active = models.BooleanField(default=True)  # Indique si la partie est en cours
-    created_at = models.DateTimeField(auto_now_add=True)
+	player1 = models.ForeignKey(User, on_delete=models.CASCADE, related_name='games_as_player1')
+	player2 = models.ForeignKey(User, on_delete=models.CASCADE, related_name='games_as_player2', null=True, blank=True)
+	mode = models.CharField(max_length=50, choices=MODE_CHOICES, default='multiplayer')  # Mode de jeu
+	ball_x = models.FloatField(default=0.5)  # Position X de la balle (normalisée entre 0 et 1)
+	ball_y = models.FloatField(default=0.5)  # Position Y de la balle (normalisée entre 0 et 1)
+	player1_y = models.FloatField(default=0.5)  # Position Y de la raquette du joueur 1
+	player2_y = models.FloatField(default=0.5)  # Position Y de la raquette du joueur 2
+	max_score = models.IntegerField(default=11, null=True, blank=True, validators=[MinValueValidator(1), MaxValueValidator(100)])  # Score maximum pour gagner
+	timer = models.IntegerField(default=0)  # Timer en secondes
+	ball_super_speed = models.BooleanField(default=False)  # Balle en mode super speed
+	score_player1 = models.IntegerField(default=0)
+	score_player2 = models.IntegerField(default=0)
+	is_active = models.BooleanField(default=True)  # Indique si la partie est en cours
+	created_at = models.DateTimeField(auto_now_add=True)
 
-    def __str__(self):
-        return f"Game {self.id} - {self.player1.username} vs {self.player2.username if self.player2 else 'IA'}"
+	def __str__(self):
+		return f"Game {self.id} - {self.player1.username} vs {self.player2.username if self.player2 else 'IA'}"
 
 
 class Tournament(models.Model):

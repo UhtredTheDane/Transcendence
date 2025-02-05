@@ -1,0 +1,76 @@
+.content-container {
+    position: relative;
+    z-index: 1;
+    padding-top: 15vh;
+}
+
+.content-container h1 {
+    font-family: 'TF-Spike', sans-serif; /* Utilisation d'une police plus adaptée */
+    font-size: 48px; /* Ajuster la taille du titre */
+    font-weight: 400; /* Rendre le texte moins bold */
+    letter-spacing: 2px; /* Espacement entre les lettres */
+	line-height: 52.8px;
+    margin-bottom: 1rem; /* Espacement sous le titre */
+}
+
+.content-container p {
+    font-family: 'Sora', sans-serif;
+    font-size: 32px; /* Ajuster la taille du sous-titre */
+    font-weight: 400; /* Rendre le texte moins épais */
+    letter-spacing: 1px; /* Ajouter un léger espacement */
+	line-height: 40.32px;
+    margin-bottom: 2rem; /* Espacement sous le texte */
+}
+
+.content-container a.btn-primary {
+    font-family: 'TF-Spike';
+	font-size: 32px;
+    font-weight: 400;
+    padding: 0.75rem 2rem; /* Ajuster le padding du bouton */
+    text-transform: uppercase; /* Mettre le texte en majuscules */
+    letter-spacing: 1px; /* Espacement entre les lettres */
+}
+
+.profile-container {
+    margin-left: auto;
+}
+
+.profile-btn {
+	width: 40px;
+	height: 40px;
+	border-radius: 50%;
+	background-color: #ffffff;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	color: #343a40;
+	font-size: 20px;
+	font-weight: bold;
+	cursor: pointer;
+	border: 2px solid white;
+}
+
+.profile-btn:hover {
+	background-color: #4423FF;
+	color: black;
+}
+
+.btn-primary {
+	border-radius: 38px;
+    background-color: #4423FF !important;
+    border-color: #4423FF !important;
+}
+
+.btn-primary:hover {
+    background-color: #3100cc !important;
+    border-color: #3100cc !important;
+}
+
+#pongCanvas {
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100vh;
+	z-index: -1;
+}
