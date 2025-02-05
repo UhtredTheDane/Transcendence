@@ -97,19 +97,30 @@ class GameConsumer(AsyncWebsocketConsumer):
 		)
 	
 	async def handle_score_update(self, data):
-		self.game.score_player1 = data.get("score_player1", self.game.score_player1)
-		self.game.score_player2 = data.get("score_player2", self.game.score_player2)
-		
-		await sync_to_async(self.game.save)()
-		
+		# print(f"[LOG] Score received: P1={data.get('player1_score')} | P2={data.get('player2_score')}")
+
+		# Assigner les nouvelles valeurs
+		self.game.score_player1 = data.get("player1_score", self.game.score_player1)
+		self.game.score_player2 = data.get("player2_score", self.game.score_player2)
+
+		# Sauvegarder correctement en forçant l'update
+		await sync_to_async(self.game.save)(update_fields=["score_player1", "score_player2"])
+
+		# Recharger l'objet pour s'assurer que la DB a bien été mise à jour
+		# self.game = await sync_to_async(Game.objects.get)(id=self.game.id)
+
+		# print(f"[LOG] Score after save: P1={self.game.score_player1} | P2={self.game.score_player2}")
+
+		# Envoyer le score mis à jour à tous les clients
 		await self.channel_layer.group_send(
 			self.game_group_name,
 			{
-				"type": "update_score",
+				"type": "update_game_score",
 				"score_player1": self.game.score_player1,
 				"score_player2": self.game.score_player2
 			}
 		)
+
 
 	async def handle_pause(self, data):
 		self.game.is_paused = bool(data.get("is_paused", False))
@@ -130,7 +141,7 @@ class GameConsumer(AsyncWebsocketConsumer):
 	async def update_ball_position(self, event):
 		await self.send(text_data=json.dumps(event))
 	
-	async def update_score(self, event):
+	async def update_game_score(self, event):
 		await self.send(text_data=json.dumps(event))
 
 	async def update_pause(self, event):
