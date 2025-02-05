@@ -1,11 +1,143 @@
 from channels.generic.websocket import AsyncWebsocketConsumer
-import json
 from asgiref.sync import sync_to_async
 from .models import Game, User, Channel, ChannelUser, Message
 from django.utils import timezone
+import json
 import asyncio
 
 active_users = {}
+
+class GameConsumer(AsyncWebsocketConsumer):
+	async def connect(self):
+		self.game_id = self.scope['url_route']['kwargs']['game_id']
+		self.game_group_name = f'game_{self.game_id}'
+		
+		try:
+			self.game = await sync_to_async(Game.objects.get)(id=self.game_id)
+			self.player1 = await sync_to_async(lambda: self.game.player1)()
+			self.player2 = await sync_to_async(lambda: self.game.player2)()
+		except Game.DoesNotExist:
+			await self.close()
+			return
+		
+		if self.scope['user'].is_anonymous or self.scope['user'] not in [self.player1, self.player2]:
+			await self.close()
+		else:
+			await self.channel_layer.group_add(
+				self.game_group_name,
+				self.channel_name
+			)
+			await self.accept()
+			
+			await self.send(text_data=json.dumps({
+				"type": "game_state",
+				"player1_y": self.game.player1_y,
+				"player2_y": self.game.player2_y,
+				"ball_x": self.game.ball_x,
+				"ball_y": self.game.ball_y,
+				"score_player1": self.game.score_player1,
+				"score_player2": self.game.score_player2,
+			}))
+	
+	async def disconnect(self, close_code):
+		await self.channel_layer.group_discard(
+			self.game_group_name,
+			self.channel_name
+		)
+	
+	async def receive(self, text_data):
+		data = json.loads(text_data)
+		message_type = data.get("type")
+
+		if message_type == "move":
+			await self.handle_move(data)
+		elif message_type == "ball":
+			await self.handle_ball_position(data)
+		elif message_type == "score":
+			await self.handle_score_update(data)
+		elif message_type == "pause":
+			await self.handle_pause(data)
+	
+	async def handle_move(self, data):
+		player = self.scope['user']
+		new_position = data.get("position")
+		
+		if player == self.player1:
+			self.game.player1_y = new_position
+		elif player == self.player2:
+			self.game.player2_y = new_position
+		
+		await sync_to_async(self.game.save)()
+		
+		# print(f"[LOG] Move received: {player} moved to {new_position}")
+		# print(f"[LOG] Sending update: {'player1' if player == self.player1 else 'player2'} moves to {new_position}")
+
+		await self.channel_layer.group_send(
+			self.game_group_name,
+			{
+				"type": "update_position",
+				"player": "player1" if player == self.player1 else "player2",
+				"position": new_position,
+			}
+		)
+	
+	async def handle_ball_position(self, data):
+		self.game.ball_x = data.get("ball_x")
+		self.game.ball_y = data.get("ball_y")
+		
+		await sync_to_async(self.game.save)()
+		
+		await self.channel_layer.group_send(
+			self.game_group_name,
+			{
+				"type": "update_ball_position",
+				"ball_x": self.game.ball_x,
+				"ball_y": self.game.ball_y,
+			}
+		)
+	
+	async def handle_score_update(self, data):
+		self.game.score_player1 = data.get("score_player1", self.game.score_player1)
+		self.game.score_player2 = data.get("score_player2", self.game.score_player2)
+		
+		await sync_to_async(self.game.save)()
+		
+		await self.channel_layer.group_send(
+			self.game_group_name,
+			{
+				"type": "update_score",
+				"score_player1": self.game.score_player1,
+				"score_player2": self.game.score_player2
+			}
+		)
+
+	async def handle_pause(self, data):
+		self.game.is_paused = bool(data.get("is_paused", False))
+		await sync_to_async(self.game.save)()
+
+		await self.channel_layer.group_send(
+			self.game_group_name,
+			{
+				"type": "update_pause",
+				"is_paused": self.game.is_paused
+			}
+		)
+	
+	async def update_position(self, event):
+		# print(f"[LOG] update_position sent: {event}")
+		await self.send(text_data=json.dumps(event))
+	
+	async def update_ball_position(self, event):
+		await self.send(text_data=json.dumps(event))
+	
+	async def update_score(self, event):
+		await self.send(text_data=json.dumps(event))
+
+	async def update_pause(self, event):
+		await self.send(text_data=json.dumps(event))
+
+
+
 
 class ChatConsumer(AsyncWebsocketConsumer):
 	async def connect(self):

@@ -24,8 +24,8 @@
                 document.getElementById("parag").innerHTML = `Match trouvé !<br>ID du match : ${data.game_id}<br>Joueurs : ${data.player1} vs ${data.player2}`;
         
 			setTimeout(() => {
-				window.location.href = `/`;
-			}, 2500);
+				window.location.href = `/game/${data.game_id}`;
+			}, 1500);
 		};
 
         matchmakingSocket.onclose = function (e) {

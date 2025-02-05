@@ -1,3 +1,4 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -5,8 +6,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Game Modes</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-	<link href="../../static/css/base.css" rel="stylesheet">
-	<link href="../../static/css/game_modes.css" rel="stylesheet">
+	<link href="{% static 'css/base.css' %}" rel="stylesheet">
+	<link href="{% static 'css/game_modes.css' %}" rel="stylesheet">
 </head>
 <body>
 
@@ -21,10 +22,8 @@
             <!-- Profile button aligned to the far right -->
             <div class="navbar-nav" style="margin-left: auto;">
                 {% if user.is_authenticated and user.avatar %}
-						<img id="navAvatar" src="{{ user.avatar.url }}" alt="Profile" class="profile-avatar">
-					{% else %}
-						<span>👤</span> <!-- Default icon if no avatar -->
-					{% endif %}
+					<img id="navAvatar" src="{{ user.avatar.url }}" alt="Profile" class="profile-avatar">
+				{% endif %}
             </div>
         </div>
     </nav>

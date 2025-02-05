@@ -1,19 +1,3 @@
-"""
-URL configuration for transcendance project.
-
-The `urlpatterns` list routes URLs to views. For more information please see:
-    https://docs.djangoproject.com/en/5.1/topics/http/urls/
-Examples:
-Function views
-    1. Add an import:  from my_app import views
-    2. Add a URL to urlpatterns:  path('', views.home, name='home')
-Class-based views
-    1. Add an import:  from other_app.views import Home
-    2. Add a URL to urlpatterns:  path('', Home.as_view(), name='home')
-Including another URLconf
-    1. Import the include() function: from django.urls import include, path
-    2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
-"""
 from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib import admin
@@ -25,7 +9,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
 	path('accounts/', include('allauth.urls')),
 	path('profile/', views.profile, name='profile'),
-	path('profile/<int:user_id>/', views.profile, name='profile'),
+	path('profile/<int:user_id>/', views.profile, name='profile_other'),
 	path('update_avatar/', views.update_avatar, name='update_avatar'),
 	path('game_modes/', views.game_modes, name='game_modes'),
 	path('leaderboard/', views.leaderboard, name='leaderboard'),
@@ -35,7 +19,7 @@ urlpatterns = [
 	path('send_message/<int:channel_id>/', views.send_message, name='send_message'),
 	path('matchmaking/', views.matchmaking, name='matchmaking'),
 	path('create-game/', views.create_game, name='create_game'),
-	path('game/', views.game, name='game'),
+	path('game/<int:game_id>/', views.game, name='game'),
 	path('game-ia/', views.game_ia, name='game-ia'),
 ]
 

@@ -11,7 +11,7 @@ class User(AbstractUser):
 	]
 
 	bio = models.CharField(max_length=280, blank=True, null=True)
-	avatar = models.ImageField(upload_to='avatars/', default='avatars/default.png', validators=[FileExtensionValidator(allowed_extensions=['jpg', 'jpeg', 'png'])])
+	avatar = models.ImageField(upload_to='avatars/', default='default/avatar.png', validators=[FileExtensionValidator(allowed_extensions=['jpg', 'jpeg', 'png'])])
 	friends = models.ManyToManyField('self', symmetrical=True, blank=True)
 	blocked = models.ManyToManyField('self', symmetrical=False, related_name="blocked_by", blank=True)
 	status = models.CharField(max_length=50, choices=STATUS_CHOICES, default='off')
@@ -29,19 +29,20 @@ class Game(models.Model):
 		('multiplayer', 'Multijoueur'),
 	]
 
+	mode = models.CharField(max_length=50, choices=MODE_CHOICES, default='multiplayer')
 	player1 = models.ForeignKey(User, on_delete=models.CASCADE, related_name='games_as_player1')
 	player2 = models.ForeignKey(User, on_delete=models.CASCADE, related_name='games_as_player2', null=True, blank=True)
-	mode = models.CharField(max_length=50, choices=MODE_CHOICES, default='multiplayer')  # Mode de jeu
-	ball_x = models.FloatField(default=0.5)  # Position X de la balle (normalisée entre 0 et 1)
-	ball_y = models.FloatField(default=0.5)  # Position Y de la balle (normalisée entre 0 et 1)
-	player1_y = models.FloatField(default=0.5)  # Position Y de la raquette du joueur 1
-	player2_y = models.FloatField(default=0.5)  # Position Y de la raquette du joueur 2
+	ball_x = models.FloatField(default=400)
+	ball_y = models.FloatField(default=200)
+	player1_y = models.FloatField(default=170)
+	player2_y = models.FloatField(default=170)
 	max_score = models.IntegerField(default=11, null=True, blank=True, validators=[MinValueValidator(1), MaxValueValidator(100)])  # Score maximum pour gagner
-	timer = models.IntegerField(default=0)  # Timer en secondes
-	ball_super_speed = models.BooleanField(default=False)  # Balle en mode super speed
+	timer = models.IntegerField(default=0)
+	ball_super_speed = models.BooleanField(default=False)
 	score_player1 = models.IntegerField(default=0)
 	score_player2 = models.IntegerField(default=0)
-	is_active = models.BooleanField(default=True)  # Indique si la partie est en cours
+	is_active = models.BooleanField(default=True)
+	is_paused = models.BooleanField(default=False)
 	created_at = models.DateTimeField(auto_now_add=True)
 
 	def __str__(self):
