@@ -57,6 +57,8 @@ class GameConsumer(AsyncWebsocketConsumer):
 			await self.handle_score_update(data)
 		elif message_type == "pause":
 			await self.handle_pause(data)
+		elif message_type == "end":
+			await self.end_game(data)
 	
 	async def handle_move(self, data):
 		player = self.scope['user']
@@ -97,21 +99,11 @@ class GameConsumer(AsyncWebsocketConsumer):
 		)
 	
 	async def handle_score_update(self, data):
-		# print(f"[LOG] Score received: P1={data.get('player1_score')} | P2={data.get('player2_score')}")
-
-		# Assigner les nouvelles valeurs
 		self.game.score_player1 = data.get("player1_score", self.game.score_player1)
 		self.game.score_player2 = data.get("player2_score", self.game.score_player2)
 
-		# Sauvegarder correctement en forçant l'update
 		await sync_to_async(self.game.save)(update_fields=["score_player1", "score_player2"])
 
-		# Recharger l'objet pour s'assurer que la DB a bien été mise à jour
-		# self.game = await sync_to_async(Game.objects.get)(id=self.game.id)
-
-		# print(f"[LOG] Score after save: P1={self.game.score_player1} | P2={self.game.score_player2}")
-
-		# Envoyer le score mis à jour à tous les clients
 		await self.channel_layer.group_send(
 			self.game_group_name,
 			{
@@ -133,9 +125,35 @@ class GameConsumer(AsyncWebsocketConsumer):
 				"is_paused": self.game.is_paused
 			}
 		)
+
+	async def end_game(self, data):
+		self.game.is_active = False
+		self.game.score_player1 = data.get("score_player1", self.game.score_player1)
+		self.game.score_player2 = data.get("score_player2", self.game.score_player2)
+
+		await sync_to_async(self.game.save)(update_fields=["score_player1", "score_player2", "is_active"])
+	
+		await self.channel_layer.group_send(
+			self.game_group_name,
+			{
+				"type": "game_over"
+			}
+		)
+
+		await asyncio.sleep(2)
+
+		await self.channel_layer.group_discard(
+			self.game_group_name,
+			self.channel_name
+		)
+		
+		try:
+			await self.close()
+		except Exception as e:
+			print(f"Error closing connection: {e}")
+			pass
 	
 	async def update_position(self, event):
-		# print(f"[LOG] update_position sent: {event}")
 		await self.send(text_data=json.dumps(event))
 	
 	async def update_ball_position(self, event):
@@ -147,7 +165,12 @@ class GameConsumer(AsyncWebsocketConsumer):
 	async def update_pause(self, event):
 		await self.send(text_data=json.dumps(event))
 
-
+	async def game_over(self, event):
+		try:
+			await self.send(text_data=json.dumps(event))
+		except Exception as e:
+			print(f"Error sending game over message: {e}")
+			pass
 
 
 class ChatConsumer(AsyncWebsocketConsumer):

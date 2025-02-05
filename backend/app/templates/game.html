@@ -15,12 +15,10 @@
     <script>
         const gameId = '{{ game_id }}';
         let playerRole = '{{ player_role }}';
-        console.log(gameId, playerRole);
         
         const socket = new WebSocket(`ws://${window.location.host}/ws/game/${gameId}/`);
         const canvas = document.getElementById("gameCanvas");
         const ctx = canvas.getContext("2d");
-        console.log(canvas.width, canvas.height);
         
         const PADDLE_HEIGHT = 60;
         const CANVAS_HEIGHT = canvas.height;
@@ -34,6 +32,7 @@
         let isSocketOpen = false;
         let isBallMover = false;
 		let isPaused = false;
+		let isGameEnded = false;
 
         socket.onopen = () => {
             console.log("Connecté au WebSocket du jeu");
@@ -42,7 +41,9 @@
 
         socket.onmessage = function(event) {
             const data = JSON.parse(event.data);
-            if (data.type === "update_position") {
+            //if (data.type !== "update_ball_position")
+			//	console.log("Message reçu :", data);
+			if (data.type === "update_position") {
 				if (data.player === "player1") {
 					if (playerRole === "player1") playerY = data.position;
                     else opponentY = data.position;
@@ -69,7 +70,10 @@
                 ball.x = data.ball_x;
                 ball.y = data.ball_y;
                 isBallMover = (playerRole === "player1");
-            }
+            } else if (data.type === "game_over") {
+				alert(playerRole === "player1" && playerScore > opponentScore ? "Vous avez gagné !" : "Vous avez perdu !");
+				window.location.href = "/";
+			}
             drawGame();
         };
 
@@ -84,33 +88,36 @@
 
 		function togglePauseGame() {
 			isPaused = !isPaused;
-			if (isSocketOpen && socket.readyState === WebSocket.OPEN) {
+			if (isGameEnded || !isSocketOpen || socket.readyState !== WebSocket.OPEN) return;
 				socket.send(JSON.stringify({ type: "pause", is_paused: isPaused }));
-			}
 		}
 
         function sendMove(position) {
-            if (isSocketOpen && socket.readyState === WebSocket.OPEN) {
-                socket.send(JSON.stringify({ type: "move", position: position }));
-            } else {
-                console.warn("Tentative d'envoi alors que le WebSocket n'est pas connecté.");
-            }
+            if (isGameEnded || !isSocketOpen || socket.readyState !== WebSocket.OPEN) return;
+            socket.send(JSON.stringify({ type: "move", position: position }));
         }
 
         function sendBallPosition() {
-            if (isSocketOpen && socket.readyState === WebSocket.OPEN) {
-                socket.send(JSON.stringify({ type: "ball", ball_x: ball.x, ball_y: ball.y }));
-            }
+            if (isGameEnded || !isSocketOpen || socket.readyState !== WebSocket.OPEN) return;
+            socket.send(JSON.stringify({ type: "ball", ball_x: ball.x, ball_y: ball.y }));
         }
 
 		function sendUpdateGameScore() {
+			if (isGameEnded || !isSocketOpen || socket.readyState === WebSocket.OPEN) return;
+			socket.send(JSON.stringify({ type: "score", player1_score: playerScore, player2_score: opponentScore }));
+		}
+
+		function endGame() {
+			isGameEnded = true;
 			if (isSocketOpen && socket.readyState === WebSocket.OPEN) {
-				socket.send(JSON.stringify({ type: "score", player1_score: playerScore, player2_score: opponentScore }));
+				socket.send(JSON.stringify({ type: "end", player1_score: playerScore, player2_score: opponentScore }));
 			}
+			alert(playerRole === "player1" && playerScore > opponentScore ? "Vous avez gagné !" : "Vous avez perdu !");
+			window.location.href = "/";
 		}
 
         document.addEventListener("keydown", function(event) {
-			if (isPaused) return;
+			if (isPaused || isGameEnded) return;
 			if (event.key === "ArrowUp" || event.key === "w" || event.key === "z") {
                 sendMove(Math.max(0, playerY - 10));
             }
@@ -127,7 +134,7 @@
 		}		
 
         function updateBall() {
-			if (isPaused) return;
+			if (isPaused || isGameEnded) return;
 			if (isBallMover) {
 				ball.x += ball.dx;
 				ball.y += ball.dy;
@@ -142,16 +149,20 @@
 					(ball.x >= 770 && ball.y >= opponentY && ball.y <= opponentY + PADDLE_HEIGHT)) {
 					ball.dx *= -1;
 				}
-		
-				// Si la balle sort d'un côté (point marqué)
-				if (ball.x <= 0) {
-					opponentScore++; // Player 2 marque un point
+
+				if (ball.x <= 0 || ball.x >= CANVAS_WIDTH) {
+					if (ball.x <= 0) playerScore++;
+					else opponentScore++;
+					
 					resetBall();
 					sendUpdateGameScore();
-				} else if (ball.x >= CANVAS_WIDTH) {
-					playerScore++; // Player 1 marque un point
-					resetBall();
-					sendUpdateGameScore();
+
+					if (playerScore >= 2 || opponentScore >= 2) {
+						playerScore = 0;
+						opponentScore = 0;
+						sendUpdateGameScore();
+						endGame();
+					}
 				}
 				sendBallPosition();
 			}
