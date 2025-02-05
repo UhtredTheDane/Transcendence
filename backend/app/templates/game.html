@@ -14,7 +14,7 @@
 	<button><a href="/">Home</button>
     <script>
         const gameId = '{{ game_id }}';
-        let playerRole = '{{ player_role }}';
+        const playerRole = '{{ player_role }}';
         
         const socket = new WebSocket(`ws://${window.location.host}/ws/game/${gameId}/`);
         const canvas = document.getElementById("gameCanvas");
@@ -41,7 +41,7 @@
 
         socket.onmessage = function(event) {
             const data = JSON.parse(event.data);
-            //if (data.type !== "update_ball_position")
+            //if (data.type !== "update_ball_position" && data.type !== "update_position")
 			//	console.log("Message reçu :", data);
 			if (data.type === "update_position") {
 				if (data.player === "player1") {
@@ -71,11 +71,19 @@
                 ball.y = data.ball_y;
                 isBallMover = (playerRole === "player1");
             } else if (data.type === "game_over") {
-				alert(playerRole === "player1" && playerScore > opponentScore ? "Vous avez gagné !" : "Vous avez perdu !");
-				window.location.href = "/";
+				document.getElementById("pauseButton").display = "none";
+				//alert(playerRole == getWinner() ? "Vous avez gagné !" : "Vous avez perdu !");
+				//setTimeout(() => {
+					window.location.href = "/";
+				//}, 4000);
 			}
             drawGame();
         };
+
+		function getWinner() {
+			if (playerScore > opponentScore) return "player1";
+			else if (playerScore < opponentScore) return "player2";
+		}
 
         socket.onerror = (error) => {
             console.error("WebSocket Erreur :", error);
@@ -103,16 +111,17 @@
         }
 
 		function sendUpdateGameScore() {
-			if (isGameEnded || !isSocketOpen || socket.readyState === WebSocket.OPEN) return;
-			socket.send(JSON.stringify({ type: "score", player1_score: playerScore, player2_score: opponentScore }));
+			if (isGameEnded || !isSocketOpen || socket.readyState !== WebSocket.OPEN) return;
+			socket.send(JSON.stringify({ type: "score", score_player1: playerScore, score_player2: opponentScore }));
 		}
 
 		function endGame() {
 			isGameEnded = true;
 			if (isSocketOpen && socket.readyState === WebSocket.OPEN) {
-				socket.send(JSON.stringify({ type: "end", player1_score: playerScore, player2_score: opponentScore }));
+				socket.send(JSON.stringify({ type: "end", score_player1: playerScore, score_player2: opponentScore }));
 			}
-			alert(playerRole === "player1" && playerScore > opponentScore ? "Vous avez gagné !" : "Vous avez perdu !");
+			document.getElementById("pauseButton").display = "none";
+			alert(playerRole == getWinner() ? "Vous avez gagné !" : "Vous avez perdu !");
 			window.location.href = "/";
 		}
 
@@ -151,18 +160,14 @@
 				}
 
 				if (ball.x <= 0 || ball.x >= CANVAS_WIDTH) {
-					if (ball.x <= 0) playerScore++;
-					else opponentScore++;
+					if (ball.x <= 0) opponentScore++;
+					else playerScore++;
 					
 					resetBall();
 					sendUpdateGameScore();
 
-					if (playerScore >= 2 || opponentScore >= 2) {
-						playerScore = 0;
-						opponentScore = 0;
-						sendUpdateGameScore();
+					if (playerScore >= 2 || opponentScore >= 2)
 						endGame();
-					}
 				}
 				sendBallPosition();
 			}

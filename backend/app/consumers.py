@@ -71,9 +71,6 @@ class GameConsumer(AsyncWebsocketConsumer):
 		
 		await sync_to_async(self.game.save)()
 		
-		# print(f"[LOG] Move received: {player} moved to {new_position}")
-		# print(f"[LOG] Sending update: {'player1' if player == self.player1 else 'player2'} moves to {new_position}")
-
 		await self.channel_layer.group_send(
 			self.game_group_name,
 			{
@@ -99,8 +96,8 @@ class GameConsumer(AsyncWebsocketConsumer):
 		)
 	
 	async def handle_score_update(self, data):
-		self.game.score_player1 = data.get("player1_score", self.game.score_player1)
-		self.game.score_player2 = data.get("player2_score", self.game.score_player2)
+		self.game.score_player1 = data.get("score_player1", self.game.score_player1)
+		self.game.score_player2 = data.get("score_player2", self.game.score_player2)
 
 		await sync_to_async(self.game.save)(update_fields=["score_player1", "score_player2"])
 
@@ -140,7 +137,7 @@ class GameConsumer(AsyncWebsocketConsumer):
 			}
 		)
 
-		await asyncio.sleep(2)
+		await asyncio.sleep(5)
 
 		await self.channel_layer.group_discard(
 			self.game_group_name,
