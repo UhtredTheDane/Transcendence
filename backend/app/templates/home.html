@@ -20,7 +20,7 @@
             <div class="navbar-nav profile-container">
 				<div class="profile-btn" onclick="redirectToProfile()">
 					{% if user.is_authenticated and user.avatar %}
-						<img id="navAvatar" src="{{ user.avatar.url }}" alt="Profile" class="profile-avatar-n34563">
+						<img id="navAvatar" src="{{ user.avatar.url }}" alt="Profile" class="profile-avatar">
 					{% else %}
 						<span>👤</span> <!-- Default icon if no avatar -->
 					{% endif %}

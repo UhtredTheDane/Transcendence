@@ -20,9 +20,11 @@
             </div>
             <!-- Profile button aligned to the far right -->
             <div class="navbar-nav" style="margin-left: auto;">
-                <div class="profile-btn" onclick="redirectToProfile()">
-                    <span>👤</span> <!-- Default human icon perhaps something else needed ? -->
-                </div>
+                {% if user.is_authenticated and user.avatar %}
+						<img id="navAvatar" src="{{ user.avatar.url }}" alt="Profile" class="profile-avatar">
+					{% else %}
+						<span>👤</span> <!-- Default icon if no avatar -->
+					{% endif %}
             </div>
         </div>
     </nav>
@@ -41,6 +43,7 @@
         <button class="game-mode" onclick="setGameMode('Custom')">Custom Mode</button>
 
         <p class="selected-mode" id="selectedMode">Current Mode: None</p>
+		<button class="btn btn-primary" style="background-color: #4423FF; border-color: #4423FF;" onclick="launchGame()">Play Now</button>
     </div>
 
     <script>
@@ -56,6 +59,16 @@
             document.getElementById("selectedMode").textContent = "Current Mode: " + mode;
             console.log("Game mode set to:", mode);
         }
+
+		function launchGame() {
+			const selectedMode = document.getElementById("selectedMode").textContent;
+			if (selectedMode === "Current Mode: None") {
+				alert("Please select a game mode first!");
+				return;
+			}
+
+			window.location.href = '/game-ia?mode=' + selectedMode.split(": ")[1];
+		}
     </script>
 </body>
 </html>

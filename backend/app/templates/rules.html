@@ -18,7 +18,11 @@
             <!-- Profile button aligned to the far right -->
             <div class="navbar-nav ms-auto">
                 <div class="profile-btn" onclick="redirectToProfile()">
-                    <span>👤</span> <!-- Default human icon -->
+                    {% if user.is_authenticated and user.avatar %}
+						<img id="navAvatar" src="{{ user.avatar.url }}" alt="Profile" class="profile-avatar">
+					{% else %}
+						<span>👤</span> <!-- Default icon if no avatar -->
+					{% endif %}
                 </div>
             </div>
         </div>

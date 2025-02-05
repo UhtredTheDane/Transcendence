@@ -31,49 +31,6 @@
     letter-spacing: 1px; /* Espacement entre les lettres */
 }
 
-.profile-avatar-n34563 {
-    display: block;
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    object-fit: cover;
-}
-
-.profile-container {
-    margin-left: auto;
-}
-
-.profile-btn {
-	width: 40px;
-	height: 40px;
-	border-radius: 50%;
-	background-color: #ffffff;
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	color: #343a40;
-	font-size: 20px;
-	font-weight: bold;
-	cursor: pointer;
-	border: 2px solid white;
-}
-
-.profile-btn:hover {
-	background-color: #4423FF;
-	color: black;
-}
-
-.btn-primary {
-	border-radius: 38px;
-    background-color: #4423FF !important;
-    border-color: #4423FF !important;
-}
-
-.btn-primary:hover {
-    background-color: #3100cc !important;
-    border-color: #3100cc !important;
-}
-
 #pongCanvas {
 	position: absolute;
 	top: 0;
