@@ -1,4 +1,4 @@
-version: '3.9'
+version: '3'
 
 networks:
   mynetwork:
@@ -27,9 +27,9 @@ services:
     container_name: db
     env_file: .env
     environment:
-      POSTGRES_USER: ${DB_USER}
-      POSTGRES_PASSWORD: ${DB_PASSWORD}
-      POSTGRES_DB: ${DB_NAME}
+      POSTGRES_USER: "postgres"
+      POSTGRES_PASSWORD: 7526
+      POSTGRES_DB: "db"
     volumes:
       - db_data:/var/lib/postgresql/data
     ports:

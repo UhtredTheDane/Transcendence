@@ -99,27 +99,27 @@ ASGI_APPLICATION = 'base.asgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
-DATABASES = {
-	'default': {
-		"ENGINE": "django.db.backends.postgresql",
-		"NAME": config('DB_NAME'),
-		"USER": config('DB_USER'),
-		"PASSWORD": config('DB_PASSWORD'),
-		"HOST": config('DB_HOST'),
-		"PORT": config('DB_PORT'),
-	}
-}
-
 # DATABASES = {
 # 	'default': {
 # 		"ENGINE": "django.db.backends.postgresql",
-# 		"NAME": 'db',
-# 		"USER": 'postgres',
-# 		"PASSWORD": '7526',
-# 		"HOST": 'db',
-# 		"PORT": '5432',
+# 		"NAME": config('DB_NAME'),
+# 		"USER": config('DB_USER'),
+# 		"PASSWORD": config('DB_PASSWORD'),
+# 		"HOST": config('DB_HOST'),
+# 		"PORT": config('DB_PORT'),
 # 	}
 # }
+
+DATABASES = {
+	'default': {
+		"ENGINE": "django.db.backends.postgresql",
+		"NAME": 'db',
+		"USER": 'postgres',
+		"PASSWORD": '7526',
+		"HOST": 'db',
+		"PORT": '5432',
+	}
+}
 
 SITE_ID = 1
 

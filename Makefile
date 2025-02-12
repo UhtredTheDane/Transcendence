@@ -15,7 +15,7 @@ DEFAULT		= \033[0;39m
 DOCKERCOMPOSE = docker-compose -f srcs/docker-compose.yml
 
 # default target
-all: up start
+all: up 
 
 # start the biulding process
 # create the wordpress and mariadb data directories.
@@ -50,12 +50,12 @@ build:
 # remove the wordpress and mariadb data directories.
 # the (|| true) is used to ignore the error if there are no containers running to prevent the make command from stopping.
 clean:
-	@docker stop $$(docker ps -qa) || true
-	@docker rm $$(docker ps -qa) || true
-	@docker rmi -f $$(docker images -qa) || true
-	@docker volume rm $$(docker volume ls -q) || true
-	@docker network rm $$(docker network ls -q) || true
-	@echo "$(RED)[Containers]$(DEFAULT) Cleaned !"
+##	@echo "$(RED)[Containers]$(DEFAULT) Cleaned !"
+	@${DOCKERCOMPOSE} down --rmi all --volumes --remove-orphans
+
+fclean:
+	@docker system prune -f -a --volumes
+	@echo "$(RED)[Containers]$(DEFAULT) Fully deleted !"
 
 # fclean: clean
 # 	@sudo rm -rf $(DB_DATA) || true
