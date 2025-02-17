@@ -1,0 +1,73 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Game Modes</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+	<link href="{% static 'css/base.css' %}" rel="stylesheet">
+	<link href="{% static 'css/game_modes.css' %}" rel="stylesheet">
+</head>
+<body>
+
+    <!-- Navbar at the top - classic buttons to make the user play around -->
+    <nav class="navbar navbar-expand-lg navbar-dark">
+        <div class="container-fluid">
+            <div class="navbar-nav">
+                <a class="nav-link" href="/">Home</a>
+                <a class="nav-link" href="/leaderboard">Leader Board</a>
+                <a class="nav-link" href="/rules">Pong Rules</a>
+            </div>
+            <!-- Profile button aligned to the far right -->
+            <div class="navbar-nav" style="margin-left: auto;">
+                {% if user.is_authenticated and user.avatar %}
+					<img id="navAvatar" src="{{ user.avatar.url }}" alt="Profile" class="profile-avatar">
+				{% endif %}
+            </div>
+        </div>
+    </nav>
+
+    <!-- Background Title -->
+    <div class="background-text">TRANSCENDANCE</div>
+
+    <div class="container">
+        <h1 class="mb-3">GAME MODES</h1>
+        <p class="mb-4">Select your Game Mode</p>
+
+        <button class="game-mode" onclick="setGameMode('AI')">AI Mode</button>
+        <button class="game-mode" onclick="setGameMode('Unranked')">Unranked Mode</button>
+        <button class="game-mode" onclick="setGameMode('Ranked')">Ranked Mode</button>
+        <button class="game-mode" onclick="setGameMode('Tournament')">Tournament Mode</button>
+        <button class="game-mode" onclick="setGameMode('Custom')">Custom Mode</button>
+
+        <p class="selected-mode" id="selectedMode">Current Mode: None</p>
+		<button class="btn btn-primary" style="background-color: #4423FF; border-color: #4423FF;" onclick="launchGame()">Play Now</button>
+    </div>
+
+    <script>
+        function redirectToProfile() {
+            if (localStorage.getItem('loggedIn') === 'true') {
+                window.location.href = '/profile';
+            } else {
+                window.location.href = '/accounts/login';
+            }
+        }
+
+        function setGameMode(mode) {
+            document.getElementById("selectedMode").textContent = "Current Mode: " + mode;
+            console.log("Game mode set to:", mode);
+        }
+
+		function launchGame() {
+			const selectedMode = document.getElementById("selectedMode").textContent;
+			if (selectedMode === "Current Mode: None") {
+				alert("Please select a game mode first!");
+				return;
+			}
+
+			window.location.href = '/game-ia?mode=' + selectedMode.split(": ")[1];
+		}
+    </script>
+</body>
+</html>
