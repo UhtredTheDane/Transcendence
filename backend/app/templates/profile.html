@@ -1,0 +1,121 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Profile Page</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+	<link href="{% static 'css/base.css' %}" rel="stylesheet">
+    <link href="{% static 'css/profile.css' %}" rel="stylesheet">
+</head>
+<body>
+    <div class="background-text">TRANSCENDANCE</div>
+
+    <!-- Home Button -->
+    <div class="home-button">
+        <a href="/" class="btn">HOME</a>
+		<form method="POST" action="{% url 'account_logout' %}">
+			{% csrf_token %}
+		</form>
+	</div>
+	
+
+    <div class="container profile-container">
+        <div class="profile-picture-container">
+			{% if user.avatar %}
+				<div id="profilePicture" class="profile-picture" style="background-image: url('{{ user.avatar.url }}'); background-size: cover; background-position: center;"></div>
+			{% endif %}
+			<span class="edit-icon" onclick="triggerUpload()">✏️</span>
+			<input type="file" id="uploadInput" style="display: none;" accept="image/*" onchange="uploadProfilePicture(this)">
+		</div>
+		
+		{% comment %} <div class="profile-picture-container">
+            <div id="profilePicture" class="profile-picture">Your Profile</div>
+            <span class="edit-icon" onclick="changeProfilePicture()">✏️</span>
+        </div>		 {% endcomment %}
+        <h2 class="mt-3">Welcome {{ user.username }} !</h2>
+        <div class="btn-container">
+            <button class="btn btn-info" onclick="toggleScores()">Your Scores</button>
+            <a href="/accounts/logout" class="btn btn-success">Logout</a>
+        </div>
+        <div id="scores-container">
+            <h3>Past Scores</h3>
+            <table class="table table-striped">
+				<thead>
+					<tr>
+						<th>Result</th>
+						<th>Score</th>
+						<th>Date</th>
+					</tr>
+				</thead>
+				<tbody>
+					{% for score in scores %}
+						<tr>
+							<td>{{ score.result }}</td>
+							<td>{{ score.score }}</td>
+							<td>{{ score.created_at }}</td>
+						</tr>
+					{% empty %}
+						<tr>
+							<td colspan="3">No recent games.</td>
+						</tr>
+					{% endfor %}
+				</tbody>
+			</table>
+			
+        </div>
+    </div>
+    
+    <script>
+		function triggerUpload() {
+			document.getElementById('uploadInput').click(); // Simule un clic sur l'input
+		}
+	
+		function uploadProfilePicture(input) {
+			const file = input.files[0];
+			if (!file) return;
+	
+			const formData = new FormData();
+			formData.append('avatar', file);
+			formData.append('csrfmiddlewaretoken', '{{ csrf_token }}'); // CSRF Token
+	
+			fetch("{% url 'update_avatar' %}", {
+				method: 'POST',
+				body: formData,
+			})
+			.then(response => {
+				console.log("Success");
+				return response.json();
+			})
+			.then(data => {
+				console.log(data);
+				if (data.status === 'success') {
+					const profilePicture = document.getElementById('profilePicture');
+					const timestamp = new Date().getTime();
+					const newAvatarUrl = `${data.image_url}?t=${timestamp}`;
+					profilePicture.style.backgroundImage = `url('${newAvatarUrl}')`;
+					const navAvatar = document.getElementById('navAvatar');
+					if (navAvatar) {
+						navAvatar.src = newAvatarUrl;
+					}
+				} else {
+					alert('Error uploading image: ' + (data.errors || data.message));
+				}
+			})
+			.catch(error => console.error('Error:', error));
+			
+		}
+
+        // Here again is just an exemple func it is not the actual results!!
+        function toggleScores() {
+            const scoresContainer = document.getElementById("scores-container");
+            if (scoresContainer.style.display === "none" || scoresContainer.style.display === "") {
+                scoresContainer.style.display = "block";
+            } else {
+                scoresContainer.style.display = "none";
+            }
+        }
+    </script>
+</body>
+</html>
