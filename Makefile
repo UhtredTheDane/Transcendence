@@ -57,6 +57,8 @@ fclean:
 	@docker system prune -f -a --volumes
 	@echo "$(RED)[Containers]$(DEFAULT) Fully deleted !"
 
+superUser2:
+	@${DOCKERCOMPOSE} run python manage.py auto_createsuperuser --username secondadmin --email bidon2@live.fr --password toto2675
 # fclean: clean
 # 	@sudo rm -rf $(DB_DATA) || true
 # 	@echo "$(RED)[Containers]$(DEFAULT) Fully cleaned !"
