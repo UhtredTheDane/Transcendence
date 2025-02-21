@@ -122,8 +122,8 @@ window.main = function () {
 
 
 	setInterval(() => {
-		updateBall();
-		drawGame();
+		ball.updateBall();
+		fieldPong.draw();
 	}, 16);
 };
 

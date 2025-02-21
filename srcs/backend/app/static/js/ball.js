@@ -144,5 +144,4 @@ set img(value) {
             sendBallPosition();
         }
     }
-    }
 }

@@ -1,3 +1,4 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -10,6 +11,6 @@
     Votre Navigateur ne supporte pas la balise canvas.
 </canvas>
 <button id="pauseButton">Pause</button>
-<script type="module" crossorigin="use-credentials" src="../../srcs/main.js"></script>
+<script type="module" src="{% static 'js/main.js' %}"></script>
 </body>
 </html>
