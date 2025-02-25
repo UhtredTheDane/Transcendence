@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Game Modes</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="index.css">
     <style>
         body {
             background-color: black;
@@ -20,110 +21,29 @@
             padding-top: 100px;
         }
 
-        /* Navbar style: Align buttons to the left, profile to the right */
-        .navbar {
-            position: fixed;
-            top: 0;
-            left: 0;
-            z-index: 999;
-            background-color: #343a40;
-            width: 100%;
-            padding: 10px;
-        }
+      
 
-        .navbar a {
-            color: white !important;
-            font-weight: bold;
-            font-size: 16px;
-            padding: 10px 15px;
-        }
-
-        /* Align navbar items to the left */
-        .navbar-nav {
-            display: flex;
-            justify-content: flex-start;
-            width: 100%;
-        }
-
-        /* Profile button circle style */
-        .profile-btn {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            background-color: #ffffff;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #343a40;
-            font-size: 20px;
-            font-weight: bold;
-            cursor: pointer;
-            border: 2px solid white;
-            margin-left: auto;
-        }
-
-        /* Hover effect for profile button */
-        .profile-btn:hover {
-            background-color: #00d4ff;
-            color: black;
-        }
-
-        /* Hover effect for navbar links */
-        .navbar a:hover {
-            color: #0d40e7 !important;
-            background-color: transparent;
-            border-radius: 5px;
-        }
-
-        /* Background title effect */
-        .background-text {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            font-size: 12vw;
-            font-weight: bold;
-            color: white;
-            opacity: 0.1;
-            white-space: nowrap;
-            user-select: none;
-            z-index: -1;
-
-            background: linear-gradient(to top, rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0));
-
-            -webkit-background-clip: text;
-            -moz-background-clip: text;
-            -ms-background-clip: text;
-            -o-background-clip: text;
-            background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
 
         /* Game mode buttons */
-        .game-mode {
+        .first-btn {
             display: block;
             width: 100%;
             padding: 15px;
             margin: 10px 0;
             font-size: 24px;
-            font-weight: bold;
             background-color: #343a40;
             border: 2px solid white;
             color: white;
             border-radius: 10px;
             cursor: pointer;
             transition: all 0.3s ease-in-out;
-        }
+            font-family: 'TF SPIKE DEMO', sans-serif;
 
-        .game-mode:hover {
-            background-color: white;
-            color: #212529;
         }
 
         .selected-mode {
             margin-top: 20px;
             font-size: 20px;
-            font-weight: bold;
             color: #17a2b8;
         }
 
@@ -136,7 +56,10 @@
         .modal-body {
             background-color: #222;
         }
+        
     </style>
+    <link rel="stylesheet" href="index.css">
+   
 </head>
 <body>
 
@@ -158,19 +81,21 @@
     </nav>
 
     <!-- Background Title -->
-    <div class="background-text">TRANSCENDANCE</div>
+    <div class=" position-absolute top-50 start-50 translate-middle">
+        <img class="transcendence-icon" alt="" src="assets/bg-text.svg">
+    </div>
 
-    <div class="container">
-        <h1 class="mb-3">GAME MODES</h1>
-        <p class="mb-4">Select your Game Mode</p>
+    <div class="container  position-absolute top-50 start-50 translate-middle">
+        <h1 class="mb-1 primary-font" style="font-size: 42pt">GAME MODES</h1>
+        <p class="mb-4 secondary-font" style=" font-size: 21pt">Select your Game Mode</p>
 
-        <button class="game-mode" onclick="setGameMode('AI')">AI</button>
-        <button class="game-mode" onclick="setGameMode('Unranked')">Unranked</button>
-        <button class="game-mode" onclick="setGameMode('Ranked')">Ranked</button>
-        <button class="game-mode" onclick="setGameMode('Tournament')">Tournament</button>
-        <button class="game-mode" onclick="setGameMode('Custom')">Custom</button>
+        <button class="first-btn" onclick="setGameMode('AI')" data="AI"></button>
+        <button class="first-btn" onclick="setGameMode('Unranked')" data="Unranked"></button>
+        <button class="first-btn" onclick="setGameMode('Ranked')" data="Ranked"></button>
+        <button class="first-btn" onclick="setGameMode('Tournament')" data="Tournament"></button>
+        <button class="first-btn" onclick="setGameMode('Custom')" data="Custom"></button>
 
-        <p class="selected-mode" id="selectedMode">Current Mode: None</p>
+        <p class="selected-mode secondary-font" id="selectedMode">Current Mode: None</p>
     </div>
 
     <!-- Modal for Tournament -->
@@ -182,8 +107,8 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <button class="game-mode" onclick="window.location.href='InviteTournament.html'">Invite to Tournament</button>
-                    <button class="game-mode" onclick="window.location.href='JoinTournament.html'">Join Existing Tournament</button>
+                    <button class="first-btn" onclick="window.location.href='InviteTournament.html'">Invite to Tournament</button>
+                    <button class="first-btn" onclick="window.location.href='JoinTournament.html'">Join Existing Tournament</button>
                 </div>
             </div>
         </div>
@@ -198,9 +123,9 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <button class="game-mode" onclick="window.location.href='PvPMaxScore.html'">PvP Max Score</button>
-                    <button class="game-mode" onclick="window.location.href='PvPMaxTime.html'">PvP Max Time</button>
-                    <button class="game-mode" onclick="window.location.href='PvPRush.html'">PvP Rush</button>
+                    <button class="first-btn" onclick="window.location.href='PvPMaxScore.html'">PvP Max Score</button>
+                    <button class="first-btn" onclick="window.location.href='PvPMaxTime.html'">PvP Max Time</button>
+                    <button class="first-btn" onclick="window.location.href='PvPRush.html'">PvP Rush</button>
                 </div>
             </div>
         </div>
@@ -216,7 +141,7 @@
         }
 
         function setGameMode(mode) {
-            document.getElementById("selectedMode").textContent = "Current Mode: " + mode;
+            document.getElementById("selectedMode").textData = "Current Mode: " + mode;
             console.log("Game mode set to:", mode);
 
             switch (mode) {
