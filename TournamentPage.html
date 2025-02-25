@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Player Challenges</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: black;
+            color: white;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: auto;
+            padding-top: 100px;
+        }
+
+        .navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 999;
+            background-color: #343a40;
+            width: 100%;
+            padding: 10px;
+        }
+
+        .navbar a {
+            color: white !important;
+            font-weight: bold;
+            font-size: 16px;
+            padding: 10px 15px;
+        }
+
+        .navbar-nav {
+            display: flex;
+            justify-content: flex-start;
+            width: 100%;
+        }
+
+        .navbar a:hover {
+            color: #0d40e7 !important;
+            background-color: transparent;
+            border-radius: 5px;
+        }
+
+        .player-list {
+            margin-top: 30px;
+            list-style-type: none;
+            padding: 0;
+        }
+
+        .player-list li {
+            background-color: #343a40;
+            padding: 10px 15px;
+            margin: 10px 0;
+            border-radius: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .player-list button {
+            background-color: #0d40e7;
+            border: none;
+            color: white;
+            padding: 8px 12px;
+            font-size: 14px;
+            border-radius: 10px;
+            cursor: pointer;
+        }
+
+        .player-list button:hover {
+            background-color: #0a32cc;
+        }
+
+        .start-game-btn {
+            background-color: #28a745;
+        }
+
+        .start-game-btn:hover {
+            background-color: #218838;
+        }
+
+    </style>
+</head>
+<body>
+
+    <!-- Navbar with Link to Leaderboard -->
+    <nav class="navbar navbar-expand-lg navbar-dark">
+        <div class="container-fluid">
+            <div class="navbar-nav">
+                <a class="nav-link" href="Leaderboard.html">Leaderboard</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <h1 class="mb-4">Tournament: Challenge Players</h1>
+
+        <!-- List of Players -->
+        <ul id="playerList" class="player-list">
+            <!-- Players will be added dynamically here -->
+        </ul>
+    </div>
+
+    <script>
+        // Example player list
+        const players = ['Player 1', 'Player 2', 'Player 3', 'Player 4'];
+        const challenges = {};
+
+        // Dynamically generate the player list
+        function renderPlayerList() {
+            const playerListContainer = document.getElementById('playerList');
+            playerListContainer.innerHTML = '';
+
+            players.forEach(player => {
+                const listItem = document.createElement('li');
+                listItem.innerHTML = `
+                    <span>${player}</span>
+                    <button class="btn btn-primary" onclick="challengePlayer('${player}')">Challenge</button>
+                `;
+
+                // Disable challenge button for players who have already been challenged
+                if (challenges[player]) {
+                    listItem.querySelector('button').disabled = true;
+                    listItem.querySelector('button').innerText = 'Already Challenged';
+                }
+
+                // Create start game button for challenged players
+                if (challenges[player] && challenges[player].challenger) {
+                    const startGameBtn = document.createElement('button');
+                    startGameBtn.classList.add('btn', 'start-game-btn');
+                    startGameBtn.innerText = 'Start Game';
+                    startGameBtn.onclick = () => startGame(player);
+                    listItem.appendChild(startGameBtn);
+                }
+
+                playerListContainer.appendChild(listItem);
+            });
+        }
+
+        // Function for player to challenge another player
+        function challengePlayer(player) {
+            // Check if the player is already in a challenge
+            const challenger = players.find(p => p !== player && !challenges[p]);
+
+            if (!challenger) {
+                alert('No players available to challenge!');
+                return;
+            }
+
+            challenges[challenger] = { challenged: player, challenger: challenger };
+            renderPlayerList();
+        }
+
+        // Function to start the game
+        function startGame(player) {
+            const challenger = challenges[player]?.challenger;
+            if (challenger) {
+                // Redirect to PongTourny.html with both player names
+                window.location.href = `PongTourny.html?player1=${challenger}&player2=${player}`;
+            } else {
+                alert('No game to start!');
+            }
+        }
+
+        // Initialize player list on page load
+        window.onload = renderPlayerList;
+    </script>
+
+</body>
+</html>

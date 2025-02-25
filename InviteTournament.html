@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Invite to Tournament</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: black;
+            color: white;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: auto;
+            padding-top: 100px;
+        }
+
+        .player-button {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            font-size: 18px;
+            background-color: #343a40;
+            border: 2px solid white;
+            color: white;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease-in-out;
+        }
+
+        .player-button:hover {
+            background-color: #0d40e7;
+        }
+
+        .invite-list {
+            margin-top: 30px;
+        }
+
+        .navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 999;
+            background-color: #343a40;
+            width: 100%;
+            padding: 10px;
+        }
+
+        .navbar a {
+            color: white !important;
+            font-weight: bold;
+            font-size: 16px;
+            padding: 10px 15px;
+            text-decoration: none;
+            transition: all 0.3s ease-in-out;
+        }
+
+        .navbar-nav {
+            display: flex;
+            justify-content: flex-start;
+            width: 100%;
+        }
+
+        .navbar a:hover {
+            color: #0d40e7 !important;
+            background-color: transparent;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Navbar with Change Mode button aligned to the left -->
+    <nav class="navbar navbar-expand-lg navbar-dark">
+        <div class="container-fluid">
+            <div class="navbar-nav">
+                <a class="nav-link" href="GameModes.html">Change Mode</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <h1 class="mb-4">Invite Players to Tournament</h1>
+
+        <!-- List of available players (can be replaced with dynamic data) -->
+        <div id="playerList">
+            <!-- Example player button -->
+            <div class="player-button">
+                <span>Player 1</span>
+                <button class="btn btn-success btn-sm" onclick="addPlayer('Player 1')">+</button>
+            </div>
+            <div class="player-button">
+                <span>Player 2</span>
+                <button class="btn btn-success btn-sm" onclick="addPlayer('Player 2')">+</button>
+            </div>
+            <div class="player-button">
+                <span>Player 3</span>
+                <button class="btn btn-success btn-sm" onclick="addPlayer('Player 3')">+</button>
+            </div>
+            <div class="player-button">
+                <span>Player 4</span>
+                <button class="btn btn-success btn-sm" onclick="addPlayer('Player 4')">+</button>
+            </div>
+        </div>
+
+        <h3>Players Selected:</h3>
+        <div id="selectedPlayers" class="invite-list">
+            <!-- Players added to the invite list will show here -->
+        </div>
+
+        <button class="btn btn-primary btn-lg" id="startTournamentBtn" onclick="startTournament()" style="margin-top: 20px;">Start Tournament</button>
+    </div>
+
+    <script>
+        const selectedPlayers = [];
+
+        function addPlayer(player) {
+            // Add the selected player to the invite list
+            if (!selectedPlayers.includes(player)) {
+                selectedPlayers.push(player);
+                updateSelectedPlayers();
+            }
+        }
+
+        function updateSelectedPlayers() {
+            const selectedListContainer = document.getElementById('selectedPlayers');
+            selectedListContainer.innerHTML = ''; // Clear previous list
+
+            selectedPlayers.forEach(player => {
+                const playerElement = document.createElement('div');
+                playerElement.textContent = player;
+                selectedListContainer.appendChild(playerElement);
+            });
+        }
+
+        function startTournament() {
+            if (selectedPlayers.length < 2) {
+                alert('You need at least 2 players to start a tournament.');
+            } else {
+                window.location.href = 'TournamentPage.html'; // Redirect to TournamentPage
+            }
+        }
+    </script>
+
+</body>
+</html>
