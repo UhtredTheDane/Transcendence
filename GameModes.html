@@ -52,7 +52,7 @@
         .modal-body {
             background-color: #222;
         }
-        
+
     </style>
     <link rel="stylesheet" href="index.css">
 </head>
@@ -63,7 +63,7 @@
         <div class="container-fluid">
             <div class="navbar-nav">
                 <a class="nav-link" href="HomePage.html">Home</a>
-                <a class="nav-link" href="LeaderBoard.html">Leader Board</a>
+                <a class="nav-link" href="#" data-bs-toggle="modal" data-bs-target="#leaderboardModal">Leader Board</a>
                 <a class="nav-link" href="PongRules.html">Pong Rules</a>
             </div>
             <!-- Profile button aligned to the far right -->
@@ -121,6 +121,26 @@
                     <button class="first-btn" onclick="window.location.href='RushMode.html'">PvP Rush</button>
                     <button class="first-btn" onclick="window.location.href='TimerMode.html'">PvP Max Time</button>
                     <button class="first-btn" onclick="window.location.href='MaxScoreMode.html'">PvP Max Score</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal for Leaderboard -->
+    <div class="modal fade" id="leaderboardModal" tabindex="-1" aria-labelledby="leaderboardModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="leaderboardModalLabel">Leaderboard</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <!-- Placeholder for leaderboard content -->
+                    <p>1. Player One - 1000 points</p>
+                    <p>2. Player Two - 900 points</p>
+                    <p>3. Player Three - 850 points</p>
+                    <p>4. Player Four - 800 points</p>
+                    <p>5. Player Five - 750 points</p>
                 </div>
             </div>
         </div>
