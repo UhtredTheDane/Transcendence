@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Join Tournament</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: black;
+            color: white;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: auto;
+            padding-top: 100px;
+        }
+
+        .tournament-button {
+            display: block;
+            width: 100%;
+            padding: 15px;
+            margin: 10px 0;
+            font-size: 24px;
+            background-color: #343a40;
+            border: 2px solid white;
+            color: white;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease-in-out;
+            font-family: 'TF SPIKE DEMO', sans-serif;
+        }
+
+        .no-tournament-message {
+            margin-top: 20px;
+            font-size: 20px;
+            color: #dc3545;
+        }
+
+        /* Navbar style */
+        .navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 999;
+            background-color: #343a40;
+            width: 100%;
+            padding: 10px;
+        }
+
+        .navbar a {
+            color: white !important;
+            font-weight: bold;
+            font-size: 16px;
+            padding: 10px 15px;
+            text-decoration: none;
+            transition: all 0.3s ease-in-out;
+            font-family: 'TF SPIKE DEMO', sans-serif;
+        }
+
+        .navbar-nav {
+            display: flex;
+            justify-content: flex-start;
+            width: 100%;
+        }
+
+        .navbar a:hover {
+            color: #0d40e7 !important;
+            background-color: transparent;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Navbar with Change Mode button aligned to the left -->
+    <nav class="navbar navbar-expand-lg navbar-dark">
+        <div class="container-fluid">
+            <div class="navbar-nav">
+                <a class="nav-link" href="GameModes.html">Change Mode</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <h1 class="mb-4 primary-font" style="font-size: 42pt">Join a Tournament</h1>
+
+        <div id="tournamentList">
+            <!-- Tournament list will appear here if there are open tournaments -->
+            <div class="tournament-button" onclick="window.location.href='JoinTournamentDetails.html'">
+                Tournament 1: Open for Registration
+            </div>
+            <div class="tournament-button" onclick="window.location.href='JoinTournamentDetails.html'">
+                Tournament 2: Open for Registration
+            </div>
+        </div>
+
+        <!-- If no tournaments available -->
+        <div id="noTournamentMessage" class="no-tournament-message" style="display: none;">
+            No tournament open at the moment.
+        </div>
+
+    </div>
+
+    <script>
+        // Simulating a list of tournaments (replace with dynamic logic)
+        const openTournaments = []; // Change this to an array of tournaments if any are open
+        const tournamentList = document.getElementById('tournamentList');
+        const noTournamentMessage = document.getElementById('noTournamentMessage');
+
+        if (openTournaments.length === 0) {
+            tournamentList.style.display = 'none';
+            noTournamentMessage.style.display = 'block';
+        } else {
+            tournamentList.style.display = 'block';
+            noTournamentMessage.style.display = 'none';
+        }
+
+    </script>
+
+</body>
+</html>

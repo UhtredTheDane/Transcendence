@@ -21,9 +21,6 @@
             padding-top: 100px;
         }
 
-      
-
-
         /* Game mode buttons */
         .first-btn {
             display: block;
@@ -38,7 +35,6 @@
             cursor: pointer;
             transition: all 0.3s ease-in-out;
             font-family: 'TF SPIKE DEMO', sans-serif;
-
         }
 
         .selected-mode {
@@ -59,7 +55,6 @@
         
     </style>
     <link rel="stylesheet" href="index.css">
-   
 </head>
 <body>
 
@@ -123,9 +118,9 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <button class="first-btn" onclick="window.location.href='PvPMaxScore.html'">PvP Max Score</button>
-                    <button class="first-btn" onclick="window.location.href='PvPMaxTime.html'">PvP Max Time</button>
-                    <button class="first-btn" onclick="window.location.href='PvPRush.html'">PvP Rush</button>
+                    <button class="first-btn" onclick="window.location.href='RushMode.html'">PvP Rush</button>
+                    <button class="first-btn" onclick="window.location.href='TimerMode.html'">PvP Max Time</button>
+                    <button class="first-btn" onclick="window.location.href='MaxScoreMode.html'">PvP Max Score</button>
                 </div>
             </div>
         </div>
@@ -141,7 +136,7 @@
         }
 
         function setGameMode(mode) {
-            document.getElementById("selectedMode").textData = "Current Mode: " + mode;
+            document.getElementById("selectedMode").textContent = "Current Mode: " + mode;
             console.log("Game mode set to:", mode);
 
             switch (mode) {
