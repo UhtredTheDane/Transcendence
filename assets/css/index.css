@@ -9,7 +9,7 @@ body {
 
 @font-face {
     font-family: TF SPIKE DEMO;
-    src: url("assets/TF\ SPIKE\ DEMO.TTF") format("truetype");
+    src: url("../TF\ SPIKE\ DEMO.TTF") format("truetype");
 }
 
 @import url('https://fonts.googleapis.com/css2?family=Sora:wght@100..800&display=swap');
@@ -97,7 +97,11 @@ body {
 }
 
 .primary-font h1{
-    font-size: 48pt;
+	font: 48pt 'TF SPIKE DEMO', sans-serif;
+}
+
+.secondary-font p{
+	font: 48pt 'Sora', sans-serif;
 }
 
 .content-container h1 {
@@ -297,3 +301,6 @@ background-position: left;
     height:1280px;
     /* text-align:center; */
 }
+
+
+
