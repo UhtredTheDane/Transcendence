@@ -114,18 +114,6 @@
             background-color: #f1f1f1;
         }
 
-        .forty-two-btn {
-            background-color: black;
-            color: white;
-            border: 2px solid white;
-            flex: 1;
-        }
-
-        .forty-two-btn:hover {
-            background-color: white;
-            color: black;
-        }
-
         /* Hover effect for social buttons */
         .social-btn:hover {
             background-color: #00d4ff;
@@ -185,12 +173,6 @@
                 <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/53/Google_%22G%22_Logo.svg/512px-Google_%22G%22_Logo.svg.png" alt="Google Logo">
                 Sign in with Google
             </button>
-
-            <!-- 42 Sign-In Button -->
-            <button class="social-btn forty-two-btn" onclick="signInWith42()">
-                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/5e/42_Logo.svg/1024px-42_Logo.svg.png" alt="42 Logo">
-                42
-            </button>
         </div>
 
         <hr class="my-4" style="border-color: white;">
@@ -207,11 +189,6 @@
         function signInWithGoogle() {
             console.log("Redirecting to Google Sign-In...");
             // Google OAuth
-        }
-
-        function signInWith42() {
-            console.log("Redirecting to 42 Sign-In...");
-            // 42 API authentication
         }
 
         function signIn(event) {
