@@ -5,90 +5,32 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Pong Rules</title>
 	<link rel="icon" href="assets/42_Logo.svg" type="image/svg+xml">
-
+	<script src="assets/js/index.js"></script>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <style>
+	
+	<link rel="preconnect" href="https://fonts.googleapis.com">
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+	<link href="https://fonts.googleapis.com/css2?family=Sora:wght@100..800&display=swap" rel="stylesheet">
+
+
+    <link rel="stylesheet" href="assets/css/chatbox.css">
+	<link rel="stylesheet" href="assets/css/index.css">
+
+
+
+
+	<style>
         body {
-            background-color: #020202; /* Black background */
+            background-color: #020202; 
             color: white;
             text-align: center;
             position: relative;
             overflow: hidden;
             margin-top: 60px;
-        }
+        } 
 
-        .background-text {
-            position: absolute;
-            top: 10%;
-            left: 50%;
-            transform: translateX(-50%);
-            font-size: 15vw;
-            font-weight: bold;
-            color: transparent;
-            opacity: 1;
-            white-space: nowrap;
-            user-select: none;
-            z-index: -1;
-            background: url('assets/bg-text.svg') no-repeat center center, url('path-to-your-image.jpg') no-repeat center center; /* Fallback color */
-            background-size: contain;
-            -webkit-background-clip: text;
-            background-clip: text;
-            -webkit-text-fill-color: transparent; 
-        }
+        
 
-        .navbar {
-            position: fixed;
-            top: 0;
-            left: 0;
-            z-index: 999;
-            background-color: #343a40;
-            width: 100%;
-            padding: 10px 15px;
-        }
-
-        .navbar a {
-            color: white;
-            font-weight: bold;
-            font-size: 16px;
-            padding: 10px 15px;
-            text-decoration: none;
-        }
-
-        .navbar a:hover {
-            color: #0d40e7 !important;
-            background-color: transparent;
-            border-radius: 5px;
-        }
-
-        .navbar-nav {
-            display: flex;
-            flex-grow: 1;
-        }
-
-        .navbar-nav .nav-item {
-            flex: 1;
-        }
-
-        .profile-btn {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            background-color: #ffffff;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #343a40;
-            font-size: 20px;
-            font-weight: bold;
-            cursor: pointer;
-            border: 2px solid white;
-            margin-left: auto;
-        }
-
-        .profile-btn:hover {
-            background-color: #00d4ff;
-            color: black;
-        }
 
         .container {
             max-width: 800px;
@@ -97,154 +39,46 @@
         }
 
         .score {
+			font: Sora;
             font-size: 48px;
             font-weight: bold;
             margin: 10px;
         }
 
-        #pongCanvas {
+        #rulePongCanvas {
             display: block;
-            margin: auto;
+            margin:  auto;
             background: white; /* Game board set to white */
         }
 
-        /* Chatbox styling */
-        .chatbox-btn {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            background-color: #343a40;
-            color: white;
-            font-size: 32px;
-            border-radius: 50%;
-            padding: 15px;
-            cursor: pointer;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
-            transition: all 0.3s ease-in-out;
-        }
 
-        .chatbox-btn:hover {
-            background-color: #17a2b8;
-        }
-
-        .chatbox {
-            position: fixed;
-            bottom: 80px;
-            right: 20px;
-            width: 300px;
-            height: 400px;
-            background-color: #343a40;
-            border-radius: 10px;
-            display: none;
-            flex-direction: column;
-            padding: 10px;
-        }
-
-        .chatbox-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            color: white;
-            font-size: 20px;
-            margin-bottom: 10px;
-        }
-
-        .chatbox-body {
-            flex: 1;
-            overflow-y: auto;
-            padding: 10px;
-            color: white;
-            background-color: #222;
-        }
-
-        .chatbox-footer {
-            display: flex;
-            align-items: center;
-        }
-
-        .chatbox-footer input {
-            width: 80%;
-            padding: 5px;
-            border: none;
-            border-radius: 5px;
-        }
-
-        .chatbox-footer button {
-            background-color: #17a2b8;
-            color: white;
-            padding: 5px 10px;
-            border: none;
-            border-radius: 5px;
-            margin-left: 10px;
-        }
-
-        .contact-list {
-            display: flex;
-            flex-direction: column;
-            margin-bottom: 10px;
-        }
-
-        .contact-item {
-            background-color: #444;
-            padding: 10px;
-            margin: 5px 0;
-            cursor: pointer;
-            border-radius: 5px;
-            color: white;
-            font-size: 16px;
-            text-align: left;
-            transition: background-color 0.3s;
-        }
-
-        .contact-item:hover {
-            background-color: #17a2b8;
-        }
-
-        #messageInput {
-            display: none;
-        }
-
-        #sendMessageBtn {
-            display: none;
-        }
-
-        /* Back button styling */
-        .back-btn {
-            background-color: transparent;
-            color: white;
-            border: none;
-            font-size: 20px;
-            cursor: pointer;
-        }
     </style>
+
 </head>
-<body>
-    <nav class="navbar navbar-expand-lg navbar-dark">
-        <div class="container-fluid">
-            <div class="navbar-nav">
-                <a class="nav-link" href="HomePage.html">Home</a>
-            </div>
 
-            <!-- Profile button aligned to the far right -->
-            <div class="navbar-nav ms-auto">
-                <div class="profile-btn" onclick="redirectToProfile()">
-                    <span>👤</span> <!-- Default human icon -->
-                </div>
-            </div>
-        </div>
-    </nav>
 
-    <div class="background-text">TRANSCENDANCE</div>
+<body onload="loadTemplate()">
+	<div id="navbar-container"></div>
+	
 
-    <div class="container">
-        <h1>Pong Rules</h1>
-        <p>Pong is a classic two-player game where you control the right paddle. Move your mouse inside the game area to play against the left paddle. The first to reach 5 points wins!</p>
-        <div>
-            <span id="leftScore" class="score">0</span> - <span id="rightScore" class="score">0</span>
+	<div class=" position-absolute top-50 start-50 translate-middle" style="z-index: -1;">
+        <img class="transcendence-icon" alt="" src="assets/bg-text.svg">
+    </div>
+
+    <div class="mb-2 container">
+        <h1 class="primary-font">Pong Rules</h1>
+        <p class="secondary-font">Pong is a classic two-player game where you control the right paddle. Move your mouse inside the game area to play against the left paddle. The first to reach 5 points wins!</p>
+        <div class="row align-items-center">
+            <span id="leftScore" class="score col">0</span>
+			<p class="col"> - </p>
+			<span id="rightScore" class="score col">0</span>
         </div>
     </div>
     
-    <canvas id="pongCanvas" width="600" height="400"></canvas>
+
+		<canvas id="rulePongCanvas" width="600" height="400"></canvas>
+
+    <!-- <canvas id="rulePongCanvas" width="600" height="400"></canvas> -->
     <!-- Chatbox -->
     <div class="chatbox-btn" onclick="toggleChatbox()">💬</div>
 
@@ -271,192 +105,7 @@
         </div>
     </div>
 
-    <script>
-        let selectedContact = null;
-
-        function toggleChatbox() {
-    let chatbox = document.getElementById('chatbox');
-    let contactList = document.getElementById('contactList');
-
-    if (chatbox.style.display === 'flex') {
-        // Hide chatbox and contact list
-        chatbox.style.display = 'none';
-        contactList.style.display = 'none';
-    } else {
-        // Show chatbox and reset state
-        chatbox.style.display = 'flex';
-        contactList.style.display = 'flex';
-        document.getElementById('chatboxBody').innerHTML = ''; // Clear chat
-        document.getElementById('messageInput').style.display = 'none'; // Hide input field initially
-        document.getElementById('sendMessageBtn').style.display = 'none'; // Hide send button initially
-        document.getElementById('messageInput').disabled = true; // Disable input field
-        document.getElementById('sendMessageBtn').disabled = true; // Disable send button
-        document.getElementById('chatboxHeader').innerHTML = 'Chat'; // Set the title to "Chat"
-    }
-}
-
-function selectContact(contact) {
-    selectedContact = contact;
-    document.getElementById('chatboxHeader').innerHTML = `<button class="back-btn" onclick="goBackToContacts()">&#8592;</button> ${contact}`;
-    document.getElementById('contactList').style.display = 'none'; // Hide contact list
-    document.getElementById('chatboxBody').innerHTML = ''; // Clear chat
-    document.getElementById('messageInput').style.display = 'block'; // Show input field
-    document.getElementById('sendMessageBtn').style.display = 'block'; // Show send button
-    document.getElementById('messageInput').disabled = false; // Enable input field
-    document.getElementById('sendMessageBtn').disabled = false; // Enable send button
-    document.getElementById('messageInput').focus(); // Auto-focus input when a contact is selected
-}
-
-function goBackToContacts() {
-    document.getElementById('contactList').style.display = 'flex'; // Show contact list
-    document.getElementById('chatboxBody').innerHTML = ''; // Clear chat
-    document.getElementById('messageInput').style.display = 'none'; // Hide input field
-    document.getElementById('sendMessageBtn').style.display = 'none'; // Hide send button
-    document.getElementById('messageInput').disabled = true; // Disable input field
-    document.getElementById('sendMessageBtn').disabled = true; // Disable send button
-    document.getElementById('chatboxHeader').innerHTML = "Chat"; // Set header back to "Chat"
-}
-
-function sendMessage() {
-    let messageInput = document.getElementById('messageInput');
-    let messageText = messageInput.value.trim();
-
-    if (messageText !== '') {
-        let chatboxBody = document.getElementById('chatboxBody');
-        let messageElement = document.createElement('div');
-        messageElement.classList.add('message'); // Add class for styling
-        messageElement.textContent = messageText;
-        chatboxBody.appendChild(messageElement);
-        
-        messageInput.value = ''; // Clear input field
-        chatboxBody.scrollTop = chatboxBody.scrollHeight; // Auto-scroll to latest message
-    }
-}
-
-    document.getElementById('messageInput').addEventListener('keydown', function (event) {
-        if (event.key === 'Enter') {
-            sendMessage();
-        }
-    });
-
-    // Add event listener for Send button click
-    document.getElementById('sendMessageBtn').addEventListener('click', sendMessage);
-    </script>
-
-    <script>
-        // Dummy function to check if user is logged in (replace with actual logic)
-        function isUserLoggedIn() {
-            return localStorage.getItem("userLoggedIn") === "true"; 
-        }
-
-        // Redirect based on login status
-        function redirectToProfile() {
-            if (isUserLoggedIn()) {
-                window.location.href = "ProfilePage.html";
-            } else {
-                window.location.href = "SignIn.html";
-            }
-        }
-
-        const canvas = document.getElementById("pongCanvas");
-        const ctx = canvas.getContext("2d");
-
-        let paddleWidth = 10, paddleHeight = 80;
-        let ballSize = 10;
-        let ballX, ballY, ballSpeedX, ballSpeedY;
-        let leftPaddleY, rightPaddleY;
-        let leftScore = 0, rightScore = 0;
-        let gameActive = false;
-
-        function resetGame() {
-            ballX = canvas.width / 2;
-            ballY = canvas.height / 2;
-            ballSpeedX = (Math.random() > 0.5 ? 4 : -4);
-            ballSpeedY = (Math.random() > 0.5 ? 3 : -3);
-            leftPaddleY = (canvas.height - paddleHeight) / 2;
-            rightPaddleY = (canvas.height - paddleHeight) / 2;
-        }
-
-        function draw() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            ctx.fillStyle = "black"; // Ball and paddles in black to stand out on white
-            ctx.fillRect(10, leftPaddleY, paddleWidth, paddleHeight);
-            ctx.fillRect(canvas.width - 20, rightPaddleY, paddleWidth, paddleHeight);
-            ctx.fillRect(ballX, ballY, ballSize, ballSize);
-            document.getElementById("leftScore").textContent = leftScore;
-            document.getElementById("rightScore").textContent = rightScore;
-        }
-
-        function update() {
-            if (!gameActive) return;
-
-            ballX += ballSpeedX;
-            ballY += ballSpeedY;
-
-            if (ballY <= 0 || ballY + ballSize >= canvas.height) ballSpeedY *= -1;
-
-            if (ballX <= 20) {
-                if (ballY > leftPaddleY && ballY < leftPaddleY + paddleHeight) {
-                    ballSpeedX *= -1;
-                } else {
-                    rightScore++;
-                    resetGame();
-                }
-            }
-
-            if (ballX + ballSize >= canvas.width - 20) {
-                if (ballY > rightPaddleY && ballY < rightPaddleY + paddleHeight) {
-                    ballSpeedX *= -1;
-                } else {
-                    leftScore++;
-                    resetGame();
-                }
-            }
-
-            leftPaddleY += (ballY - (leftPaddleY + paddleHeight / 2)) * 0.1;
-        }
-
-        function checkWinner() {
-            if (leftScore >= 5 || rightScore >= 5) {
-                gameActive = false;
-                document.getElementById("leftScore").textContent = leftScore >= 5 ? "Winner!" : "Loser!";
-                document.getElementById("rightScore").textContent = rightScore >= 5 ? "Winner!" : "Loser!";
-                setTimeout(() => {
-                    leftScore = 0;
-                    rightScore = 0;
-                    resetGame();
-                    document.getElementById("leftScore").textContent = "0";
-                    document.getElementById("rightScore").textContent = "0";
-                    gameActive = true;
-                }, 3000);
-            }
-        }
-
-        function gameLoop() {
-            update();
-            draw();
-            checkWinner();
-            requestAnimationFrame(gameLoop);
-        }
-
-        canvas.addEventListener("mouseenter", () => {
-            if (!gameActive) {
-                gameActive = true;
-            }
-        });
-
-        canvas.addEventListener("mousemove", (event) => {
-            const rect = canvas.getBoundingClientRect();
-            rightPaddleY = event.clientY - rect.top - paddleHeight / 2;
-            rightPaddleY = Math.max(0, Math.min(canvas.height - paddleHeight, rightPaddleY));
-        });
-
-        canvas.addEventListener("mouseleave", () => {
-            gameActive = false;
-        });
-
-        resetGame();
-        gameLoop();
-    </script>
+	<script src="assets/js/pongRules.js"></script>
+	<script src="assets/js/chatbox.js"></script>
 </body>
 </html>
