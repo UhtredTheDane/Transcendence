@@ -26,63 +26,6 @@
             padding-top: 100px;
         }
 
-        /* Navbar style: Align buttons to the left */
-        .navbar {
-            position: fixed;
-            top: 0;
-            left: 0;
-            z-index: 999;
-            background-color: #343a40;
-            width: 100%;
-            padding: 10px;
-        }
-
-        .navbar a {
-            color: white !important;
-            font-weight: bold;
-            font-size: 16px;
-            padding: 10px 15px;
-        }
-
-        /* Align navbar items to the left */
-        .navbar-nav {
-            display: flex;
-            justify-content: flex-start;
-            width: 100%;
-        }
-
-        /* Hover effect for navbar links */
-        .navbar a:hover {
-            color: #0d40e7 !important;
-            background-color: transparent;
-            border-radius: 5px;
-        }
-
-        /* Background title effect */
-        .background-text {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            font-size: 12vw;
-            font-weight: bold;
-            color: white;
-            opacity: 0.1;
-            white-space: nowrap;
-            user-select: none;
-            z-index: -1;
-
-            /* Fading effect from bottom to top */
-            background: linear-gradient(to top, rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0));
-
-            -webkit-background-clip: text;
-            -moz-background-clip: text;
-            -ms-background-clip: text;
-            -o-background-clip: text;
-            background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
         /* Social login buttons container */
         .social-login {
             display: flex;
@@ -153,11 +96,15 @@
         .sign-in-btn:hover {
             background-color: #138496;
         }
+
+		.first-btn {
+			width: 100%;
+		}
     </style>
 	<link rel="stylesheet" href="assets/css/index.css">
 </head>
 <body onload="loadTemplate()">
-        <img class="transcendence-icon position-absolute top-50 start-50 translate-middle" alt="" src="assets/bg-text.svg">
+        <img class="transcendence-icon position-absolute top-50 start-50 translate-middle" style="z-index: -1;" alt="" src="assets/bg-text.svg">
 
     <!-- Navbar at the top -->
     <nav class="navbar navbar-expand-lg navbar-dark">
@@ -171,13 +118,13 @@
 	
     <!-- Background Title -->
 
-    <div class="container">
-        <h1 class="mb-3">Sign In</h1>
+    <div class="container position-absolute top-50 start-50 translate-middle">
+        <h1 class="mb-3 primary-font">Sign In</h1>
 
         <!-- Social Sign-In Options -->
         <div class="social-login">
             <!-- Google Sign-In Button -->
-            <button class="social-btn google-btn" onclick="signInWithGoogle()">
+            <button class="social-btn google-btn secondary-font"  onclick="signInWithGoogle()">
                 <img src="assets/google icon.svg" alt="Google Logo">
                 Sign in with Google
             </button>
@@ -187,9 +134,9 @@
 
         <!-- Email and Password Sign-In -->
         <form onsubmit="signIn(event)">
-            <input type="email" class="form-control" placeholder="Email" required>
-            <input type="password" class="form-control" placeholder="Password" required>
-            <button type="submit" class="sign-in-btn">Sign In</button>
+            <input type="email" class="form-control secondary-font" placeholder="Email" required>
+            <input type="password" class="form-control secondary-font" placeholder="Password" required>
+            <button type="submit" class="sign-in-btn primary-font first-btn" style="font-size: 21pt;">Sign In</button>
         </form>
     </div>
 
