@@ -23,7 +23,6 @@ export default class Ball {
     get yPos() {
         return this._yPos;
     }
-
     set yPos(value) {
         this._yPos = value;
     }
@@ -51,14 +50,12 @@ export default class Ball {
     set ballSpeed(value) {
         this._ballSpeed = value;
     }
-    
     get ballSpeedMax() {
         return this._ballSpeedMax;
     }
 	set ballSpeedMax(value) {
         this._ballSpeedMax = value;
     }
-
 
     get ballSpeedIncrement() {
         return this._ballSpeedIncrement;
@@ -67,14 +64,12 @@ export default class Ball {
         	this._ballSpeedIncrement = value;
     }
 
-
     get diameter() {
         return this._diameter;
     }
 	set diameter(value) {
         this._diameter = value;
     }
-
 
     get img() {
         return this._img;
@@ -114,34 +109,28 @@ set img(value) {
         this._ySpeed = this._ballSpeed * Math.sin(angle); // Mettre à jour la composante verticale
     }
 
-    updateBall() {
-        if (isPaused || isGameEnded) return;
-        if (isBallMover) {
-            ball.x += ball.dx;
-            ball.y += ball.dy;
-
-            // Collision avec le haut/bas
-            if (ball.y <= 0 || ball.y >= CANVAS_HEIGHT) {
+    updateBall(fieldPong, game) {
+        player = fieldPong.player;
+        opponent = fieldPong.opponent;
+        ball.x += ball.dx;
+        ball.y += ball.dy;
+        // Collision avec le haut/bas
+        if (ball.y <= 0 || ball.y >= fieldPong.canevas.height)
                 ball.dy *= -1;
-            }
-
-            // Collision avec les raquettes
-            if ((ball.x <= 30 && ball.y >= playerY && ball.y <= playerY + PADDLE_HEIGHT) ||
-                (ball.x >= 770 && ball.y >= opponentY && ball.y <= opponentY + PADDLE_HEIGHT)) {
-                ball.dx *= -1;
-            }
-
-            if (ball.x <= 0 || ball.x >= CANVAS_WIDTH) {
-                if (ball.x <= 0) opponentScore++;
-                else playerScore++;
-
-                resetBall();
-                sendUpdateGameScore();
-
-                if (playerScore >= 2 || opponentScore >= 2)
+        // Collision avec les raquettes
+        if ((ball.x <= 30 && ball.y >= player.yPos && ball.y <= player.yPos + player.height) ||
+            (ball.x >= 770 && ball.y >= opponent.yPos && ball.y <= opponent.yPos + opponent.height))
+            ball.dx *= -1;
+        if (ball.x <= 0 || ball.x >= fieldPong.canevas.width) {
+            if (ball.x <= 0)
+                opponent.playerScore++;
+            else
+                player.playerScore++;
+            resetBall();
+            game.sendUpdateGameScore();
+            if (player.playerScore >= 2 || opponent.playerScore >= 2)
                     endGame();
-            }
-            sendBallPosition();
         }
-    }
+            game.sendBallPosition();
+        }
 }

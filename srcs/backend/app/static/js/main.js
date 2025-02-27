@@ -3,21 +3,14 @@ import Field from './field.js';
 import Player from './player.js';
 import Ball from './ball.js';
 
-let player1 = new Player(0.0, 167.5, 'textures/Player1.png');
-let player2 = new Player(785, 167.5, 'textures/Player2.png');
-let ball = new Ball(384, 212.5, 'textures/Ball.png');
+let player = new Player(0.0, 167.5, '../../media/textures/Player1.png');
+let opponent = new Player(785, 167.5, '../../media/textures/Player2.png');
+let ball = new Ball(384, 212.5, '../../media/textures/Ball.png');
 let fieldPong = new Field(player1, player2, ball);
 let game = new Game(fieldPong);
 
 window.main = function () {
-
-	if (game.isPaused) {
-		window.requestAnimationFrame(main);
-		return;
-	}
-	window.requestAnimationFrame(main);
-	fieldPong.draw();
-
+/*
 	// Gestion des collisions avec les bords du terrain (haut et bas)
 	if (ball.yPos + ball.diameter + ball.ySpeed * 2.5 > fieldPong.canevas.height || ball.yPos + ball.ySpeed * 2.5 < 0)
 		ball.ySpeed = ball.ySpeed * -1;
@@ -116,7 +109,7 @@ window.main = function () {
 	// Mise à jour de la position de la balle
 	ball.xPos += ball.xSpeed * 2.5;
 	ball.yPos += ball.ySpeed * 2.5;
-
+	*/
 
 
 
