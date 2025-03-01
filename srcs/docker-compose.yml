@@ -1,0 +1,59 @@
+version: '3'
+
+networks:
+  mynetwork:
+    external: false
+
+services:
+  site:
+    image: django-docker:0.0.1
+    build:
+      context: backend/
+      dockerfile: Dockerfile
+    # container_name: site
+    env_file: .env
+    volumes:
+      - site_static:/app/static
+      - site_media:/app/media
+    depends_on:
+      - db
+    # networks:
+    #   - mynetwork
+    ports:
+      - "8000:8000"
+
+  db:
+    image: postgres:latest
+    container_name: db
+    env_file: .env
+    environment:
+      POSTGRES_USER: "postgres"
+      POSTGRES_PASSWORD: 7526
+      POSTGRES_DB: "db"
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    # networks:
+    #   - mynetwork
+
+  # nginx:
+  #   image: nginx:1.19-alpine
+  #   build: srcs/nginx/
+  #   container_name: nginx
+  #   volumes:
+  #     #- ./nginx/nginx.conf:/etc/nginx/conf.d/default.conf
+  #     - site_static:/home/app/site/static
+  #     - site_media:/home/app/site/media
+  #   depends_on:
+  #     - site
+  #   networks:
+  #     - mynetwork
+  #   ports:
+  #     - "8080:80"
+  #     - "4443:443"
+
+volumes:
+  db_data:
+  site_static:
+  site_media:
