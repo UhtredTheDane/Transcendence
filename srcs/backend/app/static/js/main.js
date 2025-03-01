@@ -3,13 +3,13 @@ import Field from './field.js';
 import Player from './player.js';
 import Ball from './ball.js';
 
-let player = new Player(0.0, 167.5, '../../media/textures/Player1.png');
-let opponent = new Player(785, 167.5, '../../media/textures/Player2.png');
-let ball = new Ball(384, 212.5, '../../media/textures/Ball.png');
-let fieldPong = new Field(player1, player2, ball);
-let game = new Game(fieldPong);
-
 window.main = function () {
+	let player = new Player(0.0, 167.5, '../../media/textures/Player1.png');
+	let opponent = new Player(785, 167.5, '../../media/textures/Player2.png');
+	let ball = new Ball(384, 212.5, '../../media/textures/Ball.png');
+	let fieldPong = new Field(player, player, ball);
+	let game = new Game(fieldPong);
+
 /*
 	// Gestion des collisions avec les bords du terrain (haut et bas)
 	if (ball.yPos + ball.diameter + ball.ySpeed * 2.5 > fieldPong.canevas.height || ball.yPos + ball.ySpeed * 2.5 < 0)

@@ -2,11 +2,12 @@ import Field from './field.js';
 
 export default class Game {
 
-	static gameId = '{{ game_id }}';
-	static playerRole = '{{ player_role }}';
-	static socket = new WebSocket(`ws://${window.location.host}/ws/game/${gameId}/`);
-
 	constructor(fieldValue) {
+		const gameId = '{{ game_id }}';
+		const playerRole = '{{ player_role }}';
+
+		const socket = new WebSocket("ws://" + window.location.host + "/ws/game/" + gameId + "/" + playerRole);
+
 		this.field = fieldValue;
 		this.isPaused = false;
 		this.isSocketOpen = false;
