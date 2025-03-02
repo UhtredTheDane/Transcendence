@@ -1,0 +1,52 @@
+{% extends "account/base.html" %}
+{% load i18n %}
+{% load allauth account %}
+{% load socialaccount %}
+
+{% block head_title %}Sign In{% endblock head_title %}
+
+
+{% block content %}
+<div class="container">
+    <nav class="navbar navbar-expand-lg navbar-dark">
+        <div class="container-fluid">
+            <div class="navbar-nav">
+                <a class="nav-link" href="/">Home</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="background-text">TRANSCENDANCE</div>
+
+    <div class="container">
+        <h1 class="mb-3">Sign In</h1>
+
+        <!-- Social Sign-In -->
+        <div class="social-login">
+            <button class="social-btn google-btn">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/53/Google_%22G%22_Logo.svg/512px-Google_%22G%22_Logo.svg.png" alt="Google Logo">
+                <a href="{% provider_login_url 'google' %}" style="text-decoration: none; color: black;">
+                    Sign in with Google
+                </a>
+            </button>
+        </div>
+
+        <hr class="my-4" style="border-color: white;">
+
+        <!-- Login Form -->
+        <form method="POST" action="{% url 'account_login' %}">
+            {% csrf_token %}
+            <input type="text" name="login" class="form-control" placeholder="Email or Username" required>
+            <input type="password" name="password" class="form-control" placeholder="Password" required>
+            <button type="submit" class="sign-in-btn">Sign In</button>
+        </form>
+
+        <p class="mt-3">
+            <a href="{% url 'account_signup' %}">Don't have an account? Sign up</a>
+        </p>
+        <p>
+            <a href="{% url 'account_reset_password' %}">Forgot password?</a>
+        </p>
+    </div>
+</div>
+{% endblock %}

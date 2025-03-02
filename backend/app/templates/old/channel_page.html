@@ -1,0 +1,56 @@
+<!-- channel_page.html -->
+
+<html>
+<head>
+    <title>Salon - {{ channel.name }}</title>
+</head>
+<body>
+    <h1>Salon: {{ channel.name }}</h1>
+    
+    <div id="chat-log">
+        {% for message in messages %}
+            <div><strong>{{ message.user.username }}:</strong> {{ message.content }}</div>
+        {% endfor %}
+    </div>
+
+    <form method="POST" action="{% url 'send_message' channel.id %}">
+        {% csrf_token %}
+        <textarea name="message" placeholder="Tapez votre message ici..."></textarea>
+        <button type="submit">Envoyer</button>
+    </form>
+
+    <a href="/">Retour</a>
+
+    <script>
+		const channelName = "{{ channel.id }}";
+		const chatSocket = new WebSocket('ws://' + window.location.host + '/ws/channel/' + channelName + '/');
+	
+		chatSocket.onopen = function(e) {
+			console.log('WebSocket ouvert!');
+		};
+	
+		chatSocket.onmessage = function(e) {
+			const data = JSON.parse(e.data);
+			const message = data['message'];
+			const user = data['user'];
+	
+			const chatLog = document.getElementById('chat-log');
+			const messageElement = document.createElement('div');
+			messageElement.innerHTML = `<strong>${user}:</strong> ${message}`;
+			chatLog.appendChild(messageElement);
+		};
+	
+		chatSocket.onclose = function(e) {
+			console.log('WebSocket fermé');
+		};
+	
+		document.querySelector('form').onsubmit = function(e) {
+			e.preventDefault();
+			const messageInputDom = document.querySelector('textarea');
+			const messageContent = messageInputDom.value;
+			chatSocket.send(JSON.stringify({'message': messageContent}));
+			messageInputDom.value = '';
+		};
+	</script>
+</body>
+</html>
