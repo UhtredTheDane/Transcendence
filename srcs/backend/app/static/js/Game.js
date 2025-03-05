@@ -3,39 +3,34 @@ import Field from './field.js';
 export default class Game {
 
 	constructor(fieldValue) {
-		const gameId = '{{ game_id }}';
-		const playerRole = '{{ player_role }}';
-
-		const socket = new WebSocket("ws://" + window.location.host + "/ws/game/" + gameId + "/" + playerRole);
+		this.socket = new WebSocket("ws://" + window.location.host + "/ws/game/" + gameId + "/");
 
 		this.field = fieldValue;
 		this.isPaused = false;
 		this.isSocketOpen = false;
 		this.isBallMover = false;
 		this.isGameEnded = false;
-
-	
 		this.#initOnOpen();
-		this.#initOnClose()
-		this.#initOnMessage()
+		this.#initOnClose();
+		this.#initOnMessage();
 	}
 
 	#initOnOpen() {
-		this._socket.onopen = () => {
+		this.socket.onopen = function () {
 			console.log("Connecté au WebSocket du jeu");
 			this._isSocketOpen = true;
 		};
 	}
 
 	#initOnClose() {
-		this._socket.onclose = () => {
+		this.socket.onclose = function() {
 			console.log("WebSocket fermé");
 			this._isSocketOpen = false;
 		};
 	}
 
 	#initOnMessage() {
-		this._socket.onmessage = function (event) {
+		this.socket.onmessage = function (event) {
 			const data = JSON.parse(event.data);
 			//if (data.type !== "update_ball_position" && data.type !== "update_position")
 			//	console.log("Message reçu :", data);
