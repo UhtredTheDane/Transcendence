@@ -17,14 +17,14 @@ export default class Game {
 
 	#initOnOpen() {
 		this.socket.onopen = function () {
-			console.log("Connecté au WebSocket du jeu");
+			console.log("ConnectÃ© au WebSocket du jeu");
 			this._isSocketOpen = true;
 		};
 	}
 
 	#initOnClose() {
 		this.socket.onclose = function() {
-			console.log("WebSocket fermé");
+			console.log("WebSocket fermÃ©");
 			this._isSocketOpen = false;
 		};
 	}
@@ -33,8 +33,7 @@ export default class Game {
 		this.socket.onmessage = function (event) {
 			const data = JSON.parse(event.data);
 			//if (data.type !== "update_ball_position" && data.type !== "update_position")
-			//	console.log("Message reçu :", data);
-			try {
+			//	console.log("Message reÃ§u :", data);
 
 			if (data.type === "update_position") {
 				if (data.player === "player1") {
@@ -65,15 +64,12 @@ export default class Game {
 					this._isBallMover = (this._playerRole === "player1");
 			} else if (data.type === "game_over") {
 				document.getElementById("pauseButton").display = "none";
-				//alert(playerRole == getWinner() ? "Vous avez gagné !" : "Vous avez perdu !");
+				//alert(playerRole == getWinner() ? "Vous avez gagnÃ© !" : "Vous avez perdu !");
 				//setTimeout(() => {
 				window.location.href = "/";
 				//}, 4000);
 			}
 			this._field.draw();
-		}
-			catch (error)
-			{}
 		};
 	}
 
@@ -132,7 +128,7 @@ export default class Game {
 			this._socket.send(JSON.stringify({ type: "end", score_player1: this._field.player.playerScore, score_player2: this._field.opponent.playerScore }));
 		document.getElementById("pauseButton").display = "none";
 		if (this._field.getWinner())
-			alert("Vous avez gagné !")
+			alert("Vous avez gagnÃ© !")
 		else
 			alert("Vous avez perdu !");
 		window.location.href = "/";
