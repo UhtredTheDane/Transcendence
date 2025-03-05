@@ -1,10 +1,10 @@
 import Field from './field.js';
+import Player from './player.js';
 
 export default class Game {
 
 	constructor(fieldValue) {
 		this.socket = new WebSocket("ws://" + window.location.host + "/ws/game/" + gameId + "/");
-
 		this.field = fieldValue;
 		this.isPaused = false;
 		this.isSocketOpen = false;
@@ -12,7 +12,7 @@ export default class Game {
 		this.isGameEnded = false;
 		this.#initOnOpen();
 		this.#initOnClose();
-		this.#initOnMessage();
+		this.initOnMessage();	
 	}
 
 	#initOnOpen() {
@@ -29,11 +29,13 @@ export default class Game {
 		};
 	}
 
-	#initOnMessage() {
+	initOnMessage() {
 		this.socket.onmessage = function (event) {
 			const data = JSON.parse(event.data);
 			//if (data.type !== "update_ball_position" && data.type !== "update_position")
 			//	console.log("Message reçu :", data);
+			try {
+
 			if (data.type === "update_position") {
 				if (data.player === "player1") {
 					if (this._playerRole === "player1") this._field.player.yPos = data.position;
@@ -56,11 +58,11 @@ export default class Game {
 					document.getElementById("pauseButton").innerText = "Pause";
 				}
 			} else if (data.type === "game_state") {
-				this._field.player.yPos = data.player1_y;
-				this._field.opponent.yPos = data.player2_y;
-				this._field.ball.xPos = data.ball_x;
-				this._field.ball.yPos = data.ball_y;
-				this._isBallMover = (this._playerRole === "player1");
+					this.field.player.yPos = data.player1_y;
+					this._field.opponent.yPos = data.player2_y;
+					this._field.ball.xPos = data.ball_x;
+					this._field.ball.yPos = data.ball_y;
+					this._isBallMover = (this._playerRole === "player1");
 			} else if (data.type === "game_over") {
 				document.getElementById("pauseButton").display = "none";
 				//alert(playerRole == getWinner() ? "Vous avez gagné !" : "Vous avez perdu !");
@@ -69,19 +71,25 @@ export default class Game {
 				//}, 4000);
 			}
 			this._field.draw();
+		}
+			catch (error)
+			{}
 		};
 	}
 
-	static get gameId() {
-		return this._gameId;
+	get field() {
+		return this._field;
 	}
-
-	static get playerRole() {
-		return this._playerRole;
+	set field(value)
+	{
+		this._field = value;
 	}
-
-	static get socket() {
+	get socket() {
 		return this._socket;
+	}
+
+	set socket(value) {
+		this._socket = value;
 	}
 
 	get isPaused() {
@@ -123,7 +131,10 @@ export default class Game {
 		if (this._isSocketOpen && this._socket.readyState === WebSocket.OPEN)
 			this._socket.send(JSON.stringify({ type: "end", score_player1: this._field.player.playerScore, score_player2: this._field.opponent.playerScore }));
 		document.getElementById("pauseButton").display = "none";
-		alert(playerRole == this._field.getWinner() ? "Vous avez gagné !" : "Vous avez perdu !");
+		if (this._field.getWinner())
+			alert("Vous avez gagné !")
+		else
+			alert("Vous avez perdu !");
 		window.location.href = "/";
 	}
 

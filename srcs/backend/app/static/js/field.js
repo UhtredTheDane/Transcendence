@@ -9,22 +9,6 @@ export default class Field {
 		this.opponent = opponentValue;
 		this.ball = ballValue;
 		this._ball.resetBall(); // Initialisation de la balle
-		document.addEventListener('keydown', function (event) {
-			if (event.key === 'ArrowUp')
-				this._opponent.ySpeed = -5;
-			else if (event.key === 'ArrowDown')
-				this._opponent.ySpeed = 5;
-			else if (event.key === 'z' || event.key === 'w')
-				this._player.ySpeed = -5;
-			else if (event.key === 's')
-				this._player.ySpeed = 5;
-		});
-		document.addEventListener('keyup', function (event) {
-			if (event.key === 'ArrowUp' || event.key === 'ArrowDown')
-				this._opponent.ySpeed = 0;
-			else if (event.key === 'w' || event.key === 'z' || event.key === 's')
-				this._player.ySpeed = 0;
-		});
 	}
 
 	get canevas() {

@@ -7,8 +7,16 @@ window.main = function () {
 	let player = new Player(0.0, 167.5, '../../media/textures/Player1.png');
 	let opponent = new Player(785, 167.5, '../../media/textures/Player2.png');
 	let ball = new Ball(384, 212.5, '../../media/textures/Ball.png');
-	let fieldPong = new Field(player, player, ball);
+	let fieldPong = new Field(player, opponent, ball);
 	let game = new Game(fieldPong);
+
+	document.addEventListener("keydown", function (event) {
+		if (game.isPaused || game.isGameEnded) return;
+		if (event.key === "ArrowUp" || event.key === "w" || event.key === "z")
+			game.sendMove(Math.max(0, game.field.player.yPos -= 10));
+		if (event.key === "ArrowDown" || event.key === "s")
+			game.sendMove(Math.max(game.field.canevas.height - game.field.player.height, game.field.player.yPos += 10));
+		});
 
 /*
 	// Gestion des collisions avec les bords du terrain (haut et bas)
@@ -115,7 +123,7 @@ window.main = function () {
 
 
 	setInterval(() => {
-		ball.updateBall();
+		ball.updateBall(fieldPong, game);
 		fieldPong.draw();
 	}, 16);
 };

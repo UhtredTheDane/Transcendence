@@ -1,3 +1,7 @@
+
+import Field from './field.js';
+
+import Player from './player.js';
 export default class Ball {
     constructor(xPosValue, yPosValue, imgSrc) {
         this.xPos = xPosValue;
@@ -110,26 +114,26 @@ set img(value) {
     }
 
     updateBall(fieldPong, game) {
-        player = fieldPong.player;
-        opponent = fieldPong.opponent;
-        ball.x += ball.dx;
-        ball.y += ball.dy;
+        let player = fieldPong.player;
+        let opponent = fieldPong.opponent;
+        this._xPos += this._xSpeed;
+        this._yPos += this._ySpeed;
         // Collision avec le haut/bas
-        if (ball.y <= 0 || ball.y >= fieldPong.canevas.height)
-                ball.dy *= -1;
+        if (this._yPos <= 0 || this._yPos >= fieldPong.canevas.height)
+                this._ySpeed *= -1;
         // Collision avec les raquettes
-        if ((ball.x <= 30 && ball.y >= player.yPos && ball.y <= player.yPos + player.height) ||
-            (ball.x >= 770 && ball.y >= opponent.yPos && ball.y <= opponent.yPos + opponent.height))
-            ball.dx *= -1;
-        if (ball.x <= 0 || ball.x >= fieldPong.canevas.width) {
-            if (ball.x <= 0)
+        if ((this._xPos <= 30 && this._yPos >= player.yPos && this._yPos <= player.yPos + player.height) ||
+            (this._xPos >= 770 && this._yPos >= opponent.yPos && this._yPos <= opponent.yPos + opponent.height))
+            this._xSpeed *= -1;
+        if (this._xPos <= 0 || this._xPos >= fieldPong.canevas.width) {
+            if (this._xPos <= 0)
                 opponent.playerScore++;
             else
                 player.playerScore++;
-            resetBall();
+            this.resetBall();
             game.sendUpdateGameScore();
             if (player.playerScore >= 2 || opponent.playerScore >= 2)
-                    endGame();
+                    game.endGame();
         }
             game.sendBallPosition();
         }
