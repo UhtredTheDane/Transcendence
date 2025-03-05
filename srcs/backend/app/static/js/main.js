@@ -124,7 +124,6 @@ window.main = function () {
 
 	setInterval(() => {
 		ball.updateBall(fieldPong, game);
-		game.updatePos();
 		fieldPong.draw();
 	}, 16);
 };
