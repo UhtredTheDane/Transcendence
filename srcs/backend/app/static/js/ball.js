@@ -84,21 +84,10 @@ set img(value) {
 
 
     resetBall() {
-        this._xPos = 384; // Réinitialiser la position horizontale de la balle
-        this._yPos = 212.5; // Réinitialiser la position verticale de la balle
-        this._ballSpeed = 1.5; // Réinitialiser la vitesse de la balle
-    
-        // Générer un angle aléatoire entre -45° et 45° (en radians)
-        let angle = (Math.random() * Math.PI / 2) - Math.PI / 4; // Angle entre -45° et 45°
-    
-        // Calculer les composantes de la vitesse
-        this._xSpeed = this._ballSpeed * Math.cos(angle); // Composante horizontale
-        this._ySpeed = this._ballSpeed * Math.sin(angle); // Composante verticale
-    
-        // Choisir une direction aléatoire (gauche ou droite)
-        if (Math.random() > 0.5) {
-            this._xSpeed *= -1; // Inverser la direction horizontale
-        }
+        this._xPos = CANVAS_WIDTH / 2;
+	this._yPos = CANVAS_HEIGHT / 2;
+	this._xSpeed = (Math.random() > 0.5 ? 1 : -1) * 3;
+	this._ySpeed = (Math.random() > 0.5 ? 1 : -1) * 3;
     }
     
     increaseBallSpeed() {
