@@ -16,20 +16,23 @@ export default class Game {
 	}
 
 	#initOnOpen() {
+		let tempoGame = this;
 		this.socket.onopen = function () {
 			console.log("Connecté au WebSocket du jeu");
-			this._isSocketOpen = true;
+			tempoGame.isSocketOpen = true;
 		};
 	}
 
 	#initOnClose() {
+		let tempoGame = this;
 		this.socket.onclose = function() {
 			console.log("WebSocket fermé");
-			this._isSocketOpen = false;
+			tempoGame.isSocketOpen = false;
 		};
 	}
 
 	initOnMessage() {
+		let tempoGame = this;
 		this.socket.onmessage = function (event) {
 			const data = JSON.parse(event.data);
 			//if (data.type !== "update_ball_position" && data.type !== "update_position")
@@ -37,31 +40,31 @@ export default class Game {
 
 			if (data.type === "update_position") {
 				if (data.player === "player1") {
-					if (this._playerRole === "player1") this._field.player.yPos = data.position;
-					else this._field.opponent.yPos = data.position;
+					if (playerRole === "player1") tempoGame.field.player.yPos = data.position;
+					else tempoGame.field.opponent.yPos = data.position;
 				} else {
-					if (this._playerRole === "player2") this._field.player.yPos = data.position;
-					else this._field.opponent.yPos = data.position;
+					if (playerRole === "player2") tempoGame.field.player.yPos = data.position;
+					else tempoGame.field.opponent.yPos = data.position;
 				}
 			} else if (data.type === "update_ball_position") {
-				this._field.ball.xPos = data.ball_x;
-				this._field.ball.yPos = data.ball_y;
+				tempoGame.field.ball.xPos = data.ball_x;
+				tempoGame.field.ball.yPos = data.ball_y;
 			} else if (data.type === "update_game_score") {
-				this._field.player.playerScore = data.score_player1;
-				this._field.opponent.playerScore = data.score_player2;
+				tempoGame.field.player.playerScore = data.score_player1;
+				tempoGame.field.opponent.playerScore = data.score_player2;
 			} else if (data.type === "update_pause") {
-				this._isPaused = data.is_paused;
-				if (this._isPaused) {
+				tempoGame.isPaused = data.is_paused;
+				if (tempoGame.isPaused) {
 					document.getElementById("pauseButton").innerText = "Play";
 				} else {
 					document.getElementById("pauseButton").innerText = "Pause";
 				}
 			} else if (data.type === "game_state") {
-					this.field.player.yPos = data.player1_y;
-					this._field.opponent.yPos = data.player2_y;
-					this._field.ball.xPos = data.ball_x;
-					this._field.ball.yPos = data.ball_y;
-					this._isBallMover = (this._playerRole === "player1");
+					tempoGame.field.player.yPos = data.player1_y;
+					tempoGame.field.opponent.yPos = data.player2_y;
+					tempoGame.field.ball.xPos = data.ball_x;
+					tempoGame.field.ball.yPos = data.ball_y;
+					tempoGame.isBallMover = (playerRole === "player1");
 			} else if (data.type === "game_over") {
 				document.getElementById("pauseButton").display = "none";
 				//alert(playerRole == getWinner() ? "Vous avez gagné !" : "Vous avez perdu !");
@@ -69,7 +72,7 @@ export default class Game {
 				window.location.href = "/";
 				//}, 4000);
 			}
-			this._field.draw();
+			tempoGame.field.draw();
 		};
 	}
 
