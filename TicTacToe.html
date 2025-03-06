@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tic-Tac-Toe</title>
+    <style>
+        body {
+            background-color: black;
+            color: white;
+            position: relative;
+            overflow: hidden;
+            margin: 0;
+            height: 100vh;
+        }
+
+        @font-face {
+            font-family: TF SPIKE DEMO;
+            src: url("TF SPIKE DEMO.TTF") format("truetype");
+        }
+
+        @font-face {
+            font-family: 'HOSKIN';
+            src: url("HOSKIN.OTF") format("opentype");
+        }
+
+        @import url('https://fonts.googleapis.com/css2?family=Sora:wght@100..800&display=swap');
+
+        .primary-font {
+            font-family: 'TF SPIKE DEMO';
+        }
+
+        .secondary-font {
+            font-family: 'Sora';
+        }
+
+        .background-text {
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 12vw;
+            color: white;
+            opacity: 0.1;
+            white-space: nowrap;
+            user-select: none;
+            z-index: -1;
+            background: linear-gradient(to top, rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0));
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 11;
+            background-color: #212121;
+            width: 100%;
+            padding: 10px 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .home-btn, .restart-btn {
+            color: white;
+            font-family: 'TF SPIKE DEMO';
+            font-size: 24px;
+            text-decoration: none;
+            background-color: transparent;
+            border: none;
+            cursor: pointer;
+            padding: 10px 20px;
+            transition: background-color 0.3s;
+        }
+
+        .home-btn:hover, .restart-btn:hover {
+            background-color: #4423ff;
+            border-radius: 5px;
+        }
+
+        .restart-btn {
+            background-color: transparent;
+            border: 2px solid white;
+            color: white;
+            font-size: 24px;
+            padding: 10px 20px;
+        }
+
+        .restart-btn:hover {
+            background-color: #4423ff;
+            color: black;
+            border: 2px solid #4423ff;
+        }
+
+        .content-container {
+            position: relative;
+            z-index: 1;
+            padding-top: 15vh;
+            text-align: center;
+        }
+
+        .primary-font h1 {
+            font: 48pt 'TF SPIKE DEMO', sans-serif;
+        }
+
+        .secondary-font p {
+            font: 48pt 'Sora', sans-serif;
+        }
+
+        .content-container h1 {
+            font-family: 'TF SPIKE DEMO', sans-serif;
+            font-size: 48pt;
+            font-weight: 400;
+            letter-spacing: 2px;
+            line-height: 52.8px;
+            margin-bottom: 2rem;
+        }
+
+        .content-container p {
+            font-family: 'Sora', sans-serif;
+            font-size: 32pt;
+            font-weight: 400;
+            letter-spacing: 1px;
+            line-height: 40.32px;
+            margin-bottom: 4rem;
+        }
+
+        .content-container a.btn-primary {
+            font-family: 'TF SPIKE DEMO';
+            font-size: 32pt;
+            font-weight: 400;
+            padding: 0.75rem 2rem;
+            text-transform: uppercase;
+            text-align: center;
+        }
+
+        /* Game grid */
+        .game-board {
+            display: grid;
+            grid-template-columns: repeat(3, 100px);
+            grid-template-rows: repeat(3, 100px);
+            gap: 5px;
+            justify-content: center;
+            margin-top: 100px;
+        }
+
+        .cell {
+            width: 100px;
+            height: 100px;
+            background-color: #333;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            color: white;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+
+        .cell.taken {
+            pointer-events: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <a href="HomePage.html" class="home-btn">Home</a>
+        <button class="restart-btn" onclick="restartGame()">Restart Game</button>
+    </div>
+    <div class="content-container">
+        <h1 class="primary-font">Tic-Tac-Toe</h1>
+        <div class="game-board" id="gameBoard">
+            <!-- Game cells will be inserted here dynamically -->
+        </div>
+    </div>
+
+    <script>
+        const gameBoard = document.getElementById('gameBoard');
+        const player1 = 'X';
+        const player2 = 'O';
+        let currentPlayer = player1;
+        let board = ['', '', '', '', '', '', '', '', ''];
+        let gameOver = false;
+
+        // Create game board dynamically
+        for (let i = 0; i < 9; i++) {
+            const cell = document.createElement('div');
+            cell.classList.add('cell');
+            cell.dataset.index = i;
+            cell.addEventListener('click', handleCellClick);
+            gameBoard.appendChild(cell);
+        }
+
+        function handleCellClick(event) {
+            const cell = event.target;
+            const index = cell.dataset.index;
+
+            // If the cell is already taken or the game is over, do nothing
+            if (board[index] || gameOver) return;
+
+            // Mark the cell with the current player's symbol
+            board[index] = currentPlayer;
+            cell.textContent = currentPlayer;
+            cell.classList.add('taken');
+
+            // Check for a winner
+            if (checkWinner()) {
+                alert(`${currentPlayer} wins!`);
+                gameOver = true;
+                return;
+            }
+
+            // Switch to the next player
+            currentPlayer = currentPlayer === player1 ? player2 : player1;
+        }
+
+        function checkWinner() {
+            const winningCombinations = [
+                [0, 1, 2],
+                [3, 4, 5],
+                [6, 7, 8],
+                [0, 3, 6],
+                [1, 4, 7],
+                [2, 5, 8],
+                [0, 4, 8],
+                [2, 4, 6]
+            ];
+
+            return winningCombinations.some(combination => {
+                const [a, b, c] = combination;
+                return board[a] && board[a] === board[b] && board[a] === board[c];
+            });
+        }
+
+        function restartGame() {
+            board = ['', '', '', '', '', '', '', '', ''];
+            currentPlayer = player1;
+            gameOver = false;
+
+            // Reset game board UI
+            const cells = document.querySelectorAll('.cell');
+            cells.forEach(cell => {
+                cell.textContent = '';
+                cell.classList.remove('taken');
+            });
+        }
+    </script>
+</body>
+</html>
