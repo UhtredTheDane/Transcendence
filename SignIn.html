@@ -54,12 +54,22 @@
             flex: 3;
         }
 
+        .forty-two-btn {
+            background-color: white;
+            color: white;
+            flex: 3;
+        }
+
         .google-btn img, .forty-two-btn img {
             width: 24px;
             margin-right: 8px;
         }
 
         .google-btn:hover {
+            background-color: #f1f1f1;
+        }
+
+        .forty-two-btn:hover {
             background-color: #f1f1f1;
         }
 
@@ -125,9 +135,10 @@
         <div class="social-login">
             <!-- Google Sign-In Button -->
             <button class="social-btn google-btn secondary-font"  onclick="signInWithGoogle()">
-                <img src="assets/google icon.svg" alt="Google Logo">
-                Sign in with Google
-            </button>
+                <img src="assets/google icon.svg" alt="Google Logo"></button>
+            <!-- 42 Sign-In Button -->
+            <button class="social-btn forty-two-btn" onclick="signInWith42()">
+                <img src="assets/42_Logo.svg" alt="42 Logo"></button>
         </div>
 
         <hr class="my-4" style="border-color: white;">
