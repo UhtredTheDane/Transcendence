@@ -13,10 +13,14 @@ window.main = function () {
 	document.addEventListener("keydown", function (event) {
 		if (game.isPaused || game.isGameEnded) return;
 		if (event.key === "ArrowUp" || event.key === "w" || event.key === "z")
-			game.sendMove(Math.max(0, game.field.player.yPos -= 10));
+			game.sendMove(Math.max(0, game.field.player.yPos - 10));
 		if (event.key === "ArrowDown" || event.key === "s")
-			game.sendMove(Math.max(game.field.canevas.height - game.field.player.height, game.field.player.yPos += 10));
+			game.sendMove(Math.min(game.field.canevas.height - game.field.player.height, game.field.player.yPos + 10));
 		});
+		setInterval(() => {
+			ball.updateBall(fieldPong, game);
+			fieldPong.draw();
+		}, 16);
 
 /*
 	// Gestion des collisions avec les bords du terrain (haut et bas)
@@ -118,14 +122,6 @@ window.main = function () {
 	ball.xPos += ball.xSpeed * 2.5;
 	ball.yPos += ball.ySpeed * 2.5;
 	*/
-
-
-
-
-	setInterval(() => {
-		ball.updateBall(fieldPong, game);
-		fieldPong.draw();
-	}, 16);
 };
 
 main();

@@ -35,9 +35,6 @@ export default class Game {
 		let tempoGame = this;
 		this.socket.onmessage = function (event) {
 			const data = JSON.parse(event.data);
-			//if (data.type !== "update_ball_position" && data.type !== "update_position")
-			//	console.log("Message reçu :", data);
-
 			if (data.type === "update_position") {
 				if (data.player === "player1") {
 					if (playerRole === "player1") tempoGame.field.player.yPos = data.position;
@@ -54,11 +51,10 @@ export default class Game {
 				tempoGame.field.opponent.playerScore = data.score_player2;
 			} else if (data.type === "update_pause") {
 				tempoGame.isPaused = data.is_paused;
-				if (tempoGame.isPaused) {
+				if (tempoGame.isPaused)
 					document.getElementById("pauseButton").innerText = "Play";
-				} else {
+				else
 					document.getElementById("pauseButton").innerText = "Pause";
-				}
 			} else if (data.type === "game_state") {
 					tempoGame.field.player.yPos = data.player1_y;
 					tempoGame.field.opponent.yPos = data.player2_y;
@@ -67,10 +63,7 @@ export default class Game {
 					tempoGame.isBallMover = (playerRole === "player1");
 			} else if (data.type === "game_over") {
 				document.getElementById("pauseButton").display = "none";
-				//alert(playerRole == getWinner() ? "Vous avez gagné !" : "Vous avez perdu !");
-				//setTimeout(() => {
 				window.location.href = "/";
-				//}, 4000);
 			}
 			tempoGame.field.draw();
 		};
@@ -89,6 +82,30 @@ export default class Game {
 
 	set socket(value) {
 		this._socket = value;
+	}
+
+	get isBallMover() {
+		return this._isBallMover;
+	}
+
+	set isBallMover(value) {
+		this._isBallMover = value;
+	}
+
+	get isGameEnded() {
+		return this._isGameEnded;
+	}
+
+	set isGameEnded(value) {
+		this._isGameEnded = value;
+	}
+
+	get isSocketOpen() {
+		return this._isSocketOpen;
+	}
+
+	set isSocketOpen(value) {
+		this._isSocketOpen = value;
 	}
 
 	get isPaused() {
@@ -138,6 +155,7 @@ export default class Game {
 	}
 
 	sendMove(position) {
+		console.log("coucou");
 		if (this._isGameEnded || !this._isSocketOpen || this._socket.readyState !== WebSocket.OPEN)
 			return;
 		this._socket.send(JSON.stringify({ type: "move", position: position }));

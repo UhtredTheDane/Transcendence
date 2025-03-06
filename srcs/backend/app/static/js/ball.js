@@ -84,10 +84,10 @@ set img(value) {
 
 
     resetBall() {
-        this._xPos = CANVAS_WIDTH / 2;
-	this._yPos = CANVAS_HEIGHT / 2;
-	this._xSpeed = (Math.random() > 0.5 ? 1 : -1) * 3;
-	this._ySpeed = (Math.random() > 0.5 ? 1 : -1) * 3;
+        this._xPos = 802 / 2;
+	    this._yPos = 455 / 2;
+	    this._xSpeed = (Math.random() > 0.5 ? 1 : -1) * 3;
+	    this._ySpeed = (Math.random() > 0.5 ? 1 : -1) * 3;
     }
     
     increaseBallSpeed() {
@@ -107,6 +107,7 @@ set img(value) {
         let opponent = fieldPong.opponent;
         this._xPos += this._xSpeed;
         this._yPos += this._ySpeed;
+        
         // Collision avec le haut/bas
         if (this._yPos <= 0 || this._yPos >= fieldPong.canevas.height)
                 this._ySpeed *= -1;
