@@ -42,7 +42,6 @@
 	display: flex;
 	justify-content: left; /* Center the children horizontally */
 	align-items: center; 
-	cursor: pointer;
 }
 
 .edit-icon {
