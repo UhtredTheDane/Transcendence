@@ -36,12 +36,12 @@
 
         .background-text {
             position: absolute;
-            top: 0;
+            top: 10%;
             left: 50%;
             transform: translateX(-50%);
             font-size: 12vw;
             color: white;
-            opacity: 0.1;
+            opacity: 0.2;
             white-space: nowrap;
             user-select: none;
             z-index: -1;
@@ -98,12 +98,8 @@
         .content-container {
             position: relative;
             z-index: 1;
-            padding-top: 15vh;
+            padding-top: 20vh;
             text-align: center;
-        }
-
-        .primary-font h1 {
-            font: 48pt 'TF SPIKE DEMO', sans-serif;
         }
 
         .secondary-font p {
@@ -166,12 +162,14 @@
     </style>
 </head>
 <body>
+    <div class="background-text">Tic-Tac-Toe</div>
+
     <div class="navbar">
         <a href="HomePage.html" class="home-btn">Home</a>
         <button class="restart-btn" onclick="restartGame()">Restart Game</button>
     </div>
+
     <div class="content-container">
-        <h1 class="primary-font">Tic-Tac-Toe</h1>
         <div class="game-board" id="gameBoard">
             <!-- Game cells will be inserted here dynamically -->
         </div>
