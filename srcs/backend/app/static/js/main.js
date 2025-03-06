@@ -18,7 +18,7 @@ window.main = function () {
 			game.sendMove(Math.min(game.field.canevas.height - game.field.player.height, game.field.player.yPos + 10));
 		});
 		setInterval(() => {
-			ball.updateBall(fieldPong, game);
+			game.updateBall(fieldPong, game);
 			fieldPong.draw();
 		}, 16);
 
