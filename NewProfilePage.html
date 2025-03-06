@@ -1,0 +1,780 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <style>
+		@import url("https://cdnjs.cloudflare.com/ajax/libs/meyer-reset/2.0/reset.min.css");
+* {
+  -webkit-font-smoothing: antialiased;
+  box-sizing: border-box;
+}
+html,
+body {
+  margin: 0px;
+  height: 100%;
+}
+/* a blue color as a generic focus style */
+button:focus-visible {
+  outline: 2px solid #4a90e2 !important;
+  outline: -webkit-focus-ring-color auto 5px !important;
+}
+a {
+  text-decoration: none;
+}
+
+.property-my {
+  position: relative;
+  width: 1920px;
+  height: 1080px;
+  background-color: #0f0f0f;
+  overflow: hidden;
+}
+
+.property-my .navbar {
+  position: absolute;
+  width: 1920px;
+  height: 88px;
+  top: 0;
+  left: 0;
+  background-color: #202020;
+}
+
+.property-my .left-nav {
+  display: inline-flex;
+  align-items: center;
+  gap: 42px;
+  position: absolute;
+  top: 29px;
+  left: 30px;
+  background-color: #202020;
+}
+
+.property-my .text-wrapper {
+  position: relative;
+  width: fit-content;
+  margin-top: -1.00px;
+  font-family: "TF Spike-Demo", Helvetica;
+  font-weight: 400;
+  color: #f0f0f0;
+  font-size: 28px;
+  text-align: center;
+  letter-spacing: 0;
+  line-height: normal;
+  white-space: nowrap;
+}
+
+.property-my .div {
+  position: relative;
+  width: fit-content;
+  margin-top: -1.00px;
+  font-family: "TF Spike-Demo", Helvetica;
+  font-weight: 400;
+  color: #f0f0f0;
+  font-size: 28px;
+  letter-spacing: 0;
+  line-height: normal;
+  white-space: nowrap;
+}
+
+.property-my .right-nav {
+  position: absolute;
+  width: 52px;
+  height: 52px;
+  top: 18px;
+  left: 1830px;
+  border-radius: 106px;
+  overflow: hidden;
+  border: 1px solid;
+  border-color: #4423ff;
+}
+
+.property-my .overlap-group {
+  position: relative;
+  width: 50px;
+  height: 73px;
+}
+
+.property-my .ellipse {
+  position: absolute;
+  width: 50px;
+  height: 50px;
+  top: 0;
+  left: 0;
+  background-color: #d9d9d9;
+  border-radius: 25px;
+}
+
+.property-my .ellipse-2 {
+  position: absolute;
+  width: 46px;
+  height: 46px;
+  top: 27px;
+  left: 1px;
+  background-color: #242424;
+  border-radius: 23px;
+}
+
+.property-my .ellipse-3 {
+  position: absolute;
+  width: 17px;
+  height: 17px;
+  top: 7px;
+  left: 16px;
+  background-color: #242424;
+  border-radius: 8.5px;
+}
+
+.property-my .profile-page {
+  position: absolute;
+  width: 1860px;
+  height: 518px;
+  top: 109px;
+  left: 30px;
+  background-color: #d9d9d91a;
+  border-radius: 21px;
+  backdrop-filter: blur(10px) brightness(100%);
+  -webkit-backdrop-filter: blur(10px) brightness(100%);
+}
+
+.property-my .frame {
+  position: absolute;
+  width: 418px;
+  height: 418px;
+  top: 50px;
+  left: 44px;
+  background-color: #d9d9d9;
+  overflow: hidden;
+  border: 8.04px solid;
+  border-color: #4423ff;
+}
+
+.property-my .ellipse-4 {
+  position: absolute;
+  width: 370px;
+  height: 370px;
+  top: 217px;
+  left: 8px;
+  background-color: #242424;
+  border-radius: 184.92px;
+}
+
+.property-my .ellipse-5 {
+  position: absolute;
+  width: 137px;
+  height: 137px;
+  top: 56px;
+  left: 129px;
+  background-color: #242424;
+  border-radius: 68.34px;
+}
+
+.property-my .frame-2 {
+  display: flex;
+  flex-direction: column;
+  width: 405px;
+  align-items: flex-start;
+  gap: 21px;
+  position: absolute;
+  top: 73px;
+  left: 508px;
+}
+
+.property-my .group {
+  position: relative;
+  width: 232px;
+  height: 53px;
+}
+
+.property-my .text-wrapper-2 {
+  position: absolute;
+  top: 0;
+  left: 0;
+  font-family: "Sora-SemiBold", Helvetica;
+  font-weight: 600;
+  color: #ffffff;
+  font-size: 42px;
+  text-align: center;
+  letter-spacing: 0;
+  line-height: normal;
+}
+
+.property-my .icon-fill-edit {
+  position: absolute;
+  width: 38px;
+  height: 38px;
+  top: 8px;
+  left: 192px;
+}
+
+.property-my .text-wrapper-3 {
+  position: relative;
+  width: fit-content;
+  font-family: "Sora-Medium", Helvetica;
+  font-weight: 500;
+  color: #5e5e5e;
+  font-size: 28px;
+  letter-spacing: 0;
+  line-height: normal;
+}
+
+.property-my .frame-3 {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  align-self: stretch;
+  width: 100%;
+  flex: 0 0 auto;
+}
+
+.property-my .text-wrapper-4 {
+  position: relative;
+  width: 405px;
+  font-family: "Sora-Medium", Helvetica;
+  font-weight: 500;
+  color: #f0f0f0;
+  font-size: 28px;
+  letter-spacing: 0;
+  line-height: normal;
+}
+
+.property-my .img {
+  position: relative;
+  width: 38px;
+  height: 38px;
+  margin-left: -107px;
+}
+
+.property-my .line {
+  position: absolute;
+  width: 5px;
+  height: 448px;
+  top: 35px;
+  left: 930px;
+}
+
+.property-my .win-lose {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 42px;
+  position: absolute;
+  top: 118px;
+  left: 1108px;
+}
+
+.property-my .element {
+  position: relative;
+  width: fit-content;
+  margin-top: -1.00px;
+  font-family: "Hoskin-Regular", Helvetica;
+  font-weight: 400;
+  color: transparent;
+  font-size: 403.8px;
+  text-align: center;
+  letter-spacing: 0;
+  line-height: normal;
+  white-space: nowrap;
+}
+
+.property-my .span {
+  color: #ffffff;
+}
+
+.property-my .text-wrapper-5 {
+  color: #4423ff;
+}
+
+.property-my .line-2 {
+  position: relative;
+  width: 5px;
+  height: 130px;
+}
+
+.property-my .text-wrapper-6 {
+  color: #f6102f;
+}
+
+.property-my .overlap {
+  position: absolute;
+  width: 1355px;
+  height: 812px;
+  top: 1140px;
+  left: 283px;
+  border-radius: 13.66px;
+}
+
+.property-my .leader-board {
+  position: absolute;
+  width: 1013px;
+  height: 678px;
+  top: 82px;
+  left: 171px;
+  background-color: #ffffff;
+  border-radius: 14px;
+  overflow: hidden;
+  box-shadow: 5px 6px 0.2px #00000040;
+  backdrop-filter: blur(14.2px) brightness(100%);
+  -webkit-backdrop-filter: blur(14.2px) brightness(100%);
+}
+
+.property-my .text-wrapper-7 {
+  position: absolute;
+  height: 25px;
+  top: 56px;
+  left: 165px;
+  font-family: "TF Spike-Demo", Helvetica;
+  font-weight: 400;
+  color: #09090b;
+  font-size: 67px;
+  text-align: center;
+  letter-spacing: -0.67px;
+  line-height: 25px;
+  white-space: nowrap;
+}
+
+.property-my .frame-4 {
+  display: inline-flex;
+  align-items: center;
+  gap: 420px;
+  position: absolute;
+  top: 143px;
+  left: 145px;
+}
+
+.property-my .frame-5 {
+  display: flex;
+  width: 238px;
+  align-items: center;
+  gap: 21px;
+  position: relative;
+}
+
+.property-my .text-wrapper-8 {
+  position: relative;
+  width: fit-content;
+  margin-top: -1.00px;
+  font-family: "Sora-Regular", Helvetica;
+  font-weight: 400;
+  color: #0f0f0f;
+  font-size: 24px;
+  text-align: center;
+  letter-spacing: -0.24px;
+  line-height: 25px;
+  white-space: nowrap;
+}
+
+.property-my .text-wrapper-9 {
+  position: relative;
+  width: fit-content;
+  margin-top: -1.00px;
+  font-family: "Sora-Regular", Helvetica;
+  font-weight: 400;
+  color: #0f0f0f;
+  font-size: 24px;
+  letter-spacing: -0.24px;
+  line-height: 25px;
+  white-space: nowrap;
+}
+
+.property-my .text-wrapper-10 {
+  position: relative;
+  width: fit-content;
+  margin-top: -1.00px;
+  font-family: "Sora-SemiBold", Helvetica;
+  font-weight: 600;
+  color: #0f0f0f;
+  font-size: 24px;
+  letter-spacing: -0.24px;
+  line-height: 25px;
+  white-space: nowrap;
+}
+
+.property-my .frame-6 {
+  display: inline-flex;
+  align-items: center;
+  gap: 420px;
+  position: absolute;
+  top: 186px;
+  left: 145px;
+}
+
+.property-my .text-wrapper-11 {
+  position: relative;
+  width: fit-content;
+  margin-top: -1.00px;
+  margin-right: -72.00px;
+  font-family: "Sora-Regular", Helvetica;
+  font-weight: 400;
+  color: #0f0f0f;
+  font-size: 24px;
+  letter-spacing: -0.24px;
+  line-height: 25px;
+  white-space: nowrap;
+}
+
+.property-my .line-wrapper {
+  position: absolute;
+  width: 2345px;
+  height: 519px;
+  top: -4624px;
+  left: -7000px;
+  background-image: url(./img/group-5.png);
+  background-size: 100% 100%;
+}
+
+.property-my .line-3 {
+  position: absolute;
+  width: 838px;
+  height: 1px;
+  top: 106px;
+  left: 753px;
+  object-fit: cover;
+}
+
+.property-my .leader-board-pop-up {
+  position: absolute;
+  width: 1355px;
+  height: 812px;
+  top: 0;
+  left: 0;
+  background-color: #ffffff;
+  border-radius: 13.66px;
+  overflow: hidden;
+  box-shadow: 4.88px 5.85px 0.2px #00000040;
+  backdrop-filter: blur(13.85px) brightness(100%);
+  -webkit-backdrop-filter: blur(13.85px) brightness(100%);
+}
+
+.property-my .text-wrapper-12 {
+  position: absolute;
+  height: 46px;
+  top: 44px;
+  left: 395px;
+  font-family: "TF Spike-Demo", Helvetica;
+  font-weight: 400;
+  color: #09090b;
+  font-size: 65.4px;
+  text-align: center;
+  letter-spacing: -0.65px;
+  line-height: 24.4px;
+}
+
+.property-my .img-wrapper {
+  position: absolute;
+  width: 1672px;
+  height: 759px;
+  top: -4587px;
+  left: -6322px;
+  background-image: url(./img/group-7.png);
+  background-size: 100% 100%;
+}
+
+.property-my .line-4 {
+  position: absolute;
+  width: 726px;
+  height: 1px;
+  top: 86px;
+  left: 473px;
+}
+
+.property-my .frame-7 {
+  display: flex;
+  flex-direction: column;
+  width: 842px;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 24.04px;
+  padding: 30.05px 0px;
+  position: absolute;
+  top: 176px;
+  left: -302px;
+}
+
+.property-my .component {
+  position: relative;
+  width: 842.47px;
+  height: 83.15px;
+  margin-top: -4818.87px;
+  margin-left: -5861.06px;
+  background-image: url(./img/rectangle-5.svg);
+  background-size: 100% 100%;
+}
+
+.property-my .text-wrapper-13 {
+  position: absolute;
+  height: 29px;
+  top: 26px;
+  left: 616px;
+  font-family: "TF Spike-Demo", Helvetica;
+  font-weight: 400;
+  color: #0f0f0f;
+  font-size: 42.1px;
+  text-align: right;
+  letter-spacing: -0.42px;
+  line-height: 25.0px;
+  white-space: nowrap;
+}
+
+.property-my .vs-AI-wrapper {
+  position: relative;
+  width: 842.47px;
+  height: 83.15px;
+  margin-top: -4818.87px;
+  margin-left: -5861.06px;
+  background-image: url(./img/rectangle-5-2.svg);
+  background-size: 100% 100%;
+}
+
+.property-my .vs-AI {
+  left: 450px;
+  position: absolute;
+  height: 29px;
+  top: 26px;
+  font-family: "TF Spike-Demo", Helvetica;
+  font-weight: 400;
+  color: #0f0f0f;
+  font-size: 42.1px;
+  text-align: right;
+  letter-spacing: -0.42px;
+  line-height: 25.0px;
+  white-space: nowrap;
+}
+
+.property-my .div-wrapper {
+  position: relative;
+  width: 842.47px;
+  height: 83.15px;
+  margin-top: -4818.87px;
+  margin-left: -5861.06px;
+  background-image: url(./img/image.svg);
+  background-size: 100% 100%;
+}
+
+.property-my .vs-AI-2 {
+  left: 527px;
+  position: absolute;
+  height: 29px;
+  top: 26px;
+  font-family: "TF Spike-Demo", Helvetica;
+  font-weight: 400;
+  color: #0f0f0f;
+  font-size: 42.1px;
+  text-align: right;
+  letter-spacing: -0.42px;
+  line-height: 25.0px;
+  white-space: nowrap;
+}
+
+.property-my .component-2 {
+  position: relative;
+  width: 842.47px;
+  height: 83.15px;
+  margin-top: -4818.87px;
+  margin-left: -5861.06px;
+  background-image: url(./img/rectangle-5-3.svg);
+  background-size: 100% 100%;
+}
+
+.property-my .vs-AI-3 {
+  left: 364px;
+  position: absolute;
+  height: 29px;
+  top: 26px;
+  font-family: "TF Spike-Demo", Helvetica;
+  font-weight: 400;
+  color: #0f0f0f;
+  font-size: 42.1px;
+  text-align: right;
+  letter-spacing: -0.42px;
+  line-height: 25.0px;
+  white-space: nowrap;
+}
+
+.property-my .component-3 {
+  position: relative;
+  width: 842.47px;
+  height: 83.15px;
+  margin-top: -4818.87px;
+  margin-left: -5861.06px;
+  background-image: url(./img/rectangle-5-4.svg);
+  background-size: 100% 100%;
+}
+
+.property-my .vs-AI-4 {
+  left: 354px;
+  position: absolute;
+  height: 29px;
+  top: 26px;
+  font-family: "TF Spike-Demo", Helvetica;
+  font-weight: 400;
+  color: #0f0f0f;
+  font-size: 42.1px;
+  text-align: right;
+  letter-spacing: -0.42px;
+  line-height: 25.0px;
+  white-space: nowrap;
+}
+
+.property-my .victory-div {
+  position: absolute;
+  width: 1860px;
+  height: 119px;
+  top: 643px;
+  left: 30px;
+  background-color: #8f87fb1a;
+  border-radius: 21px;
+  overflow: hidden;
+  box-shadow: 0px 4px 4px #00000040;
+}
+
+.property-my .text-wrapper-14 {
+  position: absolute;
+  top: 36px;
+  left: 62px;
+  text-shadow: 0px 4px 20px #16161640;
+  font-family: "TF Spike-Demo", Helvetica;
+  font-weight: 400;
+  color: #4423ff;
+  font-size: 42px;
+  text-align: center;
+  letter-spacing: 0;
+  line-height: normal;
+  white-space: nowrap;
+}
+
+.property-my .line-5 {
+  position: absolute;
+  width: 1px;
+  height: 102px;
+  top: 9px;
+  left: 362px;
+  object-fit: cover;
+}
+
+.property-my .text-wrapper-15 {
+  position: absolute;
+  top: 32px;
+  left: 405px;
+  font-family: "Sora-SemiBold", Helvetica;
+  font-weight: 600;
+  color: #ffffff;
+  font-size: 42px;
+  letter-spacing: 0;
+  line-height: normal;
+}
+
+.property-my .text-wrapper-16 {
+  position: absolute;
+  top: 32px;
+  left: 1702px;
+  font-family: "Sora-SemiBold", Helvetica;
+  font-weight: 600;
+  color: #ffffff;
+  font-size: 42px;
+  text-align: right;
+  letter-spacing: 0;
+  line-height: normal;
+}
+
+.property-my .chat-box {
+  position: absolute;
+  width: 88px;
+  height: 88px;
+  top: 960px;
+  left: 30px;
+}
+
+:root {
+  --1-tokens-color-modes-button-secondary-default-text: var(
+    --1-tokens-color-modes-common-neutral-hightest
+  );
+}
+
+
+	</style>
+  </head>
+  <body>
+    <div class="property-my">
+      <div class="navbar">
+        <div class="left-nav">
+          <div class="text-wrapper">Home</div>
+          <div class="div">Leader Board</div>
+          <div class="div">Pong Rules</div>
+        </div>
+        <div class="right-nav">
+          <div class="overlap-group">
+            <div class="ellipse"></div>
+            <div class="ellipse-2"></div>
+            <div class="ellipse-3"></div>
+          </div>
+        </div>
+      </div>
+      <div class="profile-page">
+        <div class="frame">
+          <div class="ellipse-4"></div>
+          <div class="ellipse-5"></div>
+        </div>
+        <div class="frame-2">
+          <div class="group">
+            <div class="text-wrapper-2">Player1</div>
+            <img class="icon-fill-edit" src="img/edit-3.svg" />
+          </div>
+          <div class="text-wrapper-3">Youva Keciri</div>
+          <div class="frame-3">
+            <div class="text-wrapper-4">ykeciri.pro@gmail.com</div>
+            <img class="img" src="img/edit.svg" />
+          </div>
+          <div class="frame-3">
+            <div class="text-wrapper-4">***********</div>
+            <img class="img" src="img/edit-2.svg" />
+          </div>
+        </div>
+        <img class="line" src="img/line-5.svg" />
+        <div class="win-lose">
+          <p class="element"><span class="span">5</span> <span class="text-wrapper-5">W</span></p>
+          <img class="line-2" src="img/line-6.svg" />
+          <p class="element"><span class="span">10</span> <span class="text-wrapper-6">L</span></p>
+        </div>
+      </div>
+      <div class="overlap">
+        <div class="leader-board">
+          <div class="text-wrapper-7">Leader Board</div>
+          <div class="frame-4">
+            <div class="frame-5">
+              <div class="text-wrapper-8">1</div>
+              <div class="text-wrapper-9">Pseudo2Quelqun</div>
+            </div>
+            <div class="text-wrapper-10">1000</div>
+          </div>
+          <div class="frame-6">
+            <div class="frame-5">
+              <div class="text-wrapper-8">2</div>
+              <div class="text-wrapper-11">AutrePseudo2Quelqun</div>
+            </div>
+            <div class="text-wrapper-10">1000</div>
+          </div>
+          <div class="line-wrapper"><img class="line-3" src="img/line-3.svg" /></div>
+        </div>
+        <div class="leader-board-pop-up">
+          <div class="text-wrapper-12">GAme Modes</div>
+          <div class="img-wrapper"><img class="line-4" src="img/line-4.svg" /></div>
+          <div class="frame-7">
+            <div class="component"><div class="text-wrapper-13">Vs AI</div></div>
+            <div class="vs-AI-wrapper"><div class="vs-AI">Unranked</div></div>
+            <div class="div-wrapper"><div class="vs-AI-2">Ranked</div></div>
+            <div class="component-2"><div class="vs-AI-3">tournament</div></div>
+            <div class="component-3"><div class="vs-AI-4">Custom Game</div></div>
+          </div>
+        </div>
+      </div>
+      <div class="victory-div">
+        <div class="text-wrapper-14">Victory</div>
+        <img class="line-5" src="img/line-7.svg" />
+        <div class="text-wrapper-15">PlayerAgainstMe</div>
+        <div class="text-wrapper-16">10 - 2</div>
+      </div>
+      <img class="chat-box" src="img/chat-box.svg" />
+    </div>
+  </body>
+</html>

@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>Profile Page</title>
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+	<link href="https://fonts.googleapis.com/css2?family=Sora&display=swap" rel="stylesheet">
+	<link rel="icon" href="assets/42_Logo.svg" type="image/svg+xml">
+	<link rel="stylesheet" href="assets/css/index.css">
+	<link rel="stylesheet" href="assets/css/chatbox.css">
+		<style>
+	body {
+		background-color: black;
+		color: white;
+		text-align: center;
+		position: relative;
+		overflow: hidden;
+	}
+	/* Profile section */
+	.page-profile-container {
+		display: flex;
+		flex-direction: column;
+		width: 1860px;
+		height: 518px;
+		align-items: center;
+		justify-content: center;
+		height: 100vh;
+		padding-top: 60px;
+	}
+
+	.profile-box {
+		background-color: rgba(255, 255, 255, 0.1);
+		width: 90%;
+		max-width: 1200px;
+		padding: 60px;
+		border-radius: 15px;
+		margin-bottom: 40px;
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		flex-wrap: wrap;
+	}
+
+
+	/* Vertical separator */
+	.vertical-bar {
+		width: 3px;
+		background-color: white;
+		height: 100%;
+		margin: 0 40px;
+	}
+
+	/* Profile picture */
+	.profile-btn {
+		background-image: url('https://cdn.discordapp.com/avatars/960896510017544282/b1e2132267708f74ca6f42674ef274d4.webp');
+		background-size: cover;
+		background-position: center;
+	}
+
+		</style>
+		<link rel="stylesheet" href="assets/css/index.css">
+		<link rel="stylesheet" href="assets/css/profilepage.css">
+		
+		
+	</head>
+	<body onload="loadTemplate()">
+		<!-- Navbar -->
+		
+		<img class="transcendence-icon position-absolute top-50 start-50 translate-middle" alt="" src="assets/bg-text.svg" style="z-index: -1;">
+		
+		<div id="header">
+			<div id="navbar-container"></div>
+		</div>
+
+		<div id="content">
+			<div class="my-profile-box">
+				<div class="profile-box-left">
+					<div class="profile-picture-box" style="background-image: url('https://cdn.discordapp.com/avatars/960896510017544282/b1e2132267708f74ca6f42674ef274d4.webp');"></div>
+					<div class="profile-box-infos">
+						<div class="with-edit">
+							<h1>Player 1</h1>
+							<img src="assets/Icons/edit.svg" class="edit-icon" alt="" onclick="" >
+						</div>
+						<p>Email:
+							<span> myEmail@42.fr</span>
+						</p>
+						<p>Password:
+							<span> *********</span>
+						</p>
+					</div>
+				</div>
+				<div class="vertical-bar"></div>
+				<div class="profile-stats">
+					<div style="text-align: center"><span class="score">110</span><span class="win">W</span></div>
+					<div class="vertical-bar"></div>
+					<div style="text-align: center"><span  class="score">10</span><span class="lose">L</span></div>
+				</div>
+			</div>
+			<div class="game-display">
+				<div class="primary-font victory">
+					Victory
+				</div>
+				<div class="vertical-bar"></div>
+				<div class="secondary-font player-name">
+					PlayerAgainstMe
+				</div>
+				<div class="secondary-font score">
+					10 - 2
+				</div>
+			</div>
+			<div class="game-display">
+				<div class="primary-font victory">
+				  Victory
+				</div>
+				<div class="vertical-bar"></div>
+				<div class="secondary-font player-name">
+				  PlayerAgainstMe
+				</div>
+				<div class="secondary-font score">
+				  10 - 2
+				</div>
+			</div>
+		</div>
+		<div id="footer"></div>
+		<script src="assets/js/chatScript.js"></script>
+		<script src="assets/js/index.js"></script>
+	</body>
+	</html>
