@@ -4,8 +4,19 @@ import Player from './player.js';
 import Ball from './ball.js';
 
 window.main = function () {
-	let player = new Player(0.0, 167.5, '../../media/textures/Player1.png');
-	let opponent = new Player(785, 167.5, '../../media/textures/Player2.png');
+	let player;
+	let opponent;
+
+	if (playerRole == "player1")
+	{
+		player = new Player(0.0, 167.5, '../../media/textures/Player1.png');
+		opponent = new Player(785, 167.5, '../../media/textures/Player2.png');
+	}
+	else
+	{
+		opponent = new Player(0.0, 167.5, '../../media/textures/Player1.png');
+		player = new Player(785, 167.5, '../../media/textures/Player2.png');
+	}
 	let ball = new Ball(384, 212.5, '../../media/textures/Ball.png');
 	let fieldPong = new Field(player, opponent, ball);
 	let game = new Game(fieldPong);
@@ -16,14 +27,14 @@ window.main = function () {
 			game.sendMove(Math.max(0, game.field.player.yPos - 10));
 		if (event.key === "ArrowDown" || event.key === "s")
 			game.sendMove(Math.min(game.field.canevas.height - game.field.player.height, game.field.player.yPos + 10));
-		});
-		setInterval(() => {
-			game.updateBall(fieldPong, game);
-			fieldPong.draw();
-		}, 16);
+	});
+	setInterval(() => {
+		game.updateBall(fieldPong, game);
+		fieldPong.draw();
+	}, 16);
 
-/*
-	// Gestion des collisions avec les bords du terrain (haut et bas)
+	/*
+		// Gestion des collisions avec les bords du terrain (haut et bas)
 	if (ball.yPos + ball.diameter + ball.ySpeed * 2.5 > fieldPong.canevas.height || ball.yPos + ball.ySpeed * 2.5 < 0)
 		ball.ySpeed = ball.ySpeed * -1;
 
@@ -105,22 +116,7 @@ window.main = function () {
 		ball.increaseBallSpeed(); // Augmenter la vitesse de la balle
 	}
 
-	// Gestion des points
-	if (ball.xPos + ball.xSpeed * 2.5 < 0) {
-		++player2.playerScore;
-		ball.resetBall();
-	} else if (ball.xPos + 30 + ball.xSpeed * 2.5 > fieldPong.width) {
-		++player1.playerScore;
-		ball.resetBall();
-	}
 
-	// Limites des raquettes
-	player1.yPos = Math.max(0, Math.min(fieldPong.canevas.height - player1.height, player1.yPos + player1.ySpeed));
-	player2.yPos = Math.max(0, Math.min(fieldPong.canevas.height - player2.height, player2.yPos + player2.ySpeed));
-
-	// Mise à jour de la position de la balle
-	ball.xPos += ball.xSpeed * 2.5;
-	ball.yPos += ball.ySpeed * 2.5;
 	*/
 };
 
