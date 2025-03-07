@@ -120,8 +120,12 @@ export default class Ball {
 			player = fieldPong.opponent;
 			opponent = fieldPong.player;
 		}
-		if ((this._xPos  <= 30 || this._xPos >= 770) && (this._yPos >= player.yPos && this._yPos <= player.yPos + player.height || this._yPos >= opponent.yPos && this._yPos <= opponent.yPos + opponent.height))
-		{	console.log("testraquette");
+		if ((this._xPos + 15  <= 30 || this._xPos + 15 >= 770) && (this._yPos + 15 >= player.yPos && this._yPos + 15 <= player.yPos + player.height || this._yPos + 15 >= opponent.yPos && this._yPos + 15 <= opponent.yPos + opponent.height))
+		{	
+			if (this._xPos + 15 <= 30)
+				this._xPos = 16;
+			else
+				this._xPos = 754;
 			this._xSpeed *= -1;
 		}
 		if (this._yPos <= 0 || this._yPos >= fieldPong.canevas.height)
