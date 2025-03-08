@@ -1,0 +1,170 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Sign In</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+	<link href="https://fonts.googleapis.com/css2?family=Sora:wght@100..800&display=swap" rel="stylesheet">
+	<script src="{% static 'js/index.js' %}"></script>
+	<link rel="stylesheet" href="{% static 'css/chatbox.css' %}">
+
+
+    <style>
+        body {
+            background-color: black;
+            color: white;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .container {
+            max-width: 400px;
+            margin: auto;
+            padding-top: 100px;
+        }
+
+        /* Social login buttons container */
+        .social-login {
+            display: flex;
+            justify-content: space-between;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .social-btn {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 10px;
+            font-size: 16px;
+            font-weight: bold;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease-in-out;
+            border: none;
+        }
+
+        .google-btn {
+            background-color: white;
+            color: black;
+            flex: 3;
+        }
+
+        .forty-two-btn {
+            background-color: white;
+            color: white;
+            flex: 3;
+        }
+
+        .google-btn img, .forty-two-btn img {
+            width: 24px;
+            margin-right: 8px;
+        }
+
+        .google-btn:hover {
+            background-color: #f1f1f1;
+        }
+
+        .forty-two-btn:hover {
+            background-color: #f1f1f1;
+        }
+
+        /* Hover effect for social buttons */
+        .social-btn:hover {
+            background-color: #00d4ff;
+            color: white;
+        }
+
+        /* Classic sign-in form */
+        .form-control {
+            background-color: #343a40;
+            color: white;
+            border: 1px solid white;
+            margin-bottom: 10px;
+        }
+
+        .form-control::placeholder {
+            color: #bdbdbd;
+        }
+
+        .sign-in-btn {
+            width: 100%;
+            background-color: #17a2b8;
+            color: white;
+            font-weight: bold;
+            border: none;
+            border-radius: 8px;
+            padding: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease-in-out;
+        }
+
+        .sign-in-btn:hover {
+            background-color: #138496;
+        }
+
+		.first-btn {
+			width: 100%;
+		}
+    </style>
+	<link rel="stylesheet" href="{% static 'css/index.css' %}">
+</head>
+<body onload="loadTemplate()">
+        <img class="transcendence-icon position-absolute top-50 start-50 translate-middle" style="z-index: -1;" alt="" src="{% static 'images/bg-text.svg' %}">
+
+    <!-- Navbar at the top -->
+    <nav class="navbar navbar-expand-lg navbar-dark">
+        <div class="container-fluid">
+            <div class="navbar-nav">
+                <a class="nav-link" href="HomePage.html">Home</a>
+            </div>
+        </div>
+    </nav>
+
+	
+    <!-- Background Title -->
+
+    <div class="container position-absolute top-50 start-50 translate-middle">
+        <h1 class="mb-3 primary-font">Sign In</h1>
+
+        <!-- Social Sign-In Options -->
+        <div class="social-login">
+            <!-- Google Sign-In Button -->
+            <button class="social-btn google-btn secondary-font"  onclick="signInWithGoogle()">
+                <img src="{% static 'icons/google-icon.svg' %}.svg" alt="Google Logo"></button>
+            <!-- 42 Sign-In Button -->
+            <button class="social-btn forty-two-btn" onclick="signInWith42()">
+                <img src="{% static 'icons/42_Logo.svg' %}" alt="42 Logo"></button>
+        </div>
+
+        <hr class="my-4" style="border-color: white;">
+
+        <!-- Email and Password Sign-In -->
+        <form onsubmit="signIn(event)">
+            <input type="email" class="form-control secondary-font" placeholder="Email" required>
+            <input type="password" class="form-control secondary-font" placeholder="Password" required>
+            <button type="submit" class="sign-in-btn primary-font first-btn" style="font-size: 21pt;">Sign In</button>
+        </form>
+    </div>
+
+
+
+    <script>
+        function signInWithGoogle() {
+            console.log("Redirecting to Google Sign-In...");
+            // Google OAuth
+        }
+
+        function signIn(event) {
+            event.preventDefault();
+            console.log("Signing in with email and password...");
+            // Handle email/password authentication
+        }
+    </script>
+</body>
+</html>

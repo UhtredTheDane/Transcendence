@@ -12,7 +12,7 @@ PINK        = \033[1;35m
 RED			= \033[0;31m
 DEFAULT		= \033[0;39m
 
-DOCKERCOMPOSE = docker-compose -f srcs/docker-compose.yml
+DOCKERCOMPOSE = docker compose -f srcs/docker-compose.yml
 
 # default target
 all: up 

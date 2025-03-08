@@ -6,6 +6,8 @@ from app import views
 
 urlpatterns = [
 	path('', views.home, name='home'),
+	path('navbar/', views.navbar, name="navbar"),
+	path('leaderboard/', views.leaderboard, name="leaderboard"),
     path('admin/', admin.site.urls),
 	path('accounts/', include('allauth.urls')),
 	path('profile/', views.profile, name='profile'),

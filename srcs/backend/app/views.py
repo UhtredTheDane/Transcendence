@@ -15,7 +15,13 @@ import json
 
 def home(request):
 	is_logged_in = request.user.is_authenticated
-	return render(request, 'home.html', { 'is_logged_in': is_logged_in })
+	return render(request, 'HomePage.html', { 'is_logged_in': is_logged_in })
+
+def navbar(request):
+	return render(request, 'navbar.html')
+
+def leaderboard(request):
+	return render(request, 'leaderboard.html')
 
 # Live Chat
 

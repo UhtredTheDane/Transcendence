@@ -1,0 +1,135 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Player 1 vs Player 2 - Ranked Mode</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: black;
+            color: white;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: auto;
+            padding-top: 100px;
+        }
+
+        /* Navbar style */
+        .navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 999;
+            background-color: #343a40;
+            width: 100%;
+            padding: 10px;
+        }
+
+        .navbar a {
+            color: white !important;
+            font-weight: bold;
+            font-size: 16px;
+            padding: 10px 15px;
+        }
+
+        /* Align navbar items to the left */
+        .navbar-nav {
+            display: flex;
+            justify-content: flex-start;
+            width: 100%;
+        }
+
+        .navbar a:hover {
+            color: #0d40e7 !important;
+            background-color: transparent;
+            border-radius: 5px;
+        }
+
+       
+    </style>
+	    <link rel="stylesheet" href="{% static 'css/index.css' %}">
+		<link rel="stylesheet" href="{% static 'css/chatbox.css' %}">
+
+		<script src="{% static 'js/index.js' %}"></script>	
+</head>
+<body onload="loadTemplate()">
+
+    <!-- Navbar with Change Mode button -->
+    <nav class="navbar navbar-expand-lg navbar-dark">
+        <div class="container-fluid">
+            <div class="navbar-nav">
+                <a class="nav-link" href="GameModes.html">Change Mode</a>
+            </div>
+        </div>
+    </nav>
+
+	<div class=" position-absolute top-50 start-50 translate-middle" style="z-index: -2;">
+        <img class="transcendence-icon" alt="" src="{% static 'images/bg-text.svg' %}">
+    </div>
+
+    <!-- Background Title -->
+    <div class="background-text">TRANSCENDANCE</div>
+
+    <div class="container">
+        <h1 class="mb-3">Player 1 vs Player 2 - Ranked Mode</h1>
+
+        <!-- Scores -->
+        <div class="scores">
+            <!-- Player 1's score container left is good ? -->
+            <div id="player1-side" class="score">
+                <p>Player 1: 0</p>
+            </div>
+            <!-- Player 2's score container right is good ? -->
+            <div id="player2-side" class="score">
+                <p>Player 2: 0</p>
+            </div>
+        </div>
+
+        <!-- Game Window -->
+        <div class="game-window">
+            <!-- The game will take place here -->
+            <p style="color: white; text-align: center; line-height: 400px;">Game in progress...</p>
+        </div>
+    </div>
+         <!-- Chatbox -->
+         <div class="chatbox-btn" onclick="toggleChatbox()">💬</div>
+
+         <div class="chatbox" id="chatbox">
+             <!-- Chatbox Header -->
+             <div class="chatbox-header" id="chatboxHeader">
+                 <button class="back-btn" onclick="goBackToContacts()">&#8592;</button>
+                 <span id="contactName">Chat</span>
+             </div>
+     
+             <!-- Contact List -->
+             <div class="contact-list" id="contactList">
+                 <div class="contact-item" onclick="selectContact('John')">John</div>
+                 <div class="contact-item" onclick="selectContact('Sarah')">Sarah</div>
+                 <div class="contact-item" onclick="selectContact('Alex')">Alex</div>
+             </div>
+     
+             <!-- Chat Content -->
+             <div class="chatbox-body" id="chatboxBody"></div>
+     
+             <div class="chatbox-footer">
+                 <input type="text" id="messageInput" placeholder="Type a message..." disabled>
+                 <button id="sendMessageBtn" onclick="sendMessage()" disabled>Send</button>
+             </div>
+         </div>
+     
+    
+
+    <!-- Bootstrap JS and Popper for Modal functionality -->
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.min.js"></script>
+	<script src="{% static 'js/chatScript.js' %}"></script>
+	<script src="{% static 'js/bgGame.js' %}"></script>
+</body>
+</html>

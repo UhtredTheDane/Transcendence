@@ -1,0 +1,173 @@
+#header, #footer, #content { position: absolute; left: 0; width: 100%; }
+#header, #footer { overflow: hidden;}
+#header { top: 0; height: 100px; overflow: hidden; }
+#content { top: 100px; bottom: 100px; overflow: auto; }
+#footer { bottom: 0; height: 100px; }
+
+.my-profile-box{
+	/* display: block; */
+	background-color: rgba(217, 217, 217, 0.10);
+	border-radius: 15px;
+	width: 95%;
+	height: 517px;
+	position: relative;
+	margin: 0 auto;
+
+	display: flex;
+	justify-content: center; /* Center the children horizontally */
+	align-items: center; 
+	margin-bottom: 21px;
+	
+}
+
+.profile-picture-box{
+	/* position: relative; */
+  width: 402px;
+  height: 402px;
+  /* background-color: #0F0F0F; */
+  border-radius: 67px;
+  margin-left: 2%;
+  margin-top: 58px;
+  /* position: absolute; */
+  /* top: 50%;
+  -ms-transform: translateY(-50%);
+  transform: translateY(-50%); */
+  border: 8.04px solid #4423FF;
+  background-repeat: no-repeat;
+  background-size: cover;
+
+}
+
+.with-edit{
+	display: flex;
+	justify-content: left; /* Center the children horizontally */
+	align-items: center; 
+}
+
+.edit-icon {
+	cursor: pointer;
+	color: #0d40e7;
+	margin-left: 10px;
+	cursor: pointer;
+}
+
+.edit-icon:hover {
+	cursor: pointer;
+}
+
+.profile-box-infos{
+width: 25%;
+height: 100%;
+  font-family: 'Sora';
+  text-align: left;
+  flex: 1 21px;
+  margin: 54px;
+  
+}
+
+.my-profile-box .vertical-bar{
+	margin :1px;
+	height: 75%;
+}
+
+.profile-box-left {
+	display: flex;
+	justify-content: center; /* Center the children horizontally */
+	align-items: center;
+	flex-basis: 60%;
+	margin-bottom: 40px;
+}
+
+.profile-stats{
+	width: 577px; 
+	height: 283px; 
+	/* justify-content: flex-start;  */
+	align-items: center; 
+	gap: 42px; 
+	/* display: inline-flex;  */
+
+	display: flex;
+	justify-content: center; /* Center the children horizontally */
+}
+
+.profile-stats .score{
+	color: white;
+	 font-size: 242px;
+	 font-family: 'Hoskin';
+	 font-weight: 400;
+	 word-wrap: break-word
+}
+
+.profile-stats .text-wrapper{
+	color: white;
+
+}
+
+.profile-stats .win{
+	color: #4423FF; font-size: 242px; font-family: Hoskin; font-weight: 400; word-wrap: break-word
+}
+
+.profile-stats .lose{
+	color: #F6102F; font-size: 242px; font-family: Hoskin; font-weight: 400; word-wrap: break-word
+}
+
+.profile-stats .line{
+	color: #FFFFFF;
+	position: relative;
+	width: 5px;
+}
+
+.game-display{
+	border-radius: 21px;
+	background: rgba(143, 135, 252, 0.10);
+	box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.25);
+	width: 95%;
+	height: 120px;
+
+	margin: 21px auto;
+
+
+
+	display: flex;
+	justify-content: left;
+	align-items: center; 
+
+}
+
+.game-display .victory{
+	color: #4423FF;
+	font-size: 42px;
+	font-weight: 400;
+	padding-left: 42px;
+	padding-right: 21px;
+}
+
+.game-display .defeat{
+	color: #F6102F;
+	font-size: 42px;
+	font-weight: 400;
+	padding-left: 42px;
+	padding-right: 21px;
+}
+
+.game-display .vertical-bar{
+	margin : 1px;
+	height: 75%;
+}
+
+.game-display .player-name{
+	color: white;
+	font-size: 42px;
+	font-weight: 400;
+	padding-left: 42px;
+	padding-right: 21px;
+}
+
+.game-display .score{
+	color: white;
+	font-size: 42px;
+	font-weight: 400;
+	padding-left: 42px;
+	padding-right: 21px;
+	text-align: right;
+}

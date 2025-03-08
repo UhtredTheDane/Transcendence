@@ -18,10 +18,15 @@ function closeLeaderboard() {
 	document.getElementById("leaderboardPopup").classList.remove("show");
 }
 
+function getUrl() {
+    return window.location.href;
+}
+
 function loadTemplate() {
+    console.log(getUrl())
     const templates = [
-        { url: './leaderboard.html', elementId: 'leaderboard-popup' },
-        { url: './navbar.html', elementId: 'navbar-container' }
+        { url: '/leaderboard/', elementId: 'leaderboard-popup' },
+        { url: '/navbar/', elementId: 'navbar-container' }
     ];
 
     const fetchPromises = templates.map(template =>
