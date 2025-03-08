@@ -6,8 +6,13 @@ async function main() {
 
     console.log("Deploying contract with account:", admin.address);
 
-    // Adresse du contrat déployé
-    const contractAddress = "0x5fbdb2315678afecb367f032d93f642f64180aa3";
+    // Adresse du contrat récupérée depuis la variable d'environnement
+    const contractAddress = process.env.CONTRACT_ADDRESS;
+    if (!contractAddress) {
+        throw new Error("CONTRACT_ADDRESS n'est pas défini dans les variables d'environnement");
+    }
+    
+    console.log("Using contract address from environment:", contractAddress);
 
     // Récupérer le contrat déjà déployé
     const PongTournament = await ethers.getContractFactory("PongTournament");

@@ -42,11 +42,11 @@ contract PongTournament {
     }
 
     // Fonction pour changer l'admin (seul l'admin actuel peut appeler cette fonction)
-    function changeAdmin(address _newAdmin) public onlyAdmin {
-        require(_newAdmin != address(0), "New admin cannot be the zero address");
-        emit AdminChanged(admin, _newAdmin);
-        admin = _newAdmin;
-    }
+    // function changeAdmin(address _newAdmin) public onlyAdmin {
+    //     require(_newAdmin != address(0), "New admin cannot be the zero address");
+    //     emit AdminChanged(admin, _newAdmin);
+    //     admin = _newAdmin;
+    // }
 
     // Créer un nouveau tournoi (restreint à l'admin)
     function createTournament(string memory _name) public onlyAdmin {

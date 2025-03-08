@@ -1,8 +1,4 @@
 import hardhat from "hardhat";
-import fs from "fs";
-import dotenv from "dotenv";
-
-dotenv.config();
 const { ethers } = hardhat;
 
 async function main() {
@@ -19,22 +15,9 @@ async function main() {
     // Affiche l'adresse du contrat déployé
     console.log("PongTournament contract deployed to:", deployedContract.target);
 
-    // Mise à jour du fichier .env avec l'adresse du contrat
-    const envFilePath = ".env";
-    const envVar = `CONTRACT_ADDRESS=${deployedContract.target}`;
-
-    // Lire le contenu du fichier .env
-    let envContent = fs.readFileSync(envFilePath, "utf8");
-
-    // Mettre à jour ou ajouter l'adresse du contrat dans .env
-    if (envContent.includes("CONTRACT_ADDRESS=")) {
-        envContent = envContent.replace(/CONTRACT_ADDRESS=.*/g, envVar);
-    } else {
-        envContent += `\n${envVar}`;
-    }
-
-    // Sauvegarder le fichier .env modifié
-    fs.writeFileSync(envFilePath, envContent);
+    // Ajouter l'adresse du contrat dans la variable d'environnement CONTRACT_ADDRESS
+    process.env.CONTRACT_ADDRESS = deployedContract.target;
+    console.log("Contract address added to environment variable CONTRACT_ADDRESS:", process.env.CONTRACT_ADDRESS);
 }
 
 main()

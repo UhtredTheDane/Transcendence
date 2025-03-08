@@ -37,7 +37,6 @@ services:
       context: ./blockchain
       dockerfile: Dockerfile
     container_name: blockchain-node
-    env_file: .env
     volumes:
       - ./blockchain:/app
     ports:
@@ -46,7 +45,7 @@ services:
     networks:
       - mynetwork
 
-volumes:
-  db_data:
-  site_static:
-  site_media:
+# volumes:
+#   db_data:
+#   site_static:
+#   site_media:
