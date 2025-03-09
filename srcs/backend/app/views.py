@@ -174,7 +174,7 @@ def profile(request, user_id=None):
 			'created_at': game.created_at.strftime("%Y-%m-%d %H:%M")
 		})
 	
-	return render(request, 'profile.html', { 'user': user_data, 'scores': scores })
+	return render(request, 'ProfilePage.html', { 'user': user_data, 'scores': scores })
 
 
 def leaderboard(request):
@@ -183,8 +183,52 @@ def leaderboard(request):
 	return render(request, 'leaderboard.html', { 'leaderboard': leaderboard })
 
 def game_modes(request):
-	return render(request, 'game_modes.html')
+	return render(request, 'GameModes.html')
 
 def rules(request):
-	return render(request, 'rules.html')
+	return render(request, 'PongRules.html')
 
+def signin(request):
+	return render(request, 'SignIn.html')
+
+def	aimode(request):
+	return render(request, 'AIMode.html')
+
+def	rankedmode(request):
+	return render(request, 'RankedMode.html')
+
+def	unrankedmode(request):
+	return render(request, 'UnrankedMode.html')
+
+def	rushmode(request):
+	return render(request, 'RushMode.html')
+
+def	tictactoe(request):
+	return render(request, 'TicTacToe.html')
+
+def	timermode(request):
+	return render(request, 'TimerMode.html')
+
+def	maxscoremode(request):
+	return render(request, 'MaxScoreMode.html')
+
+def	tounrnamentpage(request):
+	return render(request, 'TournamentPage.html')
+
+def	invitetournament(request):
+	return render(request, 'InviteTournament.html')
+
+def	jointournament(request):
+	return render(request, 'JoinTournament.html')
+
+def	pongtourny(request):
+	return render(request, 'PongTourny.html')
+
+def	newprofile(request):
+	return render(request, 'NewProfilePage.html')
+
+def	myfriends(request):
+	return render(request, 'MyFriends.html')
+
+def	error404(request):
+	return render(request, 'Error404.html')

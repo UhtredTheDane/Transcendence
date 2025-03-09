@@ -4,9 +4,11 @@ function isUserLoggedIn() {
 
 function redirectToProfile() {
 	if (isUserLoggedIn()) {
-		window.location.href = "/profilepage.html";
+        alert("kuhqggregerge");
+		window.location.href = "/ProfilePage.html/";
 	} else {
-		window.location.href = "/SignIn.html";
+        alert("cococococococ");
+		window.location.href = "/SignIn/";
 	}
 }
 

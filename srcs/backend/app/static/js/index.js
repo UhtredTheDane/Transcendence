@@ -3,11 +3,10 @@ function isUserLoggedIn() {
 }
 
 function redirectToProfile() {
-	if (isUserLoggedIn()) {
-		window.location.href = "/profilepage.html";
-	} else {
-		window.location.href = "/SignIn.html";
-	}
+    if (isUserLoggedIn())
+		window.location.href = "ProfilePage";
+    else
+		window.location.href = "SignIn";
 }
 
 function showLeaderboard() {

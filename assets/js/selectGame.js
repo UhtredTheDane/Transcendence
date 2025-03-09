@@ -3,11 +3,7 @@ document.getElementById('sendMessageBtn').addEventListener('click', sendMessage)
         function setGameMode(mode) {
             document.getElementById("selectedMode").textContent = "Current Mode: " + mode;
         }
-
-        function redirectToProfile() {
-            window.location.href = "ProfilePage.html";
-        }
-
+        
         function setGameMode(mode) {
             document.getElementById('selectedMode').textContent = "Current Mode: " + mode;
 
