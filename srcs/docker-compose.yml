@@ -41,7 +41,7 @@ services:
       - ./blockchain:/app
     ports:
       - "8545:8545"
-    command: ["npx", "hardhat", "node"]
+    #command: ["npx", "hardhat", "node"]
     networks:
       - mynetwork
 

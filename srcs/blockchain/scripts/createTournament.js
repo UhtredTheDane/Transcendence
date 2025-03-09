@@ -1,9 +1,12 @@
 const { ethers } = require("hardhat");
+const dotenv = require("dotenv");
+
+// Charger les variables d'environnement depuis le fichier .env
+dotenv.config();
 
 async function main() {
-    // Récupérer l'adresse du contrat depuis l'environnement
+    // Récupérer le compte admin
     const [admin] = await ethers.getSigners();  // Utilise le compte admin
-
     console.log("Deploying contract with account:", admin.address);
 
     // Adresse du contrat récupérée depuis la variable d'environnement
@@ -11,7 +14,7 @@ async function main() {
     if (!contractAddress) {
         throw new Error("CONTRACT_ADDRESS n'est pas défini dans les variables d'environnement");
     }
-    
+
     console.log("Using contract address from environment:", contractAddress);
 
     // Récupérer le contrat déjà déployé

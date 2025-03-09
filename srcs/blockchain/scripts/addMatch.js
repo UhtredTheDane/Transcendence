@@ -1,16 +1,17 @@
 const hardhat = require("hardhat");
 const dotenv = require("dotenv");
 
+// Charger les variables d'environnement depuis le fichier .env
 dotenv.config();
 const { ethers } = hardhat;
 
 async function main() {
-    // Récupère l'adresse du contrat depuis le fichier .env
+    // Récupère l'adresse du contrat depuis les variables d'environnement
     const contractAddress = process.env.CONTRACT_ADDRESS;
 
     // Vérifie si l'adresse du contrat est bien récupérée
     if (!contractAddress) {
-        throw new Error("L'adresse du contrat n'est pas définie dans le fichier .env");
+        throw new Error("L'adresse du contrat n'est pas définie dans les variables d'environnement");
     }
 
     // Initialise le contrat avec l'adresse déployée
