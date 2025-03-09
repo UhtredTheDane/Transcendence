@@ -12,11 +12,11 @@ document.getElementById('sendMessageBtn').addEventListener('click', sendMessage)
             document.getElementById('selectedMode').textContent = "Current Mode: " + mode;
 
             if (mode === 'AI') {
-                window.location.href = 'AIMode.html';
+                window.location.href = '/AIMode/';
             } else if (mode === 'Unranked') {
-                window.location.href = 'UnrankedMode.html';
+                window.location.href = '/UnrankedMode/';
             } else if (mode === 'Ranked') {
-                window.location.href = 'RankedMode.html';
+                window.location.href = '/RankedMode/';
             } else if (mode === 'Tournament') {
                 // Open Tournament Modal for options
                 new bootstrap.Modal(document.getElementById('tournamentModal')).show();

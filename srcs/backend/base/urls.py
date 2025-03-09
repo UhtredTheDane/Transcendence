@@ -27,7 +27,9 @@ urlpatterns = [
 	path('RushMode/', views.rushmode, name='rushmode'),	
 	path('TimerMode/', views.timermode, name='timermode'),
 	path('TicTacToe/', views.tictactoe, name='tictactoe'),
-	path('MyFriends/', views.myfriends, name='myfriends'),	
+	path('MyFriends/', views.myfriends, name='myfriends'),
+	path('NewProfilePage/', views.newprofile, name='newprofilepage'),
+
 
 
 	path('leaderboard/', views.leaderboard, name='leaderboard'),

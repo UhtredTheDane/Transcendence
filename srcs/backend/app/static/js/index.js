@@ -4,9 +4,9 @@ function isUserLoggedIn() {
 
 function redirectToProfile() {
     if (isUserLoggedIn())
-		window.location.href = "ProfilePage";
+		window.location.href = "/ProfilePage/";
     else
-		window.location.href = "SignIn";
+		window.location.href = "/SignIn/";
 }
 
 function showLeaderboard() {

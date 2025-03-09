@@ -69,7 +69,7 @@
 	<nav class="navbar navbar-expand-lg navbar-dark">
         <div class="container-fluid">
             <div class="navbar-nav">
-                <a class="nav-link" href="GameModes.html">Change Mode</a>
+                <a class="nav-link" href="/GameModes">Change Mode</a>
             </div>
         </div>
     </nav>
@@ -203,18 +203,18 @@ document.getElementById('sendMessageBtn').addEventListener('click', sendMessage)
         }
 
         function redirectToProfile() {
-            window.location.href = "ProfilePage.html";
+            window.location.href = "/ProfilePage/";
         }
 
         function setGameMode(mode) {
             document.getElementById('selectedMode').textContent = "Current Mode: " + mode;
 
             if (mode === 'AI') {
-                window.location.href = 'AIMode.html';
+                window.location.href = '/AIMode/';
             } else if (mode === 'Unranked') {
-                window.location.href = 'UnrankedMode.html';
+                window.location.href = '/UnrankedMode/';
             } else if (mode === 'Ranked') {
-                window.location.href = 'RankedMode.html';
+                window.location.href = '/RankedMode/';
             } else if (mode === 'Tournament') {
                 // Open Tournament Modal for options
                 new bootstrap.Modal(document.getElementById('tournamentModal')).show();
