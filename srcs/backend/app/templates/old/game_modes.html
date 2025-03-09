@@ -47,11 +47,7 @@
 
     <script>
         function redirectToProfile() {
-            if (localStorage.getItem('loggedIn') === 'true') {
-                window.location.href = '/profile';
-            } else {
-                window.location.href = '/accounts/login';
-            }
+        	window.location.href = '/ProfilePage';
         }
 
         function setGameMode(mode) {

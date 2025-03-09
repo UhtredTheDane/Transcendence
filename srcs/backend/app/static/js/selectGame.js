@@ -5,7 +5,7 @@ document.getElementById('sendMessageBtn').addEventListener('click', sendMessage)
         }
 
         function redirectToProfile() {
-            window.location.href = "ProfilePage.html";
+            window.location.href = "/ProfilePage";
         }
 
         function setGameMode(mode) {

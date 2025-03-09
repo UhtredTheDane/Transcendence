@@ -18,7 +18,11 @@ def home(request):
 	return render(request, 'HomePage.html', { 'is_logged_in': is_logged_in })
 
 def navbar(request):
-	return render(request, 'navbar.html')
+    user = request.user if request.user.is_authenticated else None
+    avatar_url = user.avatar.url if user and user.avatar else '/media/default/avatar.png'
+
+    return render(request, 'navbar.html', { 'avatar': avatar_url })
+
 
 def leaderboard(request):
 	return render(request, 'leaderboard.html')
@@ -28,7 +32,7 @@ def leaderboard(request):
 @login_required
 def create_or_get_channel(request, user_id):
 	if not request.user.is_authenticated:
-		return HttpResponseRedirect('/accounts/login')
+		return HttpResponseRedirect('/SignIn')
 
 	other_user = get_object_or_404(User, id=user_id)
 	current_user = request.user
@@ -36,7 +40,6 @@ def create_or_get_channel(request, user_id):
 	if (other_user == current_user):
 		return HttpResponseNotFound("Vous ne pouvez pas discuter avec vous-même")
 	
-	print(current_user is AnonymousUser)
 	if (current_user is AnonymousUser):
 		return HttpResponseNotFound("Vous devez être connecté pour accéder à cette page")
 
@@ -151,30 +154,37 @@ def update_avatar(request):
 
 @login_required
 def profile(request, user_id=None):
-	if user_id is None:
-		user_data = request.user
-	else:
-		try:
-			user_data = get_object_or_404(User, id=user_id)
-		except:
-			raise Http404("User does not exist")
+    if user_id is None:
+        user_data = request.user
+    else:
+        user_data = get_object_or_404(User, id=user_id)
 
-	last_games = Game.objects.filter(player1=user_data).order_by('-created_at')[:5]
+    last_games = Game.objects.filter(
+        player1=user_data
+    ).order_by('-created_at')[:4]
 
-	scores = []
-	for game in last_games:
-		user_score = game.score_player1
-		opponent_score = game.score_player2 if game.player2 else 0
+    scores = []
+    for game in last_games:
+        if game.player1 == user_data:
+            user_score = game.score_player1
+            opponent = game.player2 if game.player2 else None
+            opponent_score = game.score_player2 if opponent else 0
+        else:
+            user_score = game.score_player2
+            opponent = game.player1
+            opponent_score = game.score_player1
 
-		result = "W" if user_score > opponent_score else "L"
+        result = "Victory" if user_score > opponent_score else "Defeat"
 
-		scores.append({
-			'result': result,
-			'score': f"{user_score} - {opponent_score}",
-			'created_at': game.created_at.strftime("%Y-%m-%d %H:%M")
-		})
-	
-	return render(request, 'ProfilePage.html', { 'user': user_data, 'scores': scores })
+        scores.append({
+            'result': result,
+            'opponent': opponent.username if opponent else "AI",
+            'score': f"{user_score} - {opponent_score}",
+            'created_at': game.created_at.strftime("%Y-%m-%d %H:%M")
+        })
+
+    return render(request, 'ProfilePage.html', {'user': user_data, 'scores': scores})
+
 
 
 def leaderboard(request):

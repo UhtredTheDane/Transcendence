@@ -40,18 +40,9 @@
     <canvas id="pongCanvas">Votre navigateur ne supporte pas Canvas.</canvas>
 
     <script>
-        // This is just an example func - is not compatible with our checks maybe
-        function isUserLoggedIn() {
-            return {{ is_logged_in|lower }}
-        }
-
-        // Redirect based on login status
+		// Redirect based on login status
         function redirectToProfile() {
-            if (isUserLoggedIn()) { 
-                window.location.href = "/profile";
-            } else {
-                window.location.href = "/accounts/login";
-            }
+            window.location.href = "/ProfilePage";
         }
 
         const canvas = document.getElementById("pongCanvas");

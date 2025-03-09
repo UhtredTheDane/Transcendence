@@ -1,12 +1,5 @@
-function isUserLoggedIn() {
-	return localStorage.getItem("userLoggedIn") === "true"; 
-}
-
 function redirectToProfile() {
-    if (isUserLoggedIn())
-		window.location.href = "/ProfilePage/";
-    else
-		window.location.href = "/SignIn/";
+	window.location.href = "/ProfilePage";
 }
 
 function showLeaderboard() {

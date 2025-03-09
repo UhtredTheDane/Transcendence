@@ -201,10 +201,10 @@
 
         <div id="tournamentList">
             <!-- Tournament list will appear here if there are open tournaments -->
-            <div class="tournament-button" onclick="window.location.href='JoinTournamentDetails.html'">
+            <div class="tournament-button" onclick="window.location.href='/JoinTournamentDetails'">
                 Tournament 1: Open for Registration
             </div>
-            <div class="tournament-button" onclick="window.location.href='JoinTournamentDetails.html'">
+            <div class="tournament-button" onclick="window.location.href='/JoinTournamentDetails'">
                 Tournament 2: Open for Registration
             </div>
         </div>
@@ -343,7 +343,7 @@ function sendMessage() {
             if (selectedPlayers.length < 2) {
                 alert('You need at least 2 players to start a tournament.');
             } else {
-                window.location.href = 'TournamentPage.html'; // Redirect to TournamentPage
+                window.location.href = '/TournamentPage'; // Redirect to TournamentPage
             }
         }
     </script>

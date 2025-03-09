@@ -8,6 +8,8 @@
 		</div>
 
 		<div class="navbar-nav profile-container">
-			<div class="profile-btn" href="" onclick="redirectToProfile()"></div>
+			{% if avatar %}
+				<div class="profile-btn" onclick="redirectToProfile()" style="background-image: url('{{ avatar }}');"></div>
+			{% endif %}
 		</div>
 </nav>

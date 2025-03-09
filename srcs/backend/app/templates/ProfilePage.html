@@ -77,20 +77,30 @@
 		<div id="content">
 			<div class="my-profile-box">
 				<div class="profile-box-left">
-					<div class="profile-picture-box" style="background-image: url('https://cdn.discordapp.com/avatars/960896510017544282/b1e2132267708f74ca6f42674ef274d4.webp');"></div>
+					{% if user.avatar %}
+					<div class="profile-picture-box" style="background-image: url('{{ user.avatar.url }}');"></div>
+					{% endif %}
 					<div class="profile-box-infos">
 						<div class="with-edit">
-							<h1>Player 1</h1>
-							<img src="assets/Icons/edit.svg" class="edit-icon" alt="" onclick="" >
+							{% if user.username %}
+								<h1>{{ user.username }}</h1>
+							{% else %}
+								<h1>Player 1</h1>
+							{% endif %}
+							<img src="{% static 'icons/edit-pp.svg' %}" class="edit-icon" alt="" onclick="" >
 						</div>
 							<p>Email:
-								<span> myEmail@42.fr</span>
-								<img src="assets/Icons/edit.svg" class="edit-icon" alt="" onclick="" >
+								{% if user.email %}
+									<span>{{ user.email }}</span>
+								{% else %}
+									<span>No mail found.</span>
+								{% endif %}
+								<img src="{% static 'icons/edit-pp.svg' %}" class="edit-icon" alt="" onclick="" >
 							</p>
 
 						<p>Password:
-							<span> *********</span>
-							<img src="assets/Icons/edit.svg" class="edit-icon" alt="" onclick="" >
+							<span>*********</span>
+							<img src="{% static 'icons/edit-pp.svg' %}" class="edit-icon" alt="" onclick="" >
 						</p>
 					</div>
 				</div>
@@ -101,30 +111,22 @@
 					<div style="text-align: center"><span  class="score">10</span><span class="lose">L</span></div>
 				</div>
 			</div>
+			{% for game in scores %}
 			<div class="game-display">
-				<div class="primary-font victory">
-					Victory
+				<div class="primary-font {{ game.result|lower }}">
+					{{ game.result }}
 				</div>
 				<div class="vertical-bar"></div>
 				<div class="secondary-font player-name">
-					PlayerAgainstMe
+					{{ game.opponent }}
 				</div>
 				<div class="secondary-font score">
-					10 - 2
+					{{ game.score }}
 				</div>
 			</div>
-			<div class="game-display">
-				<div class="primary-font victory">
-				  Victory
-				</div>
-				<div class="vertical-bar"></div>
-				<div class="secondary-font player-name">
-				  PlayerAgainstMe
-				</div>
-				<div class="secondary-font score">
-				  10 - 2
-				</div>
-			</div>
+			{% empty %}
+			<p>No recent matches found.</p>
+			{% endfor %}
 		</div>
 		<div id="footer"></div>
 		<script src="{% static 'js/chatScript.js' %}"></script>

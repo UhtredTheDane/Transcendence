@@ -4,6 +4,14 @@
 #content { top: 100px; bottom: 100px; overflow: auto; }
 #footer { bottom: 0; height: 100px; }
 
+.victory {
+    color: #4423FF;
+}
+
+.defeat {
+    color: #FF4C4C;
+}
+
 .my-profile-box{
 	/* display: block; */
 	background-color: rgba(217, 217, 217, 0.10);
