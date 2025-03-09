@@ -151,7 +151,6 @@ def update_avatar(request):
 		return JsonResponse({'status': 'error', 'errors': form.errors})
 	return JsonResponse({'status': 'error', 'message': 'Invalid request'})
 
-
 @login_required
 def profile(request, user_id=None):
     if user_id is None:
@@ -159,6 +158,7 @@ def profile(request, user_id=None):
     else:
         user_data = get_object_or_404(User, id=user_id)
 
+	
     last_games = Game.objects.filter(
         player1=user_data
     ).order_by('-created_at')[:4]
@@ -183,7 +183,7 @@ def profile(request, user_id=None):
             'created_at': game.created_at.strftime("%Y-%m-%d %H:%M")
         })
 
-    return render(request, 'ProfilePage.html', {'user': user_data, 'scores': scores})
+    return render(request, 'ProfilePage.html', { 'user': user_data, 'scores': scores })
 
 
 

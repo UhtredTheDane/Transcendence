@@ -31,7 +31,6 @@ urlpatterns = [
 	path('NewProfilePage/', views.newprofile, name='newprofilepage'),
 
 
-
 	path('leaderboard/', views.leaderboard, name='leaderboard'),
 	path('PongRules/', views.rules, name='rules'),
 	path('create_channel/<int:user_id>/', views.create_or_get_channel, name='create_or_get_channel'),

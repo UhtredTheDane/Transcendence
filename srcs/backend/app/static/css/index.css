@@ -9,14 +9,14 @@ body {
 
 @font-face {
     font-family: 'TF-Spike';
-    src: url('../fonts/TF-Spike.ttf') format('truetype');
+    src: url("../fonts/TF-Spike.ttf") format('truetype');
     font-weight: normal;
     font-style: normal;
 }
 
 @font-face {
     font-family: 'Hoskin';
-    src: url('../fonts/Hoskin.otf') format('opentype');
+    src: url("../fonts/Hoskin.otf") format('opentype');
     font-weight: normal;
     font-style: normal;
 }
@@ -24,13 +24,12 @@ body {
 @import url('https://fonts.googleapis.com/css2?family=Sora:wght@100..800&display=swap');
 
 .primary-font{
-    font-family: 'TF-Spike';
+    font-family: 'TF-Spike', sans-serif !important;
 }
 
 .secondary-font{
-    font-family: 'Sora';
+    font-family: 'Sora', sans-serif !important;
 }
-
 
 .background-text {
     position: absolute;
@@ -60,10 +59,9 @@ body {
 }
 
 
-
 .navbar a {
     color: white;
-    font-family: 'TF SPIKE DEMO';
+    font-family: 'TF-Spike';
     position: relative;
     text-align: left;
     font-size: 28px;
@@ -78,6 +76,7 @@ body {
 }
 
 .navbar-nav {
+	font-family: 'TF-Spike', sans-serif !important;
     display: flex;
 }
 
@@ -108,7 +107,7 @@ body {
 }
 
 .primary-font h1{
-	font: 48pt 'TF SPIKE DEMO', sans-serif;
+	font: 48pt 'TF-Spike', sans-serif;
 }
 
 .secondary-font p{
@@ -116,7 +115,7 @@ body {
 }
 
 .content-container h1 {
-    font-family: 'TF SPIKE DEMO', sans-serif;
+    font-family: 'TF-Spike', sans-serif !important;
     font-size: 48pt;
     font-weight: 400;
     letter-spacing: 2px;
@@ -125,7 +124,7 @@ body {
 }
 
 .content-container p {
-    font-family: 'Sora', sans-serif;
+    font-family: 'Sora', sans-serif !important;
     font-size: 32pt;
     font-weight: 400;
     letter-spacing: 1px;
@@ -134,7 +133,7 @@ body {
 }
 
 .content-container a.btn-primary {
-    font-family: 'TF SPIKE DEMO';
+    font-family: 'TF-Spike';
     font-size: 32pt;
     font-weight: 400;
     padding: 0.75rem 2rem;
@@ -144,44 +143,41 @@ body {
 }
 
 .first-btn{
-    
-/* display: block; */
-padding: 21px 42px;
-border: transparent;
-border-radius: 38px;
-position: relative;
-background-image: linear-gradient(210deg, #4423ff, #291599, #0f0f0f);
-background-size : 200% auto;
-background-position: right;
-cursor: pointer;
-transition: 0.5s all;
+	/* display: block; */
+	padding: 21px 42px;
+	border: transparent;
+	border-radius: 38px;
+	position: relative;
+	background-image: linear-gradient(210deg, #4423ff, #291599, #0f0f0f);
+	background-size : 200% auto;
+	background-position: right;
+	cursor: pointer;
+	transition: 0.5s all;
 }
 
 .first-btn:hover{
-border:2px solid (linear-gradient(210deg, #4423ff, #291599, #0f0f0f));
-border-width: 7px;
-
-background-position: left;
+	border:2px solid (linear-gradient(210deg, #4423ff, #291599, #0f0f0f));
+	border-width: 7px;
+	background-position: left;
 }
 
 .first-btn::after {
-content: attr(data);
-font-size: 32px;
-font-family: 'TF SPIKE DEMO', sans-serif;
-background-image: linear-gradient(270deg, #f0f0f0, #f0f2f0, #4423ff);
-background-position: right;
-background-size: 200%;
--webkit-background-clip: text;
-background-clip: text;
-color: transparent;
+	content: attr(data);
+	font-family: 'TF-Spike', sans-serif !important;
+	font-size: 32px;
+	font-family: 'TF-Spike', sans-serif;
+	background-image: linear-gradient(270deg, #f0f0f0, #f0f2f0, #4423ff);
+	background-position: right;
+	background-size: 200%;
+	-webkit-background-clip: text;
+	background-clip: text;
+	color: transparent;
 
-transition: 0.5s background-position;
-
-
+	transition: 0.5s background-position;
 }
 
 .first-btn:hover::after {
-background-position: left;
+	background-position: left;
 }
 
 #pongCanvas {
