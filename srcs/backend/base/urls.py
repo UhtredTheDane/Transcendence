@@ -13,6 +13,7 @@ urlpatterns = [
 	path('ProfilePage/', views.profile, name='profile'),
 	path('profile/<int:user_id>/', views.profile, name='profile_other'),
 	path('update_avatar/', views.update_avatar, name='update_avatar'),
+	path('SignUp/', views.signup, name='signup'),
 
 	path('GameModes/', views.game_modes, name='game_modes'),
 	path('AIMode/', views.aimode, name='aimode'),

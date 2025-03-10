@@ -242,3 +242,6 @@ def	myfriends(request):
 
 def	error404(request):
 	return render(request, 'Error404.html')
+
+def	signup(request):
+	return render(request, 'SignUp.html')
