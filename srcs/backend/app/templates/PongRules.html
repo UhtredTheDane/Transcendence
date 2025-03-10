@@ -13,12 +13,8 @@
 	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 	<link href="https://fonts.googleapis.com/css2?family=Sora:wght@100..800&display=swap" rel="stylesheet">
 
-
     <link rel="stylesheet" href="{% static 'css/chatbox.css' %}">
 	<link rel="stylesheet" href="{% static 'css/index.css' %}">
-
-
-
 
 	<style>
         body {
@@ -75,14 +71,16 @@
 			<span id="rightScore" class="score col">0</span>
         </div>
     </div>
-    
+    	<!-- Leaderboard Popup -->
+        <div id="leaderboard-popup"></div>
 
 		<canvas id="rulePongCanvas" width="600" height="400"></canvas>
 
     <!-- <canvas id="rulePongCanvas" width="600" height="400"></canvas> -->
     <!-- Chatbox -->
     <div class="chatbox-btn" onclick="toggleChatbox()">💬</div>
-
+	<!-- Leaderboard Popup -->
+    <div id="leaderboard-popup"></div>
     <div class="chatbox" id="chatbox">
         <!-- Chatbox Header -->
         <div class="chatbox-header" id="chatboxHeader">
