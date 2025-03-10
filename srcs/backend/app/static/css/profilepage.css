@@ -63,6 +63,21 @@
 	cursor: pointer;
 }
 
+.profile-edit-icon {
+	position: absolute;
+    bottom: 5px;
+    right: 5px;
+    width: 24px;
+    height: 24px;
+	color: #0d40e7;
+	margin-left: 10px;
+	cursor: pointer;
+}
+
+.profile-edit-icon:hover {
+	cursor: pointer;
+}
+
 .profile-box-infos{
 width: 25%;
 height: 100%;
