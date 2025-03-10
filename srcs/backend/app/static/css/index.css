@@ -342,3 +342,19 @@ body {
         .modal-footer {
             border-top: none;
         }
+
+        /*Sign out button styles */
+        .signout-btn {
+            background-color: rgb(149, 81, 35);
+            color: black;
+            font-size: 14px;
+            padding: 8px 15px;
+            border: none;
+            border-radius: 5px;
+        }
+        
+        .signout-btn:hover {
+            background-color: #4423FF;
+            color: white;
+        }
+        
