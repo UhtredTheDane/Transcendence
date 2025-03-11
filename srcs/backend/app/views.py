@@ -245,3 +245,6 @@ def	error404(request):
 
 def	signup(request):
 	return render(request, 'SignUp.html')
+
+def	passwordreset(request):
+    return render(request, 'PasswordReset.html')
