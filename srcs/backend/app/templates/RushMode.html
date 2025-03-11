@@ -232,29 +232,31 @@
         </div>
     </nav>
 
-    <!-- Background Title -->
-    <div class="background-text">TRANSCENDANCE</div>
+    <div class=" position-absolute top-50 start-50 translate-middle">
+        <img class="transcendence-icon" alt="" src="{% static 'images/bg-text.svg' %}">
+    </div>
 
     <div class="container">
-        <h1 class="mb-3">Rush Mode</h1>
+        <h1 class="mb-3 primary-font grid text-center">PvP - Rush Mode</h1>
 
         <!-- Scores -->
-        <div class="scores">
+        <div class="scores secondary-font">
             <!-- Player's score container (always on the left) -->
-            <div id="player-side" class="score">
-                <p>Player1: 0</p>
+            <div id="player-side" class="score container px-4 text-center">
+                <p>Player 1: 0</p>
             </div>
             <!-- AI's score container (always on the right) -->
-            <div id="ai-side" class="score">
-                <p>Player2: 0</p>
+            <div id="ai-side" class="score container px-4 text-center">
+                <p>Player 2: 0</p>
             </div>
         </div>
 
-        <!-- Game Window -->
+         <!-- Game Window -->
         <div class="game-window">
             <!-- The game will take place here -->
             <p style="color: white; text-align: center; line-height: 400px;">Game in progress...</p>
         </div>
+
     </div>
 
              <!-- Chatbox -->

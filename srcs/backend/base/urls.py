@@ -42,6 +42,7 @@ urlpatterns = [
 	path('create-game/', views.create_game, name='create_game'),
 	path('game/<int:game_id>/', views.game, name='game'),
 	path('game-ia/', views.game_ia, name='game-ia'),
+ 	path('MatchMaking/', views.matchmaking, name='matchmaking'),
 ]
 
 if settings.DEBUG:

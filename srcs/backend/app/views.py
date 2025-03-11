@@ -248,3 +248,9 @@ def	signup(request):
 
 def	passwordreset(request):
     return render(request, 'PasswordReset.html')
+
+def	tictactoe(request):
+    return render(request, 'TicTacToe.html')
+
+def	matchmaking(request):
+    return render(request, 'MatchMaking.html')

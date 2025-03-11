@@ -74,20 +74,17 @@
         <img class="transcendence-icon" alt="" src="{% static 'images/bg-text.svg' %}">
     </div>
 
-    <!-- Background Title -->
-    <div class="background-text">TRANSCENDANCE</div>
-
     <div class="container">
-        <h1 class="mb-3">Player 1 vs Player 2 - Ranked Mode</h1>
+        <h1 class="mb-3 primary-font grid text-center">PvP - Ranked Mode</h1>
 
         <!-- Scores -->
-        <div class="scores">
-            <!-- Player 1's score container left is good ? -->
-            <div id="player1-side" class="score">
+        <div class="scores secondary-font">
+            <!-- Player's score container (always on the left) -->
+            <div id="player-side" class="score container px-4 text-center">
                 <p>Player 1: 0</p>
             </div>
-            <!-- Player 2's score container right is good ? -->
-            <div id="player2-side" class="score">
+            <!-- AI's score container (always on the right) -->
+            <div id="ai-side" class="score container px-4 text-center">
                 <p>Player 2: 0</p>
             </div>
         </div>

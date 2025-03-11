@@ -157,7 +157,7 @@
         <hr class="my-4" style="border-color: white;">
 
         <!-- Email and Password Sign-In -->
-        <form method="POST" action="{% url 'account_login' %}">
+        <form method="POST">
 			{% csrf_token %}
 			<input type="text" name="login" class="form-control secondary-font" placeholder="Email or Username" required>
 			<input type="password" name="password" class="form-control secondary-font" placeholder="Password" required>

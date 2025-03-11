@@ -117,7 +117,7 @@
         <h1 class="mb-3 primary-font">Sign Up</h1>
 
         <!-- Email and Password Sign-In -->
-        <form method="POST" action="{% url 'account_login' %}">
+        <form method="POST">
 			{% csrf_token %}
 			<input type="email" name="email" class="form-control secondary-font" placeholder="Email" required>
             <input type="username" name="username" class="form-control secondary-font" placeholder="Username" required>
