@@ -17,6 +17,7 @@
 
     <script src="assets/js/index.js"></script>
 
+
 </head>
 <body onload="loadTemplate()">
 
@@ -48,7 +49,26 @@
 
         <!-- Contact List -->
         <div class="contact-list" id="contactList">
-            <div class="contact-item" onclick="selectContact('John')">John</div>
+			
+			<!-- DIV POUR UNE PERSONNE ! -->
+			<div class="contact-item" onclick="selectContact('John')" style="
+					display: flex;
+					justify-content: left;
+					align-items: center; ">
+					<div class="">
+						<img src="assets/default_pfp.png" alt="John" style="
+							width: 50px;
+							height: 50px;
+							border-radius: 50%;
+							margin-right: 10px;">
+					</div>
+					<div class="">
+						<p style="font-size: 18px; margin-bottom: 2px;">John</p>
+						<p style="font-size: 12px; font-style: italic;">You : Hey ! What's up ?</p>
+					</div>
+			</div>
+			<!-- FIN DIV -->
+			
             <div class="contact-item" onclick="selectContact('Sarah')">Sarah</div>
             <div class="contact-item" onclick="selectContact('Alex')">Alex</div>
         </div>
