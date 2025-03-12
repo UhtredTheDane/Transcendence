@@ -1,19 +1,17 @@
 {
   "name": "pong-tournament",
   "version": "1.0.0",
-  "description": "",
+  "description": "A smart contract for managing Pong tournaments",
   "main": "index.js",
   "scripts": {
+    "test": "npx hardhat test",
     "start": "npx hardhat node"
-  },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "devDependencies": {
-    "@nomicfoundation/hardhat-toolbox": "^5.0.0",
-    "hardhat": "^2.22.19"
   },
   "dependencies": {
     "dotenv": "^16.4.7"
+  },
+  "devDependencies": {
+    "@nomicfoundation/hardhat-toolbox": "^5.0.0",
+    "hardhat": "^2.22.19"
   }
 }

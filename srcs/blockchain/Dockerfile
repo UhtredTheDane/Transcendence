@@ -1,16 +1,15 @@
 # Utiliser une image officielle Node.js en tant qu'image de base
-FROM node:18
+FROM node:22
 
+#RUN npm install -g npm@latest
+#RUN npm -v
 # Créer un répertoire de travail
 WORKDIR /app
 
 # Copier package.json et package-lock.json pour installer les dépendances
-#COPY package.json package-lock.json ./
+COPY package.json package-lock.json ./
 
-# Installer les dépendances du projet localement (y compris Hardhat)
-RUN npm install --save-dev hardhat@^2.22.19 @nomicfoundation/hardhat-toolbox@^5.0.0
-#RUN npm install
-
+RUN npm install
 # Copier tous les fichiers du projet dans le conteneur après l'installation des dépendances
 COPY . .
 

@@ -14,24 +14,36 @@ async function main() {
         throw new Error("L'adresse du contrat n'est pas définie dans les variables d'environnement");
     }
 
+    // Vérifie si tous les arguments nécessaires sont fournis
+    const args = process.argv.slice(2);
+    if (args.length < 5) {
+        console.error("Usage: node script.js <tournamentId> <player1> <player2> <score1> <score2>");
+        process.exit(1);
+    }
+
+    // Récupérer les arguments
+    const [tournamentId, player1, player2, score1, score2] = args;
+
+    // Convertir tournamentId et les scores en nombres
+    const parsedTournamentId = parseInt(tournamentId);
+    const parsedScore1 = parseInt(score1);
+    const parsedScore2 = parseInt(score2);
+
+    // Vérifier si tournamentId et les scores sont valides
+    if (isNaN(parsedTournamentId) || isNaN(parsedScore1) || isNaN(parsedScore2)) {
+        console.error("Invalid tournamentId or scores. They must be valid numbers.");
+        process.exit(1);
+    }
+
     // Initialise le contrat avec l'adresse déployée
     const PongTournament = await ethers.getContractFactory("PongTournament");
     const pongTournament = PongTournament.attach(contractAddress);
 
-    // Spécifie l'ID du tournoi auquel ajouter le match (par exemple, tournoi ID 1)
-    const tournamentId = 1;
-
-    // Spécifie les détails du match (noms des joueurs et scores)
-    const player1 = "Alice";
-    const player2 = "Bob";
-    const score1 = 21;
-    const score2 = 15;
-
     // Ajoute le match au tournoi
-    const addMatchTx = await pongTournament.addMatch(tournamentId, player1, player2, score1, score2);
+    const addMatchTx = await pongTournament.addMatch(parsedTournamentId, player1, player2, parsedScore1, parsedScore2);
     await addMatchTx.wait();
 
-    console.log(`Match ajouté au tournoi ID ${tournamentId}: ${player1} vs ${player2}, score: ${score1}-${score2}`);
+    console.log(`Match ajouté au tournoi ID ${parsedTournamentId}: ${player1} vs ${player2}, score: ${parsedScore1}-${parsedScore2}`);
 }
 
 main()
