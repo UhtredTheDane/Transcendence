@@ -155,10 +155,16 @@ export default class Game {
 	}
 
 	sendMove(position) {
-		console.log("coucou");
 		if (this._isGameEnded || !this._isSocketOpen || this._socket.readyState !== WebSocket.OPEN)
 			return;
 		this._socket.send(JSON.stringify({ type: "move", position: position }));
 	}
+
+	makeMove(position) {
+		if (this._isGameEnded)
+			return;
+		this._field.player.yPos = position;
+	}
+
 
 }

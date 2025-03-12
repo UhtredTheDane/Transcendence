@@ -3,11 +3,79 @@ import Field from './field.js';
 import Player from './player.js';
 import Ball from './ball.js';
 
-window.main = function () {
-	let player;
-	let opponent;
+function redirectToProfile() {
+	window.location.href = "/ProfilePage";
+}
 
-	if (playerRole == "player1")
+function runAIGame()
+{
+	let player = new Player(0.0, 167.5, '../../media/textures/Player1.png');
+	let opponent = new Player(785, 167.5, '../../media/textures/Player2.png');
+
+	let ball = new Ball(384, 212.5, '../../media/textures/Ball.png');
+	let fieldPong = new Field(player, opponent, ball);
+	let game = new Game(fieldPong);
+
+	document.addEventListener("keydown", function (event) {
+	if (game.isPaused || game.isGameEnded) return;
+	if (event.key === "ArrowUp" || event.key === "w" || event.key === "z")
+		game.makeMove(Math.max(0, game.field.player.yPos - 10));
+	if (event.key === "ArrowDown" || event.key === "s")
+			game.makeMove(Math.min(game.field.canevas.height - game.field.player.height, game.field.player.yPos + 10));
+	});
+
+	setInterval(() => {
+		game.updateBall(fieldPong, game);
+		fieldPong.draw();
+	}, 16);
+}
+
+
+
+
+
+function setGameMode(mode) {
+	document.getElementById('selectedMode').textContent = "Current Mode: " + mode;
+	console.log("sa passe la cool;", window.location.href);
+	switch (mode) {
+		case "AI":
+			window.location.href = '/AIMode/';
+	  		break;
+		case "Unranked":
+			window.location.href = '/UnrankedMode/';
+			break;
+		case "Ranked":
+			window.location.href = '/RankedMode/';
+			break;
+		case "Tournament":
+			new bootstrap.Modal(document.getElementById('tournamentModal')).show();
+			break;
+		case "RushMode":
+			window.location.href='/RushMode/';
+			break;
+		case "TimerMode":
+			window.location.href='/TimerMode/';
+			break;
+		default:
+			window.location.href='/MaxScoreMode/';
+	}
+}
+
+function customMode(mode)
+{
+	if (mode === 'Custom') 
+	{
+		// Open Custom Mode Modal for options
+		new bootstrap.Modal(document.getElementById('customModal')).show();
+	}
+}
+
+window.customMode = customMode;
+
+window.main = function (mode) {
+	setGameMode(mode);
+
+	/*if (playerRole == "player1")
 	{
 		player = new Player(0.0, 167.5, '../../media/textures/Player1.png');
 		opponent = new Player(785, 167.5, '../../media/textures/Player2.png');
@@ -17,6 +85,7 @@ window.main = function () {
 		opponent = new Player(0.0, 167.5, '../../media/textures/Player1.png');
 		player = new Player(785, 167.5, '../../media/textures/Player2.png');
 	}
+
 	let ball = new Ball(384, 212.5, '../../media/textures/Ball.png');
 	let fieldPong = new Field(player, opponent, ball);
 	let game = new Game(fieldPong);
@@ -33,7 +102,6 @@ window.main = function () {
 		fieldPong.draw();
 	}, 16);
 
-	/*
 		// Gestion des collisions avec les bords du terrain (haut et bas)
 	if (ball.yPos + ball.diameter + ball.ySpeed * 2.5 > fieldPong.canevas.height || ball.yPos + ball.ySpeed * 2.5 < 0)
 		ball.ySpeed = ball.ySpeed * -1;
@@ -119,5 +187,3 @@ window.main = function () {
 
 	*/
 };
-
-main();

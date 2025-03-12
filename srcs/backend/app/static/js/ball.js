@@ -110,16 +110,16 @@ export default class Ball {
 		this._xPos += this._xSpeed;
 		this._yPos += this._ySpeed;
 
-		if (playerRole == "player1")
-		{
+		//if (playerRole == "player1")
+		//{
 			player = fieldPong.player;
 			opponent = fieldPong.opponent;
-		}
+		/*}
 		else
 		{
 			player = fieldPong.opponent;
 			opponent = fieldPong.player;
-		}
+		}*/
 		if ((this._xPos + 15  <= 30 || this._xPos + 15 >= 770) && (this._yPos + 15 >= player.yPos && this._yPos + 15 <= player.yPos + player.height || this._yPos + 15 >= opponent.yPos && this._yPos + 15 <= opponent.yPos + opponent.height))
 		{	
 			if (this._xPos + 15 <= 30)
@@ -140,11 +140,11 @@ export default class Ball {
 			else
 				player.playerScore++;
 			this.resetBall();
-			game.sendUpdateGameScore();
-			if (player.playerScore >= 2 || opponent.playerScore >= 2)
-				game.endGame();
+			//game.sendUpdateGameScore();
+			//if (player.playerScore >= 2 || opponent.playerScore >= 2)
+			//	game.endGame();
 		}
-
-				game.sendBallPosition();
+				//game.sendBallPosition();
 	}
 }
+400
