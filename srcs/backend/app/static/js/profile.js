@@ -2,6 +2,12 @@ function triggerUpload() {
 	document.getElementById('profile-pic-input').click(); // Simule un clic sur l'input
 }
 
+function getCSRFToken() {
+    return document.cookie.split('; ')
+        .find(row => row.startsWith('csrftoken='))
+        ?.split('=')[1];
+}
+
 function uploadProfilePicture(input) {
     const file = input.files[0];
     if (!file) return;
@@ -9,14 +15,15 @@ function uploadProfilePicture(input) {
     const formData = new FormData();
     formData.append('avatar', file);
 
-    const csrftoken = document.querySelector('#csrf-form [name=csrfmiddlewaretoken]')?.value;
+    const csrftoken = getCSRFToken();
     if (!csrftoken) return console.error('CSRF token not found');
-
-    formData.append('csrfmiddlewaretoken', csrftoken);
 
     fetch(updateAvatarUrl, {
         method: 'POST',
         body: formData,
+        headers: {
+            'X-CSRFToken': csrftoken
+        }
     })
     .then(response => response.json())
     .then(data => {

@@ -6,11 +6,15 @@ import requests
 from django.conf import settings
 from django.shortcuts import get_object_or_404, render, redirect
 from django.http import HttpResponse, HttpResponseNotFound, HttpResponseRedirect, Http404, JsonResponse
-from django.contrib.auth import authenticate, login, logout, get_backends
-from django.contrib.auth.decorators import login_required
+from django.core.files.storage import default_storage
+from django.core.files.base import ContentFile
 from django.core.files.uploadedfile import InMemoryUploadedFile
+from django.contrib.auth import authenticate, login, logout, get_backends
+from django.contrib.auth.models import AnonymousUser
+from django.contrib.auth.decorators import login_required
 from django.views.decorators.csrf import csrf_exempt
 from django.utils.decorators import method_decorator
+from django.db.models import F
 from allauth.socialaccount.models import SocialAccount
 from .models import User, Channel, ChannelUser, Message, Game
 from app.tests import Test
@@ -25,7 +29,10 @@ def home(request):
 
 def navbar(request):
 	user = request.user if request.user.is_authenticated else None
-	avatar_url = user.avatar.url if user and user.avatar else '/media/default/avatar.png'
+	if (user and user.avatar.url):
+		avatar_url = user.avatar.url
+	else:
+		avatar_url = '/media/default/avatar.png'
 
 	return render(request, 'navbar.html', { 'avatar': avatar_url })
 
@@ -193,53 +200,58 @@ def update_avatar(request):
 		user = request.user
 		uploaded_file = request.FILES['avatar']
 
-		# Lire l'image et la stocker sous forme de binaire
-		image_data = uploaded_file.read()
-		user.avatar = image_data
-		user.save()
+		# Supprimer l'ancien avatar s'il n'est pas l'avatar par défaut
+		if user.avatar and user.avatar.name != 'default/avatar.png':
+			user.avatar.delete(save=False)
 
-		# Convertir en Base64 pour l'affichage dans le frontend
-		encoded_image = base64.b64encode(image_data).decode('utf-8')
+		# Sauvegarde du fichier dans MEDIA_ROOT/avatars/
+		user.avatar.save(f"{user.username}_{uploaded_file.name}", uploaded_file)
 
-		return JsonResponse({'status': 'success', 'image_url': f"data:image/png;base64,{encoded_image}"})
+		return JsonResponse({'status': 'success', 'image_url': user.avatar.url})
 
 	return JsonResponse({'status': 'error', 'message': 'Invalid request'}, status=400)
 
 
 @login_required
 def profile(request, user_id=None):
-	if user_id is None:
-		user_data = request.user
-	else:
-		user_data = get_object_or_404(User, id=user_id)
+    if user_id is None:
+        user_data = request.user
+    else:
+        user_data = get_object_or_404(User, id=user_id)
 
-	last_games = Game.objects.filter(
-		player1=user_data
-	).order_by('-created_at')[:4]
+    user_games = Game.objects.filter(player1=user_data)
 
-	avatar_url = user_data.avatar.url if user_data.avatar else "/media/default/avatar.png"
+    wins = user_games.filter(score_player1__gt=F('score_player2')).count()
+    losses = user_games.filter(score_player1__lt=F('score_player2')).count()
 
-	scores = []
-	for game in last_games:
-		if game.player1 == user_data:
-			user_score = game.score_player1
-			opponent = game.player2 if game.player2 else None
-			opponent_score = game.score_player2 if opponent else 0
-		else:
-			user_score = game.score_player2
-			opponent = game.player1
-			opponent_score = game.score_player1
+    last_games = user_games.order_by('-created_at')[:4]
 
-		result = "Victory" if user_score > opponent_score else "Defeat"
+    scores = []
+    for game in last_games:
+        if game.player1 == user_data:
+            user_score = game.score_player1
+            opponent = game.player2 if game.player2 else None
+            opponent_score = game.score_player2 if opponent else 0
+        else:
+            user_score = game.score_player2
+            opponent = game.player1
+            opponent_score = game.score_player1
 
-		scores.append({
-			'result': result,
-			'opponent': opponent.username if opponent else "AI",
-			'score': f"{user_score} - {opponent_score}",
-			'created_at': game.created_at.strftime("%Y-%m-%d %H:%M")
-		})
+        result = "Victory" if user_score > opponent_score else "Defeat"
 
-	return render(request, 'ProfilePage.html', { 'user': user_data, 'avatar_url': avatar_url, 'scores': scores })
+        scores.append({
+            'result': result,
+            'opponent': opponent.username if opponent else "AI",
+            'score': f"{user_score} - {opponent_score}",
+            'created_at': game.created_at.strftime("%Y-%m-%d %H:%M")
+        })
+
+    return render(request, 'ProfilePage.html', {
+        'user': user_data,
+        'scores': scores,
+        'wins': wins,
+        'losses': losses
+    })
 
 
 
@@ -303,10 +315,10 @@ def	signup(request):
 	return render(request, 'SignUp.html')
 
 def	passwordreset(request):
-    return render(request, 'PasswordReset.html')
+	return render(request, 'PasswordReset.html')
 
 def	tictactoe(request):
-    return render(request, 'TicTacToe.html')
+	return render(request, 'TicTacToe.html')
 
 def	matchmaking(request):
-    return render(request, 'MatchMaking.html')
+	return render(request, 'MatchMaking.html')
