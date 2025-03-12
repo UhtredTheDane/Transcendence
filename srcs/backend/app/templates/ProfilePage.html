@@ -81,7 +81,7 @@
 					{% if user.avatar %}
 					<div class="profile-picture-box" style="background-image: url('{{ user.avatar.url }}'); position: relative;">
 						<input type="file" id="profile-pic-input" accept="image/png" style="display: none;" onchange="uploadProfilePicture(event)">
-						<img src="{% static 'icons/edit-pp.svg' %}" class="profile.edit-icon" alt="Edit Profile Picture" onclick="document.getElementById('profile-pic-input').click();">
+						<img src="{% static 'icons/edit-pp.svg' %}" class="profile.edit-icon" style="cursor: pointer;" alt="Edit Profile Picture" onclick="document.getElementById('profile-pic-input').click();">
 					</div>
 					{% endif %}
 					<div class="profile-box-infos">
@@ -134,7 +134,7 @@
 				</div>
 			</div>
 			{% empty %}
-			<p>No recent matches found.</p>
+			<p class="secondary-font">No recent matches found.</p>
 			{% endfor %}
 		</div>
 		<script src="{% static 'js/chatScript.js' %}"></script>
