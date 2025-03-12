@@ -217,6 +217,8 @@ def profile(request, user_id=None):
 		player1=user_data
 	).order_by('-created_at')[:4]
 
+	avatar_url = user_data.avatar.url if user_data.avatar else "/media/default/avatar.png"
+
 	scores = []
 	for game in last_games:
 		if game.player1 == user_data:
@@ -237,7 +239,7 @@ def profile(request, user_id=None):
 			'created_at': game.created_at.strftime("%Y-%m-%d %H:%M")
 		})
 
-	return render(request, 'ProfilePage.html', { 'user': user_data, 'scores': scores })
+	return render(request, 'ProfilePage.html', { 'user': user_data, 'avatar_url': avatar_url, 'scores': scores })
 
 
 

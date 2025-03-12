@@ -79,14 +79,7 @@
 		<div id="content">
 			<div class="my-profile-box">
 				<div class="profile-box-left">
-					<div class="profile-picture-box" id="profile-picture-box"
-						style="background-image: url(
-							{% if user.avatar %}
-								'{{ user.avatar.url }}'
-							{% else %}
-								'/media/default/avatar.png'
-							{% endif %});
-						">
+					<div class="profile-picture-box" id="profile-picture-box" style="background-image: url('{{ avatar_url }}');">
 						<input type="file" id="profile-pic-input" accept="image/*" style="display: none;" onchange="uploadProfilePicture(this)">
 						<img src="{% static 'icons/edit-pp.svg' %}" class="edit-icon" alt="Edit Profile Picture" onclick="triggerUpload()">
 					</div>
@@ -146,7 +139,6 @@
 		</div>
 		<script>
 			const updateAvatarUrl = "{% url 'update_avatar' %}";
-			const userAvatar = '{{ user.avatar }}';
 		</script>
 		<script src="{% static 'js/index.js' %}"></script>
 		<script src="{% static 'js/chatScript.js' %}"></script>
