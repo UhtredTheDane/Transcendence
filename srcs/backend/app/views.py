@@ -1,27 +1,33 @@
 import os
 import uuid
+import base64
+import json
+import requests
 from django.conf import settings
 from django.shortcuts import get_object_or_404, render, redirect
 from django.http import HttpResponse, HttpResponseNotFound, HttpResponseRedirect, Http404, JsonResponse
-from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth import authenticate, login, logout, get_backends
 from django.contrib.auth.decorators import login_required
+from django.core.files.uploadedfile import InMemoryUploadedFile
 from django.views.decorators.csrf import csrf_exempt
 from django.utils.decorators import method_decorator
 from allauth.socialaccount.models import SocialAccount
 from .models import User, Channel, ChannelUser, Message, Game
-from .forms import ProfilePictureForm
 from app.tests import Test
-import json
+
+API_42_AUTH_URL = "https://api.intra.42.fr/oauth/authorize"
+API_42_TOKEN_URL = "https://api.intra.42.fr/oauth/token"
+API_42_USER_URL = "https://api.intra.42.fr/v2/me"
 
 def home(request):
 	is_logged_in = request.user.is_authenticated
 	return render(request, 'HomePage.html', { 'is_logged_in': is_logged_in })
 
 def navbar(request):
-    user = request.user if request.user.is_authenticated else None
-    avatar_url = user.avatar.url if user and user.avatar else '/media/default/avatar.png'
+	user = request.user if request.user.is_authenticated else None
+	avatar_url = user.avatar.url if user and user.avatar else '/media/default/avatar.png'
 
-    return render(request, 'navbar.html', { 'avatar': avatar_url })
+	return render(request, 'navbar.html', { 'avatar': avatar_url })
 
 
 def leaderboard(request):
@@ -108,12 +114,12 @@ def create_game(request):
 
 @login_required
 def game(request, game_id):
-    game = get_object_or_404(Game, id=game_id)
-    if request.user == game.player1:
-        player_role = 'player1'
-    else:
-        player_role = 'player2'
-    return render(request, 'game.html', { 'game_id': game_id, 'player_role': player_role })
+	game = get_object_or_404(Game, id=game_id)
+	if request.user == game.player1:
+		player_role = 'player1'
+	else:
+		player_role = 'player2'
+	return render(request, 'game.html', { 'game_id': game_id, 'player_role': player_role })
 
 def game_ia(request):
 	mode = request.GET.get('mode', 'medium')
@@ -124,66 +130,114 @@ def matchmaking(request):
 	return render(request, 'old/matchmaking.html')
 
 
-# Simple pages
+# 42
+def auth_42_login(request):
+	"""Redirige l'utilisateur vers la page d'authentification de 42."""
+	auth_url = (
+		f"{API_42_AUTH_URL}?client_id={settings.FORTYTWO_CLIENT_ID}"
+		f"&redirect_uri={settings.FORTYTWO_REDIRECT_URI}&response_type=code"
+	)
+	return redirect(auth_url)
 
+def auth_42_callback(request):
+	"""Gère le callback OAuth2 après la connexion de l'utilisateur."""
+	code = request.GET.get("code")
+	if not code:
+		return JsonResponse({"error": "No code provided"}, status=400)
+
+	# Échange du code contre un token
+	data = {
+		"grant_type": "authorization_code",
+		"client_id": settings.FORTYTWO_CLIENT_ID,
+		"client_secret": settings.FORTYTWO_CLIENT_SECRET,
+		"code": code,
+		"redirect_uri": settings.FORTYTWO_REDIRECT_URI,
+	}
+	response = requests.post(API_42_TOKEN_URL, data=data)
+	if response.status_code != 200:
+		return JsonResponse({"error": "Failed to fetch token"}, status=400)
+
+	token_data = response.json()
+	access_token = token_data.get("access_token")
+
+	# Récupération des infos de l'utilisateur
+	headers = {"Authorization": f"Bearer {access_token}"}
+	user_response = requests.get(API_42_USER_URL, headers=headers)
+	if user_response.status_code != 200:
+		return JsonResponse({"error": "Failed to fetch user info"}, status=400)
+
+	user_data = user_response.json()
+	
+	# Vérification si l'utilisateur existe déjà
+	user, created = User.objects.get_or_create(
+		username=user_data["login"],
+		defaults={
+			"email": user_data.get("email", ""),
+			"first_name": user_data.get("first_name", ""),
+			"last_name": user_data.get("last_name", ""),
+		},
+	)
+	
+	backend = get_backends()[0]  # Prend le premier backend configuré
+	user.backend = f"{backend.__module__}.{backend.__class__.__name__}"
+
+	# Connexion de l'utilisateur
+	login(request, user)
+	return redirect("/ProfilePage/")
+
+
+# Profile
 @login_required
 def update_avatar(request):
-	if request.method == 'POST':
+	if request.method == 'POST' and request.FILES.get('avatar'):
 		user = request.user
+		uploaded_file = request.FILES['avatar']
 
-		old_avatar = User.objects.get(id=user.id).avatar
-		old_avatar_path = os.path.join(settings.MEDIA_ROOT, str(old_avatar)) if old_avatar else None
+		# Lire l'image et la stocker sous forme de binaire
+		image_data = uploaded_file.read()
+		user.avatar = image_data
+		user.save()
 
-		form = ProfilePictureForm(request.POST, request.FILES, instance=user)
-		if form.is_valid():
-			new_avatar = request.FILES['avatar']
+		# Convertir en Base64 pour l'affichage dans le frontend
+		encoded_image = base64.b64encode(image_data).decode('utf-8')
 
-			ext = new_avatar.name.split('.')[-1]
-			new_filename = f"{user.id}_{uuid.uuid4().hex}.{ext}"
+		return JsonResponse({'status': 'success', 'image_url': f"data:image/png;base64,{encoded_image}"})
 
-			if old_avatar and old_avatar.url != '/media/default/avatar.png':
-				if os.path.exists(old_avatar_path):
-					os.remove(old_avatar_path)
+	return JsonResponse({'status': 'error', 'message': 'Invalid request'}, status=400)
 
-			user.avatar.save(new_filename, new_avatar)
-
-			return JsonResponse({'status': 'success', 'image_url': user.avatar.url})
-		return JsonResponse({'status': 'error', 'errors': form.errors})
-	return JsonResponse({'status': 'error', 'message': 'Invalid request'})
 
 @login_required
 def profile(request, user_id=None):
-    if user_id is None:
-        user_data = request.user
-    else:
-        user_data = get_object_or_404(User, id=user_id)
+	if user_id is None:
+		user_data = request.user
+	else:
+		user_data = get_object_or_404(User, id=user_id)
 
-	
-    last_games = Game.objects.filter(
-        player1=user_data
-    ).order_by('-created_at')[:4]
+	last_games = Game.objects.filter(
+		player1=user_data
+	).order_by('-created_at')[:4]
 
-    scores = []
-    for game in last_games:
-        if game.player1 == user_data:
-            user_score = game.score_player1
-            opponent = game.player2 if game.player2 else None
-            opponent_score = game.score_player2 if opponent else 0
-        else:
-            user_score = game.score_player2
-            opponent = game.player1
-            opponent_score = game.score_player1
+	scores = []
+	for game in last_games:
+		if game.player1 == user_data:
+			user_score = game.score_player1
+			opponent = game.player2 if game.player2 else None
+			opponent_score = game.score_player2 if opponent else 0
+		else:
+			user_score = game.score_player2
+			opponent = game.player1
+			opponent_score = game.score_player1
 
-        result = "Victory" if user_score > opponent_score else "Defeat"
+		result = "Victory" if user_score > opponent_score else "Defeat"
 
-        scores.append({
-            'result': result,
-            'opponent': opponent.username if opponent else "AI",
-            'score': f"{user_score} - {opponent_score}",
-            'created_at': game.created_at.strftime("%Y-%m-%d %H:%M")
-        })
+		scores.append({
+			'result': result,
+			'opponent': opponent.username if opponent else "AI",
+			'score': f"{user_score} - {opponent_score}",
+			'created_at': game.created_at.strftime("%Y-%m-%d %H:%M")
+		})
 
-    return render(request, 'ProfilePage.html', { 'user': user_data, 'scores': scores })
+	return render(request, 'ProfilePage.html', { 'user': user_data, 'scores': scores })
 
 
 

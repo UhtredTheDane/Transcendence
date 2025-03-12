@@ -9,6 +9,8 @@ urlpatterns = [
 	path('navbar/', views.navbar, name="navbar"),
     path('admin/', admin.site.urls),
 	path('accounts/', include('allauth.urls')),
+    path("auth/42/login/", views.auth_42_login, name="auth_42_login"),
+    path("auth/42/callback/", views.auth_42_callback, name="auth_42_callback"),
 	path('SignIn/', views.signin, name='signin'),
 	path('ProfilePage/', views.profile, name='profile'),
 	path('profile/<int:user_id>/', views.profile, name='profile_other'),
@@ -31,7 +33,6 @@ urlpatterns = [
 	path('TicTacToe/', views.tictactoe, name='tictactoe'),
 	path('MyFriends/', views.myfriends, name='myfriends'),
 	path('NewProfilePage/', views.newprofile, name='newprofilepage'),
-
 
 	path('leaderboard/', views.leaderboard, name='leaderboard'),
 	path('PongRules/', views.rules, name='rules'),

@@ -15,7 +15,6 @@ function getUrl() {
 }
 
 function loadTemplate() {
-    console.log(getUrl())
     const templates = [
         { url: '/leaderboard/', elementId: 'leaderboard-popup' },
         { url: '/navbar/', elementId: 'navbar-container' }
@@ -46,4 +45,8 @@ function loadTemplate() {
         .catch(error => {
             console.error('Error loading templates:', error);
         });
+}
+
+function updateProfilePicture() {
+	
 }

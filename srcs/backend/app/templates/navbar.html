@@ -7,9 +7,14 @@
 			<a class="nav-link" href="/PongRules">Pong Rules</a>
 		</div>
 
-		<div class="navbar-nav profile-container">
+		<!-- <div class="navbar-nav profile-container">
 			{% if avatar %}
 				<div class="profile-btn" onclick="redirectToProfile()" style="background-image: url('{{ avatar }}');"></div>
 			{% endif %}
-		</div>
+		</div> -->
+		<div class="navbar-nav profile-container">
+			{% if avatar %}
+				<div class="profile-btn" id="navAvatar" onclick="redirectToProfile()" style="background-image: url('{{ avatar }}');"></div>
+			{% endif %}
+		</div>		
 </nav>

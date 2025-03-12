@@ -11,7 +11,7 @@ class User(AbstractUser):
 	]
 
 	bio = models.CharField(max_length=280, blank=True, null=True)
-	avatar = models.ImageField(upload_to='avatars/', default='default/avatar.png', validators=[FileExtensionValidator(allowed_extensions=['jpg', 'jpeg', 'png'])])
+	avatar = models.BinaryField(blank=True, null=True)
 	friends = models.ManyToManyField('self', symmetrical=True, blank=True)
 	blocked = models.ManyToManyField('self', symmetrical=False, related_name="blocked_by", blank=True)
 	status = models.CharField(max_length=50, choices=STATUS_CHOICES, default='off')

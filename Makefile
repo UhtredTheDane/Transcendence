@@ -50,11 +50,11 @@ build:
 # remove the wordpress and mariadb data directories.
 # the (|| true) is used to ignore the error if there are no containers running to prevent the make command from stopping.
 clean:
-##	@echo "$(RED)[Containers]$(DEFAULT) Cleaned !"
 	@${DOCKERCOMPOSE} down --rmi all --volumes --remove-orphans
+	@echo "$(RED)[Containers]$(DEFAULT) Cleaned !"
 
 fclean:
-	@docker system prune -f -a --volumes
+	@sudo docker system prune -f -a --volumes
 	@echo "$(RED)[Containers]$(DEFAULT) Fully deleted !"
 
 superUser2:

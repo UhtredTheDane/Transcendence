@@ -1,4 +1,5 @@
 {% load static %}
+{% load base64_filters %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -66,7 +67,7 @@
 	</head>
 	<body onload="loadTemplate()">
 		<!-- Navbar -->
-		
+
 		<img class="transcendence-icon position-absolute top-50 start-50 translate-middle" alt="" src="{% static 'images/bg-text.svg' %}" style="z-index: -1;">
 		
 		<div id="header">
@@ -78,12 +79,18 @@
 		<div id="content">
 			<div class="my-profile-box">
 				<div class="profile-box-left">
-					{% if user.avatar %}
-					<div class="profile-picture-box" style="background-image: url('{{ user.avatar.url }}'); position: relative;">
-						<input type="file" id="profile-pic-input" accept="image/png" style="display: none;" onchange="uploadProfilePicture(event)">
-						<img src="{% static 'icons/edit-pp.svg' %}" class="profile.edit-icon" style="cursor: pointer;" alt="Edit Profile Picture" onclick="document.getElementById('profile-pic-input').click();">
+					<div class="profile-picture-box" id="profile-picture-box"
+						style="background-image: url(
+							{% if user.avatar %}
+								'{{ user.avatar.url }}'
+							{% else %}
+								'/media/default/avatar.png'
+							{% endif %});
+						">
+						<input type="file" id="profile-pic-input" accept="image/*" style="display: none;" onchange="uploadProfilePicture(this)">
+						<img src="{% static 'icons/edit-pp.svg' %}" class="edit-icon" alt="Edit Profile Picture" onclick="triggerUpload()">
 					</div>
-					{% endif %}
+
 					<div class="profile-box-infos">
 						<div class="with-edit">
 							{% if user.username %}
@@ -107,8 +114,8 @@
 							<img src="{% static 'icons/edit-pp.svg' %}" class="edit-icon" alt="" onclick="" >
 						</p>
 						<p>
-							<button type="button" class="btn btn-primary signout-btn">
-								<a href="/accounts/logout" style="text-decoration: none; color: black;">Sign Out</a>
+							<button type="button" class="btn btn-primary signout-btn" style="background-color: #4423ff; border-color: #4423ff;">
+								<a href="/accounts/logout" style="text-decoration: none; color: #ffffff;">Logout</a>
 							</button>
 						</p>
 					</div>
@@ -137,7 +144,12 @@
 			<p class="secondary-font">No recent matches found.</p>
 			{% endfor %}
 		</div>
-		<script src="{% static 'js/chatScript.js' %}"></script>
+		<script>
+			const updateAvatarUrl = "{% url 'update_avatar' %}";
+			const userAvatar = '{{ user.avatar }}';
+		</script>
 		<script src="{% static 'js/index.js' %}"></script>
+		<script src="{% static 'js/chatScript.js' %}"></script>
+		<script src="{% static 'js/profile.js' %}"></script>
 	</body>
 	</html>

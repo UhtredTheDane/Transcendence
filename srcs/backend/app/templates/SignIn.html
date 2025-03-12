@@ -5,7 +5,7 @@
 {% load socialaccount %}
 
 {% block head_title %}Sign In{% endblock head_title %}
-
+{% block body %}
 
 {% block content %}
 <!DOCTYPE html>
@@ -36,27 +36,31 @@
             padding-top: 100px;
         }
 
-        /* Social login buttons container */
         .social-login {
-            display: flex;
-            justify-content: space-between;
-            gap: 10px;
-            align-items: center;
-        }
+			display: flex;
+			justify-content: space-between;
+			gap: 10px;
+			align-items: center;
+		}
 
-        .social-btn {
-            flex: 1;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 10px;
-            font-size: 16px;
-            font-weight: bold;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: all 0.3s ease-in-out;
-            border: none;
-        }
+		.social-login a {
+			flex: 1; /* Prend toute la place disponible */
+			display: flex; /* Permet d’aligner correctement le bouton */
+		}
+
+		.social-btn {
+			width: 100%;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			padding: 10px;
+			font-size: 16px;
+			font-weight: bold;
+			border-radius: 8px;
+			cursor: pointer;
+			transition: all 0.3s ease-in-out;
+			border: none;
+		}
 
         .google-btn {
             background-color: white;
@@ -123,7 +127,7 @@
     </style>
 	<link rel="stylesheet" href="{% static 'css/index.css' %}">
 </head>
-<body onload="loadTemplate()">
+<body>
         <img class="transcendence-icon position-absolute top-50 start-50 translate-middle" style="z-index: -1;" alt="" src="{% static 'images/bg-text.svg' %}">
 
     <!-- Navbar at the top -->
@@ -144,14 +148,17 @@
         <!-- Social Sign-In Options -->
         <div class="social-login">
             <!-- Google Sign-In Button -->
-            <button class="social-btn google-btn secondary-font">
-				<a href="{% provider_login_url 'google' %}" style="text-decoration: none; color: black;">
+			<a href="{% provider_login_url 'google' %}" style="text-decoration: none;">
+            	<button class="social-btn google-btn secondary-font">
                 	<img src="{% static 'icons/google-icon.svg' %}" alt="Google Logo">
-				</a>
-			</button>
+				</button>
+			</a>
             <!-- 42 Sign-In Button -->
-            <button class="social-btn forty-two-btn" onclick="signInWith42()">
-                <img src="{% static 'icons/42_Logo.svg' %}" alt="42 Logo"></button>
+			<a href="{% url 'auth_42_login' %}" style="text-decoration: none;">
+            	<button class="social-btn forty-two-btn">
+                	<img src="{% static 'icons/42_Logo.svg' %}" alt="42 Logo">
+				</button>
+			</a>
         </div>
 
         <hr class="my-4" style="border-color: white;">
@@ -173,4 +180,5 @@
     </div>
 </body>
 </html>
+{% endblock %}
 {% endblock %}
