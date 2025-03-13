@@ -30,22 +30,17 @@ function runAIGame()
 	}, 16);
 }
 
-var typegame;
-
-
 function setGameMode(mode) {
 	document.getElementById('selectedMode').textContent = "Current Mode: " + mode;
-	console.log("sa passe la cool;", window.location.href);
 	switch (mode) {
 		case "AI":
 			window.location.href = '/AIMode/';
 	  		break;
 		case "Unranked":
-			typegame = '/UnrankedMode/';
 			window.location.href = '/MatchMaking/';
 			break;
 		case "Ranked":
-			window.location.href = '/MatchMaking/';
+			window.location.href = '/MatchMaking/?typegame=RankedMode';
 			break;
 		case "Tournament":
 			new bootstrap.Modal(document.getElementById('tournamentModal')).show();

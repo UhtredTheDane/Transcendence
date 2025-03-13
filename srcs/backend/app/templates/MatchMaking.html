@@ -45,6 +45,9 @@
     </div>
 
     <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        const typegame= urlParams.get('typegame');
+        
         const matchmakingSocket = new WebSocket(
             'ws://' + window.location.host + '/ws/MatchMaking/'
         );
