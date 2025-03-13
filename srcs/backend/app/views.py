@@ -99,7 +99,7 @@ def send_message(request, channel_id):
 # Games
 
 @login_required
-def create_game(request):    
+def create_game(request):   
 	mode = request.GET.get('mode', 'multiplayer')  # Par défaut, mode multijoueur
 	player1 = request.user  # Joueur 1 est l'utilisateur connecté
 	print("Hello function create_game")

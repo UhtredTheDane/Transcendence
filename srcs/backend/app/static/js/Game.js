@@ -25,7 +25,7 @@ export default class Game {
 	set isBallMover(value) {
 		this._isBallMover = value;
 	}
-
+ 
 	get isGameEnded() {
 		return this._isGameEnded;
 	}
