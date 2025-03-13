@@ -326,7 +326,7 @@ body {
 
         /* Game window */
         .game-window {
-            width: 802;
+            width: 802px;
             height: 455px;
             border: 2px solid white;
             background-color: #222 !important;

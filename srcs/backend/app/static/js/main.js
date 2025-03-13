@@ -56,6 +56,9 @@ function setGameMode(mode) {
 		case "TimerMode":
 			window.location.href='/TimerMode/';
 			break;
+		case "TicTacToe":
+			window.location.href='/TicTacToe';
+			break;
 		default:
 			window.location.href='/MaxScoreMode/';
 	}
@@ -65,7 +68,6 @@ function customMode(mode)
 {
 	if (mode === 'Custom') 
 	{
-		// Open Custom Mode Modal for options
 		new bootstrap.Modal(document.getElementById('customModal')).show();
 	}
 }
