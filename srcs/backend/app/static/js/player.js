@@ -4,7 +4,7 @@ export default class Player {
 		this.yPos = yPosValue;
 		this.xSpeed = 0.0;
 		this.ySpeed = 0.0;
-		this.height = 120.0;
+		this.height = 130.0;
 		this.width = 17.0;
 		this.playerScore = 0;
 		this.img = new Image();

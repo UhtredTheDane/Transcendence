@@ -58,7 +58,7 @@ export default class Field {
 	}
 
 	draw() {
-		this._opponent.yPos = Math.min(Math.max(this._ball.yPos - this._opponent.height / 2, 0), this._canevas.height - this._opponent.height);
+		//this._opponent.yPos = Math.min(Math.max(this._ball.yPos - this._opponent.height / 2, 0), this._canevas.height - this._opponent.height);
 		this._contexte.clearRect(0, 0, this._canevas.width, this._canevas.height);
 		this._contexte.font = "30px Arial";
 		this._contexte.fillText(this._player.playerScore, 50, 70);
