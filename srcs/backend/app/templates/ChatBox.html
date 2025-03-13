@@ -1,183 +1,27 @@
 {% load static %}
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Chat Box</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <style>
-        body {
-            background-color: #212529;
-            color: white;
-            text-align: center;
-            margin-top: 60px;
-        }
+<div class="chatbox-btn" onclick="toggleChatbox()">💬</div>
 
-        .chat-container {
-            display: flex;
-            justify-content: space-between;
-            height: 80vh;
-        }
+<div class="chatbox secondary-font" id="chatbox">
+	<!-- Chatbox Header -->
+	<div class="chatbox-header" id="chatboxHeader">
+		<button class="back-btn" onclick="goBackToContacts()">&#8592;</button>
+		<span id="contactName">Chat</span>
+	</div>
 
-        .user-list {
-            width: 30%;
-            background-color: #343a40;
-            padding: 10px;
-            overflow-y: scroll;
-            border-radius: 5px;
-        }
+	<!-- Contact List -->
+	<div class="contact-list" id="contactList">
+		<div class="contact-item" onclick="selectContact('John')">John</div>
+		<div class="contact-item" onclick="selectContact('Sarah')">Sarah</div>
+		<div class="contact-item" onclick="selectContact('Alex')">Alex</div>
+	</div>
 
-        .user-item {
-            padding: 10px;
-            cursor: pointer;
-            border-bottom: 1px solid #444;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-        }
+	<!-- Chat Content -->
+	<div class="chatbox-body" id="chatboxBody"></div>
 
-        .user-item:hover {
-            background-color: #00d4ff;
-            color: black;
-        }
+	<div class="chatbox-footer">
+		<input type="text" id="messageInput" placeholder="Type a message..." disabled>
+		<button id="sendMessageBtn" onclick="sendMessage()" disabled>Send</button>
+	</div>
+</div>
 
-        .new-message {
-            width: 10px;
-            height: 10px;
-            background-color: red;
-            border-radius: 50%;
-            position: absolute;
-            right: 10px;
-            top: 10px;
-        }
-
-        .chat-box {
-            width: 65%;
-            background-color: #343a40;
-            padding: 10px;
-            border-radius: 5px;
-            display: none;
-        }
-
-        .messages {
-            height: 70%;
-            overflow-y: scroll;
-            margin-bottom: 10px;
-        }
-
-        .message-input {
-            width: 100%;
-            padding: 10px;
-            margin-top: 10px;
-        }
-
-        .message {
-            margin-bottom: 10px;
-        }
-
-        .message span {
-            font-weight: bold;
-        }
-    </style>
-</head>
-<body>
-
-    <div class="container">
-        <div class="chat-container">
-            <!-- User list -->
-            <div class="user-list">
-                <h3>Your Friends</h3>
-                <div id="userList">
-                    <!-- Dynamically populated user list -->
-                </div>
-            </div>
-
-            <!-- Chat box -->
-            <div class="chat-box" id="chatBox">
-                <h3 id="chatWith">Chat with...</h3>
-                <div class="messages" id="messages"></div>
-                <input type="text" class="message-input" id="messageInput" placeholder="Type a message...">
-                <button class="btn btn-primary" id="sendBtn">Send</button>
-            </div>
-        </div>
-    </div>
-
-    <script>
-        // Dummy list of users
-        const users = [
-            { id: 1, name: "Alice", hasNewMessage: false },
-            { id: 2, name: "Bob", hasNewMessage: true },
-            { id: 3, name: "Charlie", hasNewMessage: false },
-            { id: 4, name: "David", hasNewMessage: true }
-        ];
-
-        // Render user list with new message indicator
-        const userList = document.getElementById("userList");
-        users.forEach(user => {
-            const userItem = document.createElement("div");
-            userItem.classList.add("user-item");
-            userItem.innerHTML = user.name;
-            if (user.hasNewMessage) {
-                const newMessageDot = document.createElement("div");
-                newMessageDot.classList.add("new-message");
-                userItem.appendChild(newMessageDot);
-            }
-            userItem.addEventListener("click", () => openChat(user));
-            userList.appendChild(userItem);
-        });
-
-        // Open chat with selected user
-        function openChat(user) {
-            const chatBox = document.getElementById("chatBox");
-            const chatWith = document.getElementById("chatWith");
-            const messages = document.getElementById("messages");
-
-            chatBox.style.display = "block";  // Show chat box
-            chatWith.textContent = "Chat with " + user.name;  // Update title
-            messages.innerHTML = "";  // Clear previous messages
-
-            // Simulate messages from selected user (replace with actual data in a real app)
-            const simulatedMessages = [
-                { sender: user.name, text: "Hello! How are you?" },
-                { sender: "You", text: "I'm doing great! How about you?" },
-                { sender: user.name, text: "I'm good, thanks for asking!" }
-            ];
-
-            // Display simulated messages
-            simulatedMessages.forEach(message => {
-                const messageElem = document.createElement("div");
-                messageElem.classList.add("message");
-                messageElem.innerHTML = `<span>${message.sender}:</span> ${message.text}`;
-                messages.appendChild(messageElem);
-            });
-
-            // Scroll to bottom
-            messages.scrollTop = messages.scrollHeight;
-
-            // Send message functionality
-            document.getElementById("sendBtn").addEventListener("click", () => {
-                const messageInput = document.getElementById("messageInput");
-                const messageText = messageInput.value.trim();
-                if (messageText) {
-                    const userMessage = document.createElement("div");
-                    userMessage.classList.add("message");
-                    userMessage.innerHTML = `<span>You:</span> ${messageText}`;
-                    messages.appendChild(userMessage);
-                    messageInput.value = "";
-                    messages.scrollTop = messages.scrollHeight;
-                }
-            });
-
-            // After chat opens, remove new message dot if any
-            const userItem = document.querySelectorAll(".user-item")[users.indexOf(user)];
-            const newMessageDot = userItem.querySelector(".new-message");
-            if (newMessageDot) {
-                newMessageDot.remove();
-                user.hasNewMessage = false; // Mark as read
-            }
-        }
-    </script>
-
-</body>
-</html>
+<script src="{% static 'js/chatScript.js' %}"></script>

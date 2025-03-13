@@ -39,32 +39,9 @@
     <div id="leaderboard-popup"></div>
 
     <!-- Chatbox -->
-	<div class="chatbox-btn" onclick="toggleChatbox()">💬</div>
-
-    <div class="chatbox secondary-font" id="chatbox">
-        <!-- Chatbox Header -->
-        <div class="chatbox-header" id="chatboxHeader">
-            <button class="back-btn" onclick="goBackToContacts()">&#8592;</button>
-            <span id="contactName">Chat</span>
-        </div>
-
-        <!-- Contact List -->
-        <div class="contact-list" id="contactList">
-            <div class="contact-item" onclick="selectContact('John')">John</div>
-            <div class="contact-item" onclick="selectContact('Sarah')">Sarah</div>
-            <div class="contact-item" onclick="selectContact('Alex')">Alex</div>
-        </div>
-
-        <!-- Chat Content -->
-        <div class="chatbox-body" id="chatboxBody"></div>
-
-        <div class="chatbox-footer">
-            <input type="text" id="messageInput" placeholder="Type a message..." disabled>
-            <button id="sendMessageBtn" onclick="sendMessage()" disabled>Send</button>
-        </div>
-    </div>
+	{% include 'ChatBox.html' %}
 	
     <script src="{% static 'js/bgGame.js' %}"></script>
-	<script src="{% static 'js/chatScript.js' %}"></script>
+
 </body>
 </html>
