@@ -47,14 +47,14 @@
     <!-- Buttons in Center -->
     <div class="d-flex justify-content-center align-items-center vh-50 mt-4">
         <div class="d-flex gap-3">
-            <a href="/RankedMode/" class="btn btn-primary btn-lg">Pong</a>
+            <a href="/create-game/" class="btn btn-primary btn-lg">Pong</a>
             <a href="/TicTacToe/" class="btn btn-success btn-lg">Tic-Tac-Toe</a>
         </div>
     </div>
 
     <script>
         const matchmakingSocket = new WebSocket(
-            'ws://' + window.location.host + '/ws/matchmaking/'
+            'ws://' + window.location.host + '/ws/MatchMaking/'
         );
 
         matchmakingSocket.onopen = function () {
@@ -64,11 +64,11 @@
         matchmakingSocket.onmessage = function (e) {
             const data = JSON.parse(e.data);
 
-            if (data.type === "match_found") 
+            if (data.type === "match_founde") 
                 document.getElementById("parag").innerHTML = `Match trouvé !<br>ID du match : ${data.game_id}<br>Joueurs : ${data.player1} vs ${data.player2}`;
         
 			setTimeout(() => {
-				window.location.href = `/game/${data.game_id}`;
+				window.location.href = `/RankedMode/${data.game_id}`;
 			}, 1500);
 		};
 
