@@ -32,7 +32,7 @@ export default class Launcher {
         }
         else
         {
-            this._game = new OnlineGame(this._fieldPong);
+            this._game = new OnlineGame(this._fieldPong, mode);
             setInterval(() => {
                 this._game.updateBall(this._fieldPong, this._game);
                 this._fieldPong.draw();

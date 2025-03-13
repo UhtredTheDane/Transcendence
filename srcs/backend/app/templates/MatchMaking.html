@@ -60,7 +60,7 @@
                 document.getElementById("parag").innerHTML = `Match trouvé !<br>ID du match : ${data.game_id}<br>Joueurs : ${data.player1} vs ${data.player2}`;
         
 			setTimeout(() => {
-				window.location.href = `/RankedMode/${data.game_id}`;
+				window.location.href = `/${typegame}/${data.game_id}`;
 			}, 1500);
 		};
 

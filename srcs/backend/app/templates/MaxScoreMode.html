@@ -218,9 +218,16 @@
         </div>
 
         <!-- Game Window -->
-        <div class="game-window">
-            <!-- The game will take place here -->
-            <p style="color: white; text-align: center; line-height: 400px;">Game in progress...</p>
+        <div class="game-window ">
+            <canvas id="field" width="802px" height="455px">
+                Votre Navigateur ne supporte pas la balise canvas.
+            </canvas>
+            <script>
+                const gameId = '{{ game_id }}';
+                const playerRole = '{{player_role }}';
+                var typegame = '/MaxScoreMode/';
+            </script>
+            <script type="module" src="{% static 'js/MaxScoreMode.js' %}"></script>
         </div>
     </div>
 

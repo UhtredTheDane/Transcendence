@@ -121,13 +121,45 @@ def create_game(request):
 	return JsonResponse({ 'game_id': game.id })
 
 @login_required
-def game(request, game_id):
+def RankedMode(request, game_id):
 	game = get_object_or_404(Game, id=game_id)
 	if request.user == game.player1:
 		player_role = 'player1'
 	else:
 		player_role = 'player2'
 	return render(request, 'RankedMode.html', { 'game_id': game_id, 'player_role': player_role })
+
+def UnrankedMode(request, game_id):
+	game = get_object_or_404(Game, id=game_id)
+	if request.user == game.player1:
+		player_role = 'player1'
+	else:
+		player_role = 'player2'
+	return render(request, 'UnrankedMode.html', { 'game_id': game_id, 'player_role': player_role })
+
+def RushMode(request, game_id):
+	game = get_object_or_404(Game, id=game_id)
+	if request.user == game.player1:
+		player_role = 'player1'
+	else:
+		player_role = 'player2'
+	return render(request, 'RushMode.html', { 'game_id': game_id, 'player_role': player_role })
+
+def TimerMode(request, game_id):
+	game = get_object_or_404(Game, id=game_id)
+	if request.user == game.player1:
+		player_role = 'player1'
+	else:
+		player_role = 'player2'
+	return render(request, 'TimerMode.html', { 'game_id': game_id, 'player_role': player_role })
+
+def MaxScoreMode(request, game_id):
+	game = get_object_or_404(Game, id=game_id)
+	if request.user == game.player1:
+		player_role = 'player1'
+	else:
+		player_role = 'player2'
+	return render(request, 'MaxScoreMode.html', { 'game_id': game_id, 'player_role': player_role })
 
 def game_ia(request):
 	mode = request.GET.get('mode', 'medium')
@@ -273,23 +305,8 @@ def signin(request):
 def	aimode(request):
 	return render(request, 'AIMode.html')
 
-def	rankedmode(request):
-	return render(request, 'RankedMode.html')
-
-def	unrankedmode(request):
-	return render(request, 'UnrankedMode.html')
-
-def	rushmode(request):
-	return render(request, 'RushMode.html')
-
 def	tictactoe(request):
 	return render(request, 'TicTacToe.html')
-
-def	timermode(request):
-	return render(request, 'TimerMode.html')
-
-def	maxscoremode(request):
-	return render(request, 'MaxScoreMode.html')
 
 def	tounrnamentpage(request):
 	return render(request, 'TournamentPage.html')

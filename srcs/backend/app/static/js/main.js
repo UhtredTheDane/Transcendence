@@ -30,8 +30,7 @@ function runAIGame()
 	}, 16);
 }
 
-
-
+var typegame;
 
 
 function setGameMode(mode) {
@@ -42,7 +41,8 @@ function setGameMode(mode) {
 			window.location.href = '/AIMode/';
 	  		break;
 		case "Unranked":
-			window.location.href = '/UnrankedMode/';
+			typegame = '/UnrankedMode/';
+			window.location.href = '/MatchMaking/';
 			break;
 		case "Ranked":
 			window.location.href = '/MatchMaking/';
@@ -51,16 +51,16 @@ function setGameMode(mode) {
 			new bootstrap.Modal(document.getElementById('tournamentModal')).show();
 			break;
 		case "RushMode":
-			window.location.href='/RushMode/';
+			window.location.href='/MatchMaking/';
 			break;
 		case "TimerMode":
-			window.location.href='/TimerMode/';
+			window.location.href='/MatchMaking/';
 			break;
 		case "TicTacToe":
 			window.location.href='/TicTacToe';
 			break;
 		default:
-			window.location.href='/MaxScoreMode/';
+			window.location.href='/MatchMaking/';
 	}
 }
 

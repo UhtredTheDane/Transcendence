@@ -1,8 +1,8 @@
 import Launcher from './Launcher.js'
 
-function runPvPGame()
+function runRushModeGame()
 {
-    let launcher = new Launcher('PvP');
+    let launcher = new Launcher('RushMode');
 
     document.addEventListener("keydown", function (event) {
     if (launcher.game.isPaused || launcher.game.isGameEnded) return;
@@ -14,4 +14,4 @@ function runPvPGame()
 
 }
 
-runPvPGame();
+runRushModeGame();
