@@ -18,7 +18,7 @@ export default class Launcher {
             this._opponent = new Player(0.0, 167.5, '../../static/images/Player1.png');
             this._player = new Player(785, 167.5, '../../static/images/Player2.png');
         }
-        this._ball = new Ball(384, 212.5, '../static/images/Ball.png');
+        this._ball = new Ball(384, 212.5, '../../static/images/Ball.png');
         this._fieldPong = new Field(this._player, this._opponent, this._ball);
         if (this._mode == 'AI')
         {
@@ -34,7 +34,7 @@ export default class Launcher {
         {
             this._game = new OnlineGame(this._fieldPong);
             setInterval(() => {
-                this._game.updateOnlineBall(this._fieldPong, this._game);
+                this._game.updateBall(this._fieldPong, this._game);
                 this._fieldPong.draw();
             }, 16);
         }

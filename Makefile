@@ -12,7 +12,7 @@ PINK        = \033[1;35m
 RED			= \033[0;31m
 DEFAULT		= \033[0;39m
 
-DOCKERCOMPOSE = docker-compose -f srcs/docker-compose.yml
+DOCKERCOMPOSE = docker compose -f srcs/docker-compose.yml
 
 # default target
 all: up 
@@ -21,47 +21,49 @@ all: up
 # create the wordpress and mariadb data directories.
 # start the containers in the background and leaves them running
 up: build
-	@${DOCKERCOMPOSE} up -d
-	@echo "$(BLUE)[Containers]$(DEFAULT) ${NC} containers are up !"
+	@$(DOCKERCOMPOSE) up -d
+	@echo "$(BLUE)[Containers]$(DEFAULT) $(NC) containers are up !"
 
 # stop the containers
 down: stop
-	@${DOCKERCOMPOSE} down
+	@$(DOCKERCOMPOSE) down
 	@echo "$(RED)[Containers]$(DEFAULT) All containers are down !"
 
 # stop the containers
 stop:
-	@${DOCKERCOMPOSE} stop
+	@$(DOCKERCOMPOSE) stop
 	@echo "$(RED)[Containers]$(DEFAULT) Stopping all containers..."
 
 # start the containers
 start:
 	@echo "$(GREEN)[Containers]$(DEFAULT) Launching $(NC) containers..."
-	@${DOCKERCOMPOSE} start
+	@$(DOCKERCOMPOSE) start
 
 # build the containers
 build:
 	@echo "$(BLUE)[Containers]$(DEFAULT) Building all containers..."
-	@${DOCKERCOMPOSE} build
+	@$(DOCKERCOMPOSE) build
 
 # clean the containers
 # stop all running containers and remove them.
 # remove all images, volumes and networks.
 # remove the wordpress and mariadb data directories.
 # the (|| true) is used to ignore the error if there are no containers running to prevent the make command from stopping.
-clean:
-##	@echo "$(RED)[Containers]$(DEFAULT) Cleaned !"
-	@${DOCKERCOMPOSE} down --rmi all --volumes --remove-orphans
+clean: down
+	@$(DOCKERCOMPOSE) down --rmi all --volumes --remove-orphans
+	@echo "$(RED)[Containers]$(DEFAULT) Cleaned !"
 
 fclean: clean
 	@docker system prune -f -a --volumes
 	@echo "$(RED)[Containers]$(DEFAULT) Fully deleted !"
 
 superUser2:
-	@${DOCKERCOMPOSE} run python manage.py auto_createsuperuser --username secondadmin --email bidon2@live.fr --password toto2675
+	@$(DOCKERCOMPOSE) run python manage.py auto_createsuperuser --username secondadmin --email bidon2@live.fr --password toto2675
 # fclean: clean
 # 	@sudo rm -rf $(DB_DATA) || true
 # 	@echo "$(RED)[Containers]$(DEFAULT) Fully cleaned !"
 
 # down, clean and start the containers
-re: down clean up
+re: down clean all
+
+mre: down all
