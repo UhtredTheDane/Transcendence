@@ -48,10 +48,10 @@ export default class Game {
 			return;
 	}
 
-	updateBall(mode) {
+	updateBall() {
 		if (this._isPaused || this._isGameEnded)
 			return;
-		this._field.ball.updateBall(this._field, this, mode);
+		this._field.ball.updateBall(this._field, this);
 	}
 
 	sendMove(position) {
