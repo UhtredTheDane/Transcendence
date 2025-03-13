@@ -39,9 +39,9 @@ urlpatterns = [
 	path('create_channel/<int:user_id>/', views.create_or_get_channel, name='create_or_get_channel'),
 	path('channel/<int:channel_id>/', views.channel_page, name='channel_page'),
 	path('send_message/<int:channel_id>/', views.send_message, name='send_message'),
-	path('matchmaking/', views.matchmaking, name='matchmaking'),
+	##path('matchmaking/', views.matchmaking2, name='matchmaking2'),
 	path('create-game/', views.create_game, name='create_game'),
-	path('game/<int:game_id>/', views.game, name='game'),
+	path('RankedMode/<int:game_id>/', views.game, name='game'),
 	path('game-ia/', views.game_ia, name='game-ia'),
  	path('MatchMaking/', views.matchmaking, name='matchmaking'),
 ]

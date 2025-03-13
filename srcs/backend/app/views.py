@@ -99,10 +99,11 @@ def send_message(request, channel_id):
 # Games
 
 @login_required
-def create_game(request):
+def create_game(request):    
 	mode = request.GET.get('mode', 'multiplayer')  # Par défaut, mode multijoueur
 	player1 = request.user  # Joueur 1 est l'utilisateur connecté
-
+	print("Hello function create_game")
+    
 	if mode == 'solo':
 		# Mode solo : pas de joueur 2
 		game = Game.objects.create(player1=player1, mode='solo')
@@ -126,14 +127,14 @@ def game(request, game_id):
 		player_role = 'player1'
 	else:
 		player_role = 'player2'
-	return render(request, 'game.html', { 'game_id': game_id, 'player_role': player_role })
+	return render(request, 'RankedMode.html', { 'game_id': game_id, 'player_role': player_role })
 
 def game_ia(request):
 	mode = request.GET.get('mode', 'medium')
 	return render(request, 'old/game-ia.html', { 'mode': mode })
 
 @login_required
-def matchmaking(request):
+def matchmaking2(request):
 	return render(request, 'old/matchmaking.html')
 
 

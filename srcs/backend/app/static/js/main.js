@@ -45,7 +45,7 @@ function setGameMode(mode) {
 			window.location.href = '/UnrankedMode/';
 			break;
 		case "Ranked":
-			window.location.href = '/RankedMode/';
+			window.location.href = '/MatchMaking/';
 			break;
 		case "Tournament":
 			new bootstrap.Modal(document.getElementById('tournamentModal')).show();
