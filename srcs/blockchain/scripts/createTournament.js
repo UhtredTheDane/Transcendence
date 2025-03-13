@@ -7,7 +7,7 @@ dotenv.config();
 async function main() {
     // Récupérer le compte admin
     const [admin] = await ethers.getSigners();  // Utilise le compte admin
-    console.log("Deploying contract with account:", admin.address);
+    console.log("Deploiement du contrat avec:", admin.address);
 
     // Adresse du contrat récupérée depuis la variable d'environnement
     const contractAddress = process.env.CONTRACT_ADDRESS;
@@ -15,7 +15,7 @@ async function main() {
         throw new Error("CONTRACT_ADDRESS n'est pas défini dans les variables d'environnement");
     }
 
-    console.log("Using contract address from environment:", contractAddress);
+    console.log("Adresse du contrat utilisé:", contractAddress);
 
     // Récupérer le contrat déjà déployé
     const PongTournament = await ethers.getContractFactory("PongTournament");

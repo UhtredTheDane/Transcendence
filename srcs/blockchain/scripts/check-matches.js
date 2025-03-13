@@ -14,12 +14,18 @@ async function main() {
         throw new Error("L'adresse du contrat n'est pas définie dans les variables d'environnement");
     }
 
+    // Vérifie si l'ID du tournoi a été passé en paramètre
+    const args = process.argv.slice(2);
+    if (args.length === 0) {
+        throw new Error("Veuillez fournir un ID de tournoi en paramètre.");
+    }
+
+    // Le premier argument sera l'ID du tournoi
+    const tournamentId = parseInt(args[0]);
+
     // Initialise le contrat avec l'adresse déployée
     const PongTournament = await ethers.getContractFactory("PongTournament");
     const pongTournament = PongTournament.attach(contractAddress);
-
-    // Spécifie l'ID du tournoi pour lequel on veut récupérer les matchs
-    const tournamentId = 1;
 
     // Récupère les matchs du tournoi
     const matches = await pongTournament.getTournamentMatches(tournamentId);
