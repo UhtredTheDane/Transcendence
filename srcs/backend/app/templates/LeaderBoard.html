@@ -1,0 +1,172 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Leaderboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: black;
+            color: white;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: auto;
+            padding-top: 100px;
+        }
+
+        /* Navbar style: Align buttons to the left */
+        .navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 999;
+            background-color: #343a40;
+            width: 100%;
+            padding: 10px;
+        }
+
+        .navbar a {
+            color: white !important;
+            font-weight: bold;
+            font-size: 16px;
+            padding: 10px 15px;
+        }
+
+        /* Align navbar items to the left */
+        .navbar-nav {
+            display: flex;
+            justify-content: flex-start;
+            width: 100%;
+        }
+
+        /* Hover effect for navbar links */
+        .navbar a:hover {
+            color: #0d40e7 !important;
+            background-color: transparent;
+            border-radius: 5px;
+        }
+
+        /* Background title effect */
+        .background-text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 12vw;
+            font-weight: bold;
+            color: white;
+            opacity: 0.1;
+            white-space: nowrap;
+            user-select: none;
+            z-index: -1;
+
+            /* Fading effect from bottom to top */
+            background: linear-gradient(to top, rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0));
+
+            -webkit-background-clip: text;
+            -moz-background-clip: text;
+            -ms-background-clip: text;
+            -o-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .leaderboard-table {
+            width: 100%;
+            margin-top: 30px;
+            border-collapse: collapse;
+        }
+
+        .leaderboard-table th, .leaderboard-table td {
+            padding: 10px;
+            border: 1px solid white;
+            text-align: center;
+        }
+
+        .leaderboard-table th {
+            background-color: #343a40;
+            font-weight: bold;
+        }
+
+        .leaderboard-table tr:nth-child(even) {
+            background-color: #444;
+        }
+
+        .leaderboard-table tr:hover {
+            background-color: #555;
+        }
+
+        .leaderboard-table td {
+            color: #bdbdbd;
+        }
+
+        .leaderboard-table td span {
+            color: white;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Navbar at the top -->
+    <nav class="navbar navbar-expand-lg navbar-dark">
+        <div class="container-fluid">
+            <div class="navbar-nav">
+                <a class="nav-link" href="/HomePage">Home</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Background Title -->
+    <div class="background-text">TRANSCENDANCE</div>
+
+    <div class="container">
+        <h1 class="mb-3">Leaderboard</h1>
+
+        <!-- Leaderboard Table -->
+        <table class="table table-dark table-striped leaderboard-table">
+            <thead>
+                <tr>
+                    <th>Rank</th>
+                    <th>Player</th>
+                    <th>Wins</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>1</td>
+                    <td><span>Player1</span></td>
+                    <td><span>20</span></td>
+                </tr>
+                <tr>
+                    <td>2</td>
+                    <td><span>Player2</span></td>
+                    <td><span>18</span></td>
+                </tr>
+                <tr>
+                    <td>3</td>
+                    <td><span>Player3</span></td>
+                    <td><span>15</span></td>
+                </tr>
+                <tr>
+                    <td>4</td>
+                    <td><span>Player4</span></td>
+                    <td><span>12</span></td>
+                </tr>
+                <tr>
+                    <td>5</td>
+                    <td><span>Player5</span></td>
+                    <td><span>10</span></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+</body>
+</html>

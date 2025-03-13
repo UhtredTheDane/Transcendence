@@ -4,32 +4,34 @@ networks:
     external: false
 
 services:
-  # site:
-  #   image: django-docker:0.0.1
-  #   build:
-  #     context: backend/
-  #     dockerfile: Dockerfile
-  #   env_file: .env
-  #   volumes:
-  #     - site_static:/app/static
-  #     - site_media:/app/media
-  #   depends_on:
-  #     - db
-  #   ports:
-  #     - "8000:8000"
+  site:
+    image: django-docker:0.0.1
+    build:
+      context: backend/
+      dockerfile: Dockerfile
+    env_file: .env
+    volumes:
+      - site_static:/app/static
+      - site_media:/app/media
+    depends_on:
+      - db
+    ports:
+      - "8000:8000"
+    networks:
+      - mynetwork
 
-  # db:
-  #   image: postgres:latest
-  #   container_name: db
-  #   env_file: .env
-  #   environment:
-  #     POSTGRES_USER: "postgres"
-  #     POSTGRES_PASSWORD: 7526
-  #     POSTGRES_DB: "db"
-  #   volumes:
-  #     - db_data:/var/lib/postgresql/data
-  #   ports:
-  #     - "5432:5432"
+  db:
+    image: postgres:latest
+    container_name: db
+    env_file: .env
+    environment:
+      POSTGRES_USER: "postgres"
+      POSTGRES_PASSWORD: 7526
+      POSTGRES_DB: "db"
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
 
   blockchain:
     build:
@@ -38,13 +40,14 @@ services:
     container_name: blockchain-node
     volumes:
       - ./blockchain:/app
+      - ./artifacts:/app/artifacts
     ports:
       - "8545:8545"
     #command: ["npx", "hardhat", "node"]
     networks:
       - mynetwork
 
-# volumes:
-#   db_data:
-#   site_static:
-#   site_media:
+volumes:
+  db_data:
+  site_static:
+  site_media:

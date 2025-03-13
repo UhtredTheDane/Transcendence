@@ -10,7 +10,6 @@ module.exports = {
   },
 };
 
-require("@nomicfoundation/hardhat-toolbox");
 require("dotenv").config();  // Add dotenv to load environment variables from .env
 
 task("add-match", "Adds a match to a tournament")
@@ -43,6 +42,46 @@ task("add-match", "Adds a match to a tournament")
     await addMatchTx.wait();
 
     console.log(`Match ajouté au tournoi ID ${tournamentId}: ${taskArgs.player1} vs ${taskArgs.player2}, score: ${score1}-${score2}`);
+  });
+
+module.exports = {
+  solidity: "0.8.20",
+};
+
+task("getPlayerMatches", "Fetches all matches of a specific player in a tournament")
+  .addParam("tournamentid", "The ID of the tournament")
+  .addParam("playername", "The name of the player")
+  .setAction(async (taskArgs) => {
+    const { tournamentid, playername } = taskArgs;
+
+    const contractAddress = process.env.CONTRACT_ADDRESS;
+    if (!contractAddress) {
+        throw new Error("Contract address is not set in environment variables.");
+    }
+
+    const PongTournament = await ethers.getContractFactory("PongTournament");
+    const pongTournament = PongTournament.attach(contractAddress);
+
+    // Fetch the matches of the tournament
+    const matches = await pongTournament.getTournamentMatches(tournamentid);
+
+    if (matches.length === 0) {
+        console.log(`No matches found for tournament with ID ${tournamentid}`);
+    } else {
+        // Filter matches by the player's name
+        const playerMatches = matches.filter(
+            (match) => match.player1 === playername || match.player2 === playername
+        );
+
+        if (playerMatches.length === 0) {
+            console.log(`No matches found for player ${playername} in tournament ID ${tournamentid}`);
+        } else {
+            // Display each match for the player
+            playerMatches.forEach((match, index) => {
+                console.log(`Match ${index + 1}: ${match.player1} vs ${match.player2}, score: ${match.score1}-${match.score2}`);
+            });
+        }
+    }
   });
 
 module.exports = {

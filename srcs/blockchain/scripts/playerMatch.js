@@ -14,42 +14,29 @@ async function main() {
         throw new Error("L'adresse du contrat n'est pas définie dans les variables d'environnement");
     }
 
-    // Vérifie si l'ID du tournoi et le nom du joueur ont été passés en paramètres
-    const args = process.argv.slice(2);
-    if (args.length < 2) {
-        throw new Error("Veuillez fournir un ID de tournoi et un nom de joueur en paramètre.");
-    }
-
-    // Le premier argument sera l'ID du tournoi, le second sera le nom du joueur
-    const tournamentId = parseInt(args[0]);
-    const playerName = args[1];
-
     // Initialise le contrat avec l'adresse déployée
     const PongTournament = await ethers.getContractFactory("PongTournament");
     const pongTournament = PongTournament.attach(contractAddress);
 
-    // Récupère les matchs du tournoi
-    const matches = await pongTournament.getTournamentMatches(tournamentId);
+    // Récupère les arguments passés en ligne de commande
+    const tournamentId = process.argv[2];
+    const playerName = process.argv[3];
+
+    // Vérifie si les paramètres sont fournis
+    if (!tournamentId || !playerName) {
+        throw new Error("Veuillez fournir un ID de tournoi et le nom d'un joueur");
+    }
+
+    // Récupère les matchs du joueur dans le tournoi
+    const matches = await pongTournament.getPlayerMatches(tournamentId, playerName);
 
     if (matches.length === 0) {
-        console.log(`Aucun match trouvé pour le tournoi avec ID ${tournamentId}`);
+        console.log(`Aucun match trouvé pour le joueur ${playerName} dans le tournoi avec ID ${tournamentId}`);
     } else {
-        // Filtrer les matchs pour obtenir ceux où le joueur participe
-        const playerMatches = matches.filter(match =>
-            match.player1 === playerName || match.player2 === playerName
-        );
-
-        if (playerMatches.length === 0) {
-            console.log(`Aucun match trouvé pour le joueur "${playerName}" dans le tournoi avec ID ${tournamentId}`);
-        } else {
-            // Affiche chaque match dans lequel le joueur a participé
-            playerMatches.forEach((match, index) => {
-                const opponent = match.player1 === playerName ? match.player2 : match.player1;
-                const playerScore = match.player1 === playerName ? match.score1 : match.score2;
-                const opponentScore = match.player1 === playerName ? match.score2 : match.score1;
-                console.log(`Match ${index + 1}: ${playerName} vs ${opponent}, score: ${playerScore}-${opponentScore}`);
-            });
-        }
+        // Affiche chaque match joué par le joueur dans le tournoi
+        matches.forEach((match, index) => {
+            console.log(`Match ${index + 1}: ${match.player1} vs ${match.player2}, score: ${match.score1}-${match.score2}`);
+        });
     }
 }
 

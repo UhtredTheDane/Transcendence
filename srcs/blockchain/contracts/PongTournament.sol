@@ -3,18 +3,18 @@ pragma solidity ^0.8.20;
 
 contract PongTournament {
     struct Match {
-        uint256 tournamentId; // ID du tournoi
-        string player1;       // Nom du joueur 1
-        string player2;       // Nom du joueur 2
-        uint256 score1;       // Score du joueur 1
-        uint256 score2;       // Score du joueur 2
+        uint256 tournamentId;
+        string player1;
+        string player2;
+        uint256 score1;
+        uint256 score2;
     }
 
     // Structure pour représenter un tournoi
     struct Tournament {
-        uint256 id;          // ID du tournoi
-        string name;         // Nom du tournoi
-        uint256 matchCount;  // Nombre de matchs dans le tournoi
+        uint256 id;
+        string name;
+        uint256 matchCount;
     }
 
     // Variables d'état
@@ -40,13 +40,6 @@ contract PongTournament {
     constructor() {
         admin = msg.sender;
     }
-
-    // Fonction pour changer l'admin (seul l'admin actuel peut appeler cette fonction)
-    // function changeAdmin(address _newAdmin) public onlyAdmin {
-    //     require(_newAdmin != address(0), "New admin cannot be the zero address");
-    //     emit AdminChanged(admin, _newAdmin);
-    //     admin = _newAdmin;
-    // }
 
     // Créer un nouveau tournoi (restreint à l'admin)
     function createTournament(string memory _name) public onlyAdmin {
@@ -94,5 +87,36 @@ contract PongTournament {
     // Récupérer le nombre total de tournois
     function getTournamentCount() public view returns (uint256) {
         return tournamentCounter;
+    }
+
+    // *** Nouvelle fonction : Récupérer les matchs d'un joueur spécifique dans un tournoi ***
+    function getPlayerMatches(uint256 _tournamentId, string memory _playerName) public view returns (Match[] memory) {
+        require(_tournamentId <= tournamentCounter, "Tournament does not exist");
+        
+        Match[] memory matches = tournamentMatches[_tournamentId];
+        uint256 count = 0;
+
+        // Compte les matchs joués par le joueur
+        for (uint256 i = 0; i < matches.length; i++) {
+            if (keccak256(bytes(matches[i].player1)) == keccak256(bytes(_playerName)) ||
+                keccak256(bytes(matches[i].player2)) == keccak256(bytes(_playerName))) {
+                count++;
+            }
+        }
+
+        // Crée un tableau de taille appropriée pour stocker les matchs du joueur
+        Match[] memory playerMatches = new Match[](count);
+        uint256 index = 0;
+
+        // Ajoute les matchs du joueur au nouveau tableau
+        for (uint256 i = 0; i < matches.length; i++) {
+            if (keccak256(bytes(matches[i].player1)) == keccak256(bytes(_playerName)) ||
+                keccak256(bytes(matches[i].player2)) == keccak256(bytes(_playerName))) {
+                playerMatches[index] = matches[i];
+                index++;
+            }
+        }
+
+        return playerMatches;
     }
 }
