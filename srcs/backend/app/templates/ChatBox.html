@@ -4,13 +4,38 @@
 <div class="chatbox secondary-font" id="chatbox">
 	<!-- Chatbox Header -->
 	<div class="chatbox-header" id="chatboxHeader">
-		<button class="back-btn" onclick="goBackToContacts()">&#8592;</button>
-		<span id="contactName">Chat</span>
+		<div class="left-part">
+			<button class="back-btn" onclick="goBackToContacts()">
+				<img src="{% static 'icons/arrow-left.png' %}">
+			</button>
+		</div>
+		<div class="center-part">
+			<span id="contactName">Chat</span>
+		</div>
+		<div class="right-part">
+			<button class="block-btn" onclick="blockContact()">&#10060;</button>
+			<button class="back-btn" onclick="challengeContact()">&#9876;</button>
+		</div>
 	</div>
 
 	<!-- Contact List -->
 	<div class="contact-list" id="contactList">
-		<div class="contact-item" onclick="selectContact('John')">John</div>
+		<div class="contact-item" onclick="selectContact('John')" style="
+					display: flex;
+					justify-content: left;
+					align-items: center; ">
+					<div class="">
+						<img src="{% static 'icons/default_pfp.png' %}" alt="John" style="
+							width: 50px;
+							height: 50px;
+							border-radius: 50%;
+							margin-right: 10px;">
+					</div>
+					<div class="">
+						<p style="font-size: 18px; margin-bottom: 2px;">SEBASTIEN</p>
+						<!-- <p style="font-size: 12px; font-style: italic;">You : Hey ! What's up ?</p> -->
+					</div>
+			</div>
 		<div class="contact-item" onclick="selectContact('Sarah')">Sarah</div>
 		<div class="contact-item" onclick="selectContact('Alex')">Alex</div>
 	</div>

@@ -37,14 +37,14 @@ line-height: 60px;
 	z-index: 11;
 }
 
-.chatbox-header {
+/* .chatbox-header {
 	display: flex;
 	justify-content: space-between;
 	align-items: center;
 	color: white;
 	font-size: 20px;
 	margin-bottom: 10px;
-}
+} */
 
 .chatbox-body {
 	flex: 1;
@@ -112,4 +112,24 @@ line-height: 60px;
 	border: none;
 	font-size: 20px;
 	cursor: pointer;
+}
+
+.chatbox-header {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	color: white;
+	font-size: 20px;
+	margin-bottom: 10px;
+	width: 100%;
+}
+
+.left-part .right-part {
+	display: flex;
+	align-items: center;
+}
+
+.center-part {
+	flex-grow: 1;
+	text-align: center;
 }
