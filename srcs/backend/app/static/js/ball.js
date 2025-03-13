@@ -202,4 +202,102 @@ export default class Ball {
 		}
 				//game.sendBallPosition();
 	}
+
+	updateOnlineBall(fieldPong, game) {
+		let player;
+		let opponent;
+		this._xPos += this._xSpeed;
+		this._yPos += this._ySpeed;
+
+		if (playerRole == "player1")
+		{
+			player = fieldPong.player;
+			opponent = fieldPong.opponent;
+		}
+		else
+		{
+			player = fieldPong.opponent;
+			opponent = fieldPong.player;
+		}
+		if (this._xPos <= 30 && (this._yPos >= player.yPos - 5 && this._yPos <= player.yPos + player.height + 5 || this._yPos + this._diameter >= player.YPos - 5 && this._yPos + this._diameter <= player.YPos + player.height + 5) || this._xPos + this._diameter >= 770 && (this._yPos >= opponent.yPos - 5 && this._yPos <= opponent.yPos + opponent.height + 5 || this._yPos + this._diameter >= opponent.yPos - 5 && this._yPos + this._diameter <= opponent.yPos + opponent.height + 5))
+		{	
+			this._xSpeed *= -1; // Inverser la direction horizontale de la balle	
+			var newSpeedx = this._xSpeed;
+			var newSpeedy = this._ySpeed;
+			if (this._xPos <= 30 && this._yPos + this._diameter / 2 >= player.yPos - 5 && this._yPos + this._diameter/2 < player.yPos + 40)
+				{
+					if (this._ySpeed < 0.0)
+					{
+					
+						newSpeedx = this._xSpeed * Math.cos(Math.PI / 180 * -15) - this._ySpeed * Math.sin(Math.PI/180 * -15);
+						newSpeedy = this._xSpeed * Math.sin(Math.PI / 180 * -15) + this._ySpeed * Math.cos(Math.PI/180 * -15);
+					}
+					else
+						newSpeedy = this._ySpeed * -1;
+					//hautraquette1
+				}
+				else if (this._xPos <= 30 && this._yPos + this._diameter/2 >= player.yPos + 40 && this._yPos + this._diameter/2 <= player.yPos + 80) {}
+					//milieuraquette1
+				else if (this._xPos <= 30 && this._yPos + this._diameter/2 > player.yPos + 80 && this._yPos + this._diameter/2 <= player.yPos + 125)
+				{	
+					//basraquette1
+					if (this._ySpeed >= 0.0)
+					{
+						
+						newSpeedx = this._xSpeed * Math.cos(Math.PI / 180 * 15) - this._ySpeed * Math.sin(Math.PI/180 * 15);
+						newSpeedy = this._xSpeed * Math.sin(Math.PI / 180 * 15) + this._ySpeed * Math.cos(Math.PI/180 * 15);
+					}
+					else
+						newSpeedy = this._ySpeed * -1;
+				}
+				else if (this._xPos >= 770 && this._yPos + this._diameter / 2 >= opponent.yPos - 5 && this._yPos + this._diameter / 2 < opponent.yPos + 40)
+					{
+						if (this._ySpeed < 0.0)
+						{
+							
+							newSpeedx = this._xSpeed * Math.cos(Math.PI / 180 * 15) - this._ySpeed * Math.sin(Math.PI/180 * 15);
+							newSpeedy = this._xSpeed * Math.sin(Math.PI / 180 * 15) + this._ySpeed * Math.cos(Math.PI/180 * 15);
+						}
+						else
+							newSpeedy = this._ySpeed * -1;
+						//hautraquette2
+					}
+				else if (this._xPos >= 770 && this._yPos + this._diameter / 2 >= opponent.yPos + 40 && this._yPos + this._diameter / 2 <= opponent.yPos + 80)
+				{}	//milieuraquette2
+				else if (this._xPos >= 770 && this._yPos + this._diameter / 2 > opponent.yPos + 80 && this._yPos + this._diameter / 2 <= opponent.yPos + 125)
+				{
+					//basraquette2
+					if (this._ySpeed >= 0.0)
+					{
+						//Angle de deviation de -40 degre
+						newSpeedx = this._xSpeed * Math.cos(Math.PI / 180 * -15) - this._ySpeed * Math.sin(Math.PI/180 * -15);
+						newSpeedy = this._xSpeed * Math.sin(Math.PI / 180 * -15) + this._ySpeed * Math.cos(Math.PI/180 * -15);
+					}
+					else
+						newSpeedy = this._ySpeed * -1;
+				}
+				this._ballSpeed = Math.sqrt(Math.pow(newSpeedx, 2) + Math.pow(newSpeedy, 2));
+				this._xSpeed = newSpeedx/this._ballSpeed * 5;
+				this._ySpeed = newSpeedy/this._ballSpeed * 5;
+			if (this._xPos <= 30)
+				this._xPos = 31;
+			else
+				this._xPos = 739;
+		}
+		if (this._yPos <= 0 || this._yPos + this._diameter >= fieldPong.canevas.height)
+		{
+			this._ySpeed *= -1;
+		} 	    
+		if (this._xPos + this._diameter / 2 <= 0 || this._xPos + this._diameter >= fieldPong.canevas.width) {
+			if (this._xPos <= 0)
+				opponent.playerScore++;
+			else
+				player.playerScore++;
+			this.resetBall();
+			game.sendUpdateGameScore();
+			if (player.playerScore >= 2 || opponent.playerScore >= 2)
+				game.endGame();
+		}
+				game.sendBallPosition();
+	}
 }
