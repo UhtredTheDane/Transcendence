@@ -3,6 +3,8 @@ import uuid
 import base64
 import json
 import requests
+import subprocess
+
 from django.conf import settings
 from django.shortcuts import get_object_or_404, render, redirect
 from django.http import HttpResponse, HttpResponseNotFound, HttpResponseRedirect, Http404, JsonResponse
@@ -18,7 +20,8 @@ from django.db.models import F
 from allauth.socialaccount.models import SocialAccount
 from .models import User, Channel, ChannelUser, Message, Game
 from app.tests import Test
-from .web3_helper import get_tournament_info
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
 
 API_42_AUTH_URL = "https://api.intra.42.fr/oauth/authorize"
 API_42_TOKEN_URL = "https://api.intra.42.fr/oauth/token"
@@ -254,17 +257,76 @@ def profile(request, user_id=None):
         'wins': wins,
         'losses': losses
     })
+    return JsonResponse({"error": str(e)}, status=400)
 
-# Blockchain
+import requests
 from django.http import JsonResponse
-from .web3_helper import get_tournament_info
+from django.views.decorators.csrf import csrf_exempt
 
-def get_tournament(request, tournament_id):
+# Express server URL (Hardhat container should expose this service)
+EXPRESS_SERVER_URL = "http://blockchain-node:3000"
+
+@csrf_exempt
+def create_tournament(request):
+    if request.method == 'POST':
+        try:
+            # Send a POST request to the Express server for creating a tournament
+            response = requests.post(f"{EXPRESS_SERVER_URL}/create-tournament")
+            
+            # Return the response from Express server
+            return JsonResponse(response.json(), safe=False)
+        except Exception as e:
+            return JsonResponse({'status': 'error', 'message': str(e)})
+    return JsonResponse({'status': 'error', 'message': 'Invalid request method'})
+
+@csrf_exempt
+def add_match(request):
+    if request.method == 'POST':
+        # Extract parameters from the request (tournament ID, player names, scores)
+        tournament_id = request.POST.get('tournament_id')
+        player1 = request.POST.get('player1')
+        player2 = request.POST.get('player2')
+        score1 = request.POST.get('score1')
+        score2 = request.POST.get('score2')
+        
+        try:
+            # Send a POST request to the Express server to add a match
+            data = {
+                'tournamentid': tournament_id,
+                'player1': player1,
+                'player2': player2,
+                'score1': score1,
+                'score2': score2
+            }
+            response = requests.post(f"{EXPRESS_SERVER_URL}/add-match", json=data)
+            
+            # Return the response from thse Express server
+            return JsonResponse(response.json(), safe=False)
+        except Exception as e:
+            return JsonResponse({'status': 'error', 'message': str(e)})
+    return JsonResponse({'status': 'error', 'message': 'Invalid request method'})
+
+@csrf_exempt
+def check_matches(request):
     try:
-        tournament = get_tournament_info(tournament_id)
-        return JsonResponse({"tournament": tournament})
-    except Exception as e:
-        return JsonResponse({"error": str(e)}, status=400)
+        # Get tournament_id from the query string
+        tournament_id = request.GET.get('tournament_id')
+        
+        if not tournament_id:
+            return JsonResponse({"status": "error", "message": "Tournament ID is required"}, status=400)
+        
+        # Send GET request to the Express server
+        response = requests.get(f"{EXPRESS_SERVER_URL}/checkMatches/", params={"tournament_id": tournament_id})
+        
+        # Check if the response is valid JSON
+        if response.status_code == 200:
+            return JsonResponse(response.json(), status=response.status_code)
+        else:
+            return JsonResponse({"status": "error", "message": "Failed to fetch matches"}, status=response.status_code)
+        
+    except requests.exceptions.RequestException as e:
+        return JsonResponse({"status": "error", "message": str(e)}, status=500)
+
 
 def leaderboard(request):
 	leaderboard = User.objects.order_by('-elo_rating')[:10]

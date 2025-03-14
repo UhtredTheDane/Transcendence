@@ -4,11 +4,12 @@
   "description": "A smart contract for managing Pong tournaments",
   "main": "index.js",
   "scripts": {
-    "start": "npx hardhat node --hostname 0.0.0.0 & sleep 5 && npx hardhat run scripts/deploy.js --network localhost && tail -f /dev/null",
+    "start": "npx hardhat node --hostname 0.0.0.0 & sleep 5 && node server.js & npx hardhat run scripts/deploy.js --network localhost && tail -f /dev/null",
     "deploy": "npx hardhat run scripts/deploy.js --network localhost"
   },
   "dependencies": {
-    "dotenv": "^16.4.7"
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2"
   },
   "devDependencies": {
     "@nomicfoundation/hardhat-toolbox": "^5.0.0",

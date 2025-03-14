@@ -84,6 +84,35 @@ task("getPlayerMatches", "Fetches all matches of a specific player in a tourname
     }
   });
 
+  // Register custom Hardhat task to check matches
+  task("checkMatches", "Get matches for a specific tournament")
+    .addParam("tournamentid", "The tournament ID")
+    .setAction(async ({ tournamentid }) => {
+      // Load contract address from environment variables
+      const contractAddress = process.env.CONTRACT_ADDRESS;
+      if (!contractAddress) {
+        throw new Error("Contract address not set in the environment");
+      }
+  
+      // Attach to the contract
+      const PongTournament = await ethers.getContractFactory("PongTournament");
+      const pongTournament = PongTournament.attach(contractAddress);
+  
+      // Fetch tournament matches
+      const matches = await pongTournament.getTournamentMatches(tournamentid);
+  
+      // Check if matches exist
+      if (matches.length === 0) {
+        console.log(`No matches found for tournament ID ${tournamentid}`);
+        return;
+      }
+  
+      // Format and display the matches
+      matches.forEach((match, index) => {
+        console.log(`Match ${index + 1}: ${match.player1} vs ${match.player2}, score: ${match.score1.toString()} - ${match.score2.toString()}`);
+      });
+    });
+
 module.exports = {
   solidity: "0.8.20",
 };

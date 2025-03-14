@@ -42,7 +42,7 @@ contract PongTournament {
     }
 
     // Créer un nouveau tournoi (restreint à l'admin)
-    function createTournament(string memory _name) public onlyAdmin {
+    function createTournament(string memory _name) public {
         tournamentCounter++; // Incrémente le compteur de tournoi
         tournaments[tournamentCounter] = Tournament({
             id: tournamentCounter,

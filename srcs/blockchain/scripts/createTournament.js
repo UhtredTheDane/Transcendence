@@ -15,7 +15,7 @@ async function main() {
         throw new Error("CONTRACT_ADDRESS n'est pas défini dans les variables d'environnement");
     }
 
-    console.log("Adresse du contrat utilisé:", contractAddress);
+    //console.log("Adresse du contrat utilisé:", contractAddress);
 
     // Récupérer le contrat déjà déployé
     const PongTournament = await ethers.getContractFactory("PongTournament");
@@ -23,7 +23,7 @@ async function main() {
 
     // Créer un tournoi
     const tournamentName = "World Pong Championship";
-    console.log("Création du tournoi:", tournamentName);
+    console.log("Creation du tournoi:", tournamentName);
     const tx = await pongTournament.createTournament(tournamentName);
     
     // Attendre la confirmation de la transaction

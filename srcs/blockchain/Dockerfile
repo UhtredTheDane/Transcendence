@@ -8,13 +8,14 @@ WORKDIR /app
 
 # Copier package.json et package-lock.json pour installer les dépendances
 COPY package.json package-lock.json ./
-
+RUN npm install express
 RUN npm install
 # Copier tous les fichiers du projet dans le conteneur après l'installation des dépendances
 COPY . .
 
 # Exposer le port 8545 pour le nœud local Hardhat
 EXPOSE 8545
+EXPOSE 3000
 
 # Commande par défaut pour démarrer le nœud Hardhat
 #CMD ["npx", "hardhat", "node", "--hostname", "0.0.0.0"]

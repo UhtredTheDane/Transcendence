@@ -53,7 +53,7 @@ clean: down
 	@$(DOCKERCOMPOSE) down --rmi all --volumes --remove-orphans
 	@echo "$(RED)[Containers]$(DEFAULT) Cleaned !"
 
-fclean: clean
+fclean: clean	
 	@docker system prune -f -a --volumes
 	@echo "$(RED)[Containers]$(DEFAULT) Fully deleted !"
 
