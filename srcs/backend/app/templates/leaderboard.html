@@ -1,0 +1,32 @@
+{% load static %}
+<div class="leaderboard-popup" id="leaderboardPopup">
+	<div class="popup-content">
+		<div class=" position-absolute top-50 start-50 translate-middle">
+			<img class="transcendence-icon" src="{% static 'images/bg-text.svg' %}">
+		</div>
+		<button class="close-btn" onclick="closeLeaderboard()">×</button>
+		<h2 class="primary-font" style="font-size: 42pt; text-decoration: underline; color: #4423ff;">Leader Board</h2>
+		<Table class="table table-hover table-responsive secondary-font" style="table-layout: auto; font-size: 21pt;">
+			<thead>
+				<tr>
+					<th scope="col"></th>
+					<th scope="col" style="text-align: left;">Username</th>
+					<th scope="col" style="text-align: right;">ELO</th>
+				</tr>
+			</thead>
+			<tbody>
+				{% for player in top_players %}
+					<tr>
+						<th scope="row">{{ forloop.counter }}</th>
+						<td>{{ player.username }}</td>
+						<td style="text-align: right;">{{ player.elo_rating }}</td>
+					</tr>
+				{% empty %}
+					<tr>
+						<td colspan="3" style="text-align: center;">No players found</td>
+					</tr>
+				{% endfor %}
+			</tbody>			
+		</Table>
+	</div>
+</div>

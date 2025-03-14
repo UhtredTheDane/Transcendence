@@ -1,0 +1,360 @@
+body {
+    background-color: black;
+    color: white;
+    position: relative;
+    overflow: hidden;
+    margin: 0;
+      height: 100vh;
+}
+
+@font-face {
+    font-family: 'TF-Spike';
+    src: url("../fonts/TF-Spike.ttf") format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Hoskin';
+    src: url("../fonts/Hoskin.otf") format('opentype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@import url('https://fonts.googleapis.com/css2?family=Sora:wght@100..800&display=swap');
+
+.primary-font{
+    font-family: 'TF-Spike', sans-serif !important;
+}
+
+.secondary-font{
+    font-family: 'Sora', sans-serif !important;
+}
+
+.background-text {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 12vw;
+    color: white;
+    opacity: 0.1;
+    white-space: nowrap;
+    user-select: none;
+    z-index: -1;
+    background: linear-gradient(to top, rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0));
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.navbar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 11;
+    background-color: #212121;
+    width: 100%;
+    padding: 10px 15px;
+}
+
+
+.navbar a {
+    color: white;
+    font-family: 'TF-Spike';
+    position: relative;
+    text-align: left;
+    font-size: 28px;
+    color: #f0f0f0;
+}
+
+.navbar a:hover {
+    color: #4423ff !important;
+    background-color: transparent;
+    border-radius: 5px;
+	cursor: pointer;
+}
+
+.navbar-nav {
+	font-family: 'TF-Spike', sans-serif !important;
+    display: flex;
+}
+
+.profile-btn {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background-size: cover;
+	background-repeat: no-repeat;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    /* font-weight: bold; */
+    cursor: pointer;
+    border: 2px solid white;
+}
+
+.profile-btn:hover {
+    background-color: #4423ff 0.8;
+    color: black;
+}
+
+.content-container {
+    position: relative;
+    z-index: 1;
+    padding-top: 15vh;
+    text-align: center;
+}
+
+.primary-font h1{
+	font: 48pt 'TF-Spike', sans-serif;
+}
+
+.secondary-font p{
+	font: 48pt 'Sora', sans-serif;
+}
+
+.content-container h1 {
+    font-family: 'TF-Spike', sans-serif !important;
+    font-size: 48pt;
+    font-weight: 400;
+    letter-spacing: 2px;
+    line-height: 52.8px;
+    margin-bottom: 2rem;
+}
+
+.content-container p {
+    font-family: 'Sora', sans-serif !important;
+    font-size: 32pt;
+    font-weight: 400;
+    letter-spacing: 1px;
+    line-height: 40.32px;
+    margin-bottom: 4rem;
+}
+
+.content-container a.btn-primary {
+    font-family: 'TF-Spike';
+    font-size: 32pt;
+    font-weight: 400;
+    padding: 0.75rem 2rem;
+    text-transform: uppercase;
+    /* letter-spacing: 1px; */
+    text-align: center;
+}
+
+.first-btn{
+	/* display: block; */
+	padding: 21px 42px;
+	border: transparent;
+	border-radius: 38px;
+	position: relative;
+	background-image: linear-gradient(210deg, #4423ff, #291599, #0f0f0f);
+	background-size : 200% auto;
+	background-position: right;
+	cursor: pointer;
+	transition: 0.5s all;
+}
+
+.first-btn:hover{
+	border:2px solid (linear-gradient(210deg, #4423ff, #291599, #0f0f0f));
+	border-width: 7px;
+	background-position: left;
+}
+
+.first-btn::after {
+	content: attr(data);
+	font-family: 'TF-Spike', sans-serif !important;
+	font-size: 32px;
+	font-family: 'TF-Spike', sans-serif;
+	background-image: linear-gradient(270deg, #f0f0f0, #f0f2f0, #4423ff);
+	background-position: right;
+	background-size: 200%;
+	-webkit-background-clip: text;
+	background-clip: text;
+	color: transparent;
+
+	transition: 0.5s background-position;
+}
+
+.first-btn:hover::after {
+	background-position: left;
+}
+
+#pongCanvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100vh;
+    z-index: -1;
+}
+
+/* Popup window styles */
+.leaderboard-popup {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.8);
+    z-index: 9999;
+    padding: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.5s ease-in-out, visibility 0s linear 0.5s;
+}
+
+.leaderboard-popup.show {
+    opacity: 1;
+    visibility: visible;
+    transition: opacity 0.5s ease-in-out;
+}
+
+.leaderboard-popup .popup-content {
+    /* max-width: 600px; */
+    background-color: white;
+    height: 720px;
+    border-radius: 14px;
+    color: black;
+    width: 1200px;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.5);
+    position: relative;
+}
+
+.leaderboard-popup .close-btn {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    color: black;
+    background: none;
+    border: none;
+    font-size: 30px;
+    cursor: pointer;
+    transition: color 0.3s;
+}
+
+.leaderboard-popup .close-btn:hover {
+    color: #ff0000;
+}
+
+.leaderboard-popup h2 {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.leaderboard-list {
+    list-style-type: none;
+    padding: 0;
+}
+
+.leaderboard-list li {
+    padding: 8px;
+    border-bottom: 1px solid #ccc;
+}
+
+/* Modal style */
+.modal-header, .modal-footer {
+    background-color: #343a40;
+    color: white;
+}
+
+.modal-body {
+    background-color: #222;
+}
+.game-mode:hover {
+    background-color: white;
+    color: #212529;
+}
+
+.selected-mode {
+    margin-top: 20px;
+    font-size: 20px;
+    color: #17a2b8;
+}
+
+.game-mode {
+    display: block;
+    width: 100%;
+    padding: 15px;
+    margin: 10px 0;
+    font-size: 24px;
+    background-color: #343a40;
+    border: 2px solid white;
+    color: white;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.3s ease-in-out;
+}
+
+.text-white {
+    color: white;
+}
+
+.to-center {
+    margin: 0;
+    position: absolute;
+    top: 50%;
+    -ms-transform: translateY(-50%);
+    transform: translateY(-50%);
+}
+
+.box{
+    width:1280px;
+    height:1280px;
+    /* text-align:center; */
+}
+
+        /* Scores section */
+        .scores {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 30px;
+            font-size: 40px;
+            font-weight: bold;
+        }
+
+        .score {
+            flex: 1;
+            padding: 10px;
+            font-size: 40px;
+        }
+
+        /* Game window */
+        .game-window {
+            width: 802px;
+            height: 455px;
+            border: 2px solid white;
+            background-color: #222 !important;
+            margin-top: 20px;
+        }
+
+        /* Modal Styles */
+        .modal-content {
+            background-color: #343a40;
+            color: white;
+        }
+
+        .modal-footer {
+            border-top: none;
+        }
+
+        /*Sign out button styles */
+        .signout-btn {
+            background-color: rgb(149, 81, 35);
+            color: black;
+            font-size: 14px;
+            padding: 8px 15px;
+            border: none;
+            border-radius: 5px;
+        }
+        
+        .signout-btn:hover {
+            background-color: #4423FF;
+            color: white;
+        }
+        

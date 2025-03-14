@@ -1,0 +1,234 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>AI Mode - Game</title>
+
+	<link rel="preconnect" href="https://fonts.googleapis.com">
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+	<link href="https://fonts.googleapis.com/css2?family=Sora:wght@100..800&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="icon" href="{% static 'icons/42_Logo.svg' %}" type="image/svg+xml">
+    <style>
+        body {
+            background-color: black;
+            color: white;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: auto;
+            padding-top: 100px;
+        }
+		
+        .scores {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 30px;
+            font-size: 40px;
+            font-weight: bold;
+        }
+
+        .score {
+            flex: 1;
+            padding: 10px;
+            font-size: 40px;
+        }
+
+        /* Game window */
+        .game-window {
+            width: 802px;
+            height: 455px;
+            border: 2px solid white;
+            /*margin-top: 20px;*/
+        }
+
+        /* Modal Styles */
+        .modal-content {
+            background-color: #343a40;
+            color: white;
+        }
+
+        .modal-footer {
+            border-top: none;
+        }
+    </style>
+    <link rel="stylesheet" href="{% static 'css/index.css' %}">
+	<link rel="stylesheet" href="{% static 'css/chatbox.css' %}">
+	<script src="{% static 'js/index.js' %}"></script>
+</head>
+<body onload="loadTemplate()">
+
+    <!-- Navbar with Change Mode button -->
+	<nav class="navbar navbar-expand-lg navbar-dark">
+        <div class="container-fluid">
+            <div class="navbar-nav">
+                <a class="nav-link" href="/GameModes">Change Mode</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Background Title -->
+	<div class=" position-absolute top-50 start-50 translate-middle" style="z-index: -1;">
+        <img class="transcendence-icon" alt="" src="{% static 'images/bg-text.svg' %}">
+    </div>
+
+    <div class="container">
+        <h1 class="mb-3 primary-font grid text-center">Player vs AI</h1>
+
+        <!-- Scores -->
+        <div class="scores secondary-font">
+            <!-- Player's score container (always on the left) -->
+            <div id="player-side" class="score container px-4 text-center">
+                <p>Player: 0</p>
+            </div>
+            <!-- AI's score container (always on the right) -->
+            <div id="ai-side" class="score container px-4 text-center">
+                <p>AI: 0</p>
+            </div>
+        </div>
+
+        <!-- Game Window -->
+        <div class="game-window ">
+            <canvas id="field" width="802px" height="455px">
+                Votre Navigateur ne supporte pas la balise canvas.
+            </canvas>
+            <script type="module" src="{% static 'js/AIMode.js' %}"></script>
+        </div>
+    </div>
+
+    <!-- Chatbox -->
+    <div class="chatbox-btn" onclick="toggleChatbox()">💬</div>
+
+    <div class="chatbox" id="chatbox">
+        <!-- Chatbox Header -->
+        <div class="chatbox-header" id="chatboxHeader">
+            <button class="back-btn" onclick="goBackToContacts()">&#8592;</button>
+            <span id="contactName">Chat</span>
+        </div>
+
+        <!-- Contact List -->
+        <div class="contact-list" id="contactList">
+            <div class="contact-item" onclick="selectContact('John')">John</div>
+            <div class="contact-item" onclick="selectContact('Sarah')">Sarah</div>
+            <div class="contact-item" onclick="selectContact('Alex')">Alex</div>
+        </div>
+
+        <!-- Chat Content -->
+        <div class="chatbox-body" id="chatboxBody"></div>
+
+        <div class="chatbox-footer">
+            <input type="text" id="messageInput" placeholder="Type a message..." disabled>
+            <button id="sendMessageBtn" onclick="sendMessage()" disabled>Send</button>
+        </div>
+    </div>
+
+    <script>
+        let selectedContact = null;
+
+        function toggleChatbox() {
+    let chatbox = document.getElementById('chatbox');
+    let contactList = document.getElementById('contactList');
+
+    if (chatbox.style.display === 'flex') {
+        // Hide chatbox and contact list
+        chatbox.style.display = 'none';
+        contactList.style.display = 'none';
+    } else {
+        // Show chatbox and reset state
+        chatbox.style.display = 'flex';
+        contactList.style.display = 'flex';
+        document.getElementById('chatboxBody').innerHTML = ''; // Clear chat
+        document.getElementById('messageInput').style.display = 'none'; // Hide input field initially
+        document.getElementById('sendMessageBtn').style.display = 'none'; // Hide send button initially
+        document.getElementById('messageInput').disabled = true; // Disable input field
+        document.getElementById('sendMessageBtn').disabled = true; // Disable send button
+        document.getElementById('chatboxHeader').innerHTML = 'Chat'; // Set the title to "Chat"
+    }
+}
+
+function selectContact(contact) {
+    selectedContact = contact;
+    document.getElementById('chatboxHeader').innerHTML = `<button class="back-btn" onclick="goBackToContacts()">&#8592;</button> ${contact}`;
+    document.getElementById('contactList').style.display = 'none'; // Hide contact list
+    document.getElementById('chatboxBody').innerHTML = ''; // Clear chat
+    document.getElementById('messageInput').style.display = 'block'; // Show input field
+    document.getElementById('sendMessageBtn').style.display = 'block'; // Show send button
+    document.getElementById('messageInput').disabled = false; // Enable input field
+    document.getElementById('sendMessageBtn').disabled = false; // Enable send button
+    document.getElementById('messageInput').focus(); // Auto-focus input when a contact is selected
+}
+
+function goBackToContacts() {
+    document.getElementById('contactList').style.display = 'flex'; // Show contact list
+    document.getElementById('chatboxBody').innerHTML = ''; // Clear chat
+    document.getElementById('messageInput').style.display = 'none'; // Hide input field
+    document.getElementById('sendMessageBtn').style.display = 'none'; // Hide send button
+    document.getElementById('messageInput').disabled = true; // Disable input field
+    document.getElementById('sendMessageBtn').disabled = true; // Disable send button
+    document.getElementById('chatboxHeader').innerHTML = "Chat"; // Set header back to "Chat"
+}
+
+function sendMessage() {
+    let messageInput = document.getElementById('messageInput');
+    let messageText = messageInput.value.trim();
+
+    if (messageText !== '') {
+        let chatboxBody = document.getElementById('chatboxBody');
+        let messageElement = document.createElement('div');
+        messageElement.classList.add('message'); // Add class for styling
+        messageElement.textContent = messageText;
+        chatboxBody.appendChild(messageElement);
+        
+        messageInput.value = ''; // Clear input field
+        chatboxBody.scrollTop = chatboxBody.scrollHeight; // Auto-scroll to latest message
+    }
+}
+
+    document.getElementById('messageInput').addEventListener('keydown', function (event) {
+        if (event.key === 'Enter') {
+            sendMessage();
+        }
+    });
+
+// Add event listener for Send button click
+document.getElementById('sendMessageBtn').addEventListener('click', sendMessage);
+
+        function setGameMode(mode) {
+            document.getElementById("selectedMode").textContent = "Current Mode: " + mode;
+        }
+
+        function redirectToProfile() {
+            window.location.href = "/ProfilePage/";
+        }
+
+        function setGameMode(mode) {
+            document.getElementById('selectedMode').textContent = "Current Mode: " + mode;
+
+            if (mode === 'AI') {
+                window.location.href = '/AIMode/';
+            } else if (mode === 'Unranked') {
+                window.location.href = '/UnrankedMode/';
+            } else if (mode === 'Ranked') {
+                window.location.href = '/RankedMode/';
+            } else if (mode === 'Tournament') {
+                // Open Tournament Modal for options
+                new bootstrap.Modal(document.getElementById('tournamentModal')).show();
+            } else if (mode === 'Custom') {
+                // Open Custom Mode Modal for options
+                new bootstrap.Modal(document.getElementById('customModal')).show();
+            }
+        }
+    </script>
+
+    <!-- Bootstrap JS and Popper for Modal functionality -->
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.min.js"></script>
+
+</body>
+</html>
