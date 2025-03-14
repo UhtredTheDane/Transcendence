@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div>{% include 'form.html' with action='/' %}</div>
+
+<div>
+    {% for user in users %}
+        <div>{% include 'message.html' with message=message %}</div>
+    {% endfor %}
+</div>
+<button><a href="/accounts/logout">Se déconnecter</a></button>
+<button><a href="/matchmaking/">Lancer une partie</a></button>
+<button><a href="/game/">Local PvP</a></button>
+<form id="aiGameForm" action="/game-ia/" method="get">
+    <label for="difficulty">Difficulté :</label>
+    <select id="difficulty" name="mode">
+        <option value="easy">Facile</option>
+        <option value="medium" selected>Moyen</option>
+        <option value="hard">Difficile</option>
+        <option value="extreme">Extrême</option>
+    </select>
+    <button type="submit">Game vs AI</button>
+</form>
+
+{% endblock %}

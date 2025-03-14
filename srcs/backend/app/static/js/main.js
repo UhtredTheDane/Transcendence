@@ -32,12 +32,13 @@ function runAIGame()
 
 function setGameMode(mode) {
 	document.getElementById('selectedMode').textContent = "Current Mode: " + mode;
+	console.log("Mode: " + mode);
 	switch (mode) {
 		case "AI":
 			window.location.href = '/AIMode/';
 	  		break;
 		case "Unranked":
-			window.location.href = '/MatchMaking/';
+			window.location.href = '/MatchMaking/?typegame=UnrankedMode';
 			break;
 		case "Ranked":
 			window.location.href = '/MatchMaking/?typegame=RankedMode';
@@ -46,16 +47,16 @@ function setGameMode(mode) {
 			new bootstrap.Modal(document.getElementById('tournamentModal')).show();
 			break;
 		case "RushMode":
-			window.location.href='/MatchMaking/';
+			window.location.href='/MatchMaking/?typegame=RushMode';
 			break;
 		case "TimerMode":
-			window.location.href='/MatchMaking/';
+			window.location.href='/MatchMaking/?typegame=TimerMode';
 			break;
 		case "TicTacToe":
 			window.location.href='/TicTacToe';
 			break;
 		default:
-			window.location.href='/MatchMaking/';
+			console.log("Invalid mode: " + mode);
 	}
 }
 
