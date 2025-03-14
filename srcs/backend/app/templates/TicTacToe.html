@@ -35,36 +35,6 @@
             font-family: 'Sora';
         }
 
-        .background-text {
-            position: absolute;
-            top: 10%;
-            left: 50%;
-            transform: translateX(-50%);
-            font-size: 12vw;
-            color: white;
-            opacity: 0.3;
-            white-space: nowrap;
-            user-select: none;
-            z-index: -1;
-            background: linear-gradient(to top, rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0));
-            -webkit-background-clip: text;
-            background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
-        .navbar {
-            position: fixed;
-            top: 0;
-            left: 0;
-            z-index: 11;
-            background-color: #212121;
-            width: 100%;
-            padding: 10px 15px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
         .home-btn, .restart-btn {
             color: white;
             font-family: 'TF-Spike';
@@ -97,7 +67,7 @@
         }
 
         .content-container {
-            position: relative;
+            position: flex;
             z-index: 1;
             padding-top: 20vh;
             text-align: center;
@@ -161,17 +131,24 @@
             pointer-events: none;
         }
     </style>
+
+	<link rel="stylesheet" href="{% static 'css/chatbox.css' %}">
+	<link rel="stylesheet" href="{% static 'css/index.css' %}">
+	<script src="{% static 'js/index.js' %}"></script>
+	<script src="{% static 'js/chatScript.js' %}"></script>
 </head>
 <body>
-    <div class="background-text">Tic-Tac-Toe</div>
 
-    <div class="navbar">
-        <a href="/" class="home-btn">Home</a>
-        <button class="restart-btn" onclick="restartGame()">Restart Game</button>
+    <div id="navbar-container">
+        {% include 'navbar.html' %}
     </div>
 
     <div class="content-container">
-        <div class="game-board" id="gameBoard">
+		<div class=" position-absolute top-50 start-50 translate-middle" style="z-index: -1;">
+			<img class="transcendence-icon" alt="" src="{% static 'images/bg-text.svg' %}">
+		</div>
+
+        <div class="game-board" id="gameBoard" style="z-index: 3;">
             <!-- Game cells will be inserted here dynamically -->
         </div>
     </div>
