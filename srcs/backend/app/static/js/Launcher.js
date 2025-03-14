@@ -4,11 +4,14 @@ import Field from './field.js';
 import Player from './player.js';
 import Ball from './ball.js';
 import AI from './AI.js';
+import TimerGame from './TimerGame.js';
+import RushGame from './RushGame.js';
+import MaxScoreGame from './MaxScoreGame.js';
 
 export default class Launcher {
     constructor(mode) {
         this._mode = mode;
-        if (this._mode || playerRole == "player1")
+        if (this._mode == 'AI' || playerRole == "player1")
         {
                 this._player = new Player(0.0, 167.5, '../../static/images/Player1.png');
                 this._opponent = new Player(785, 167.5, '../../static/images/Player2.png');
@@ -32,11 +35,18 @@ export default class Launcher {
         }
         else
         {
-            this._game = new OnlineGame(this._fieldPong, mode);
-            setInterval(() => {
-                this._game.updateBall(this._fieldPong, this._game);
-                this._fieldPong.draw();
-            }, 16);
+            if (this._mode == 'TimerMode')
+                this._game = new TimerGame(this._fieldPong, mode);
+            else if (this._mode == 'MaxScoreMode')
+                this._game = new MaxScoreGame(this._fieldPong, mode);
+            else if (this._mode == 'RushMode')
+                this._game = new RushGame(this._fieldPong, mode);
+            else
+                this._game = new OnlineGame(this._fieldPong, mode);
+                setInterval(() => {
+                    this._game.updateBall(this._fieldPong, this._game);
+                    this._fieldPong.draw();
+                }, 16);
         }
     }
 

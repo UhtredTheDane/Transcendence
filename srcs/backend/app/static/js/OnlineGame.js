@@ -97,12 +97,10 @@ export default class OnlineGame extends Game{
 	}
 
 	updateBall() {
-		console.log("update ball online");
 		if (this._isPaused || this._isGameEnded)
 			return;
 		if (this._isBallMover)
 		{
-			console.log("is ball mover");
 			this._field.ball.updateOnlineBall(this._field, this);
 		}
 	}
