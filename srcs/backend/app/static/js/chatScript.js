@@ -78,7 +78,10 @@ function goBackToContacts() {
 function sendMessage() {
 	let messageInput = document.getElementById('messageInput');
 	let messageText = messageInput.value.trim();
-	
+
+	if (messageInput == null) {
+        messageInput = "";
+    }
 	
 	if (messageText !== '') {
 		let chatboxBody = document.getElementById('chatboxBody');
