@@ -44,6 +44,11 @@
         .cell.taken {
             pointer-events: none;
         }
+
+		.symbol {
+			width: 80px;
+			height: 80px;
+		}
 	</style>
 </head>
 <body onload="loadTemplate()">
@@ -78,28 +83,55 @@
             gameBoard.appendChild(cell);
         }
 
-        function handleCellClick(event) {
-            const cell = event.target;
-            const index = cell.dataset.index;
+        // function handleCellClick(event) {
+        //     const cell = event.target;
+        //     const index = cell.dataset.index;
 
-            // If the cell is already taken or the game is over, do nothing
-            if (board[index] || gameOver) return;
+        //     // If the cell is already taken or the game is over, do nothing
+        //     if (board[index] || gameOver) return;
 
-            // Mark the cell with the current player's symbol
-            board[index] = currentPlayer;
-            cell.textContent = currentPlayer;
-            cell.classList.add('taken');
+        //     // Mark the cell with the current player's symbol
+        //     board[index] = currentPlayer;
+        //     cell.textContent = currentPlayer;
+        //     cell.classList.add('taken');
 
-            // Check for a winner
-            if (checkWinner()) {
-                alert(`${currentPlayer} wins!`);
-                gameOver = true;
-                return;
-            }
+        //     // Check for a winner
+        //     if (checkWinner()) {
+        //         alert(`${currentPlayer} wins!`);
+        //         gameOver = true;
+        //         return;
+        //     }
 
-            // Switch to the next player
-            currentPlayer = currentPlayer === player1 ? player2 : player1;
+        //     // Switch to the next player
+        //     currentPlayer = currentPlayer === player1 ? player2 : player1;
+        // }
+
+		function handleCellClick(event) {
+        const cell = event.target;
+        const index = cell.dataset.index;
+
+        // If the cell is already taken or the game is over, do nothing
+        if (board[index] || gameOver) return;
+
+        // Mark the cell with the current player's symbol
+        board[index] = currentPlayer;
+        const img = document.createElement('img');
+        img.src = currentPlayer === player1 ? '{% static "images/cross.svg" %}' : '{% static "images/circle.svg" %}';
+        img.classList.add('symbol');
+        cell.appendChild(img);
+        cell.classList.add('taken');
+
+        // Check for a winner
+        if (checkWinner()) {
+            alert(`${currentPlayer} wins!`);
+            gameOver = true;
+            return;
         }
+
+        // Switch to the next player
+        currentPlayer = currentPlayer === player1 ? player2 : player1;
+    }
+
 
         function checkWinner() {
             const winningCombinations = [
