@@ -19,7 +19,24 @@ function toggleChatbox() {
 		document.getElementById('sendMessageBtn').disabled = true; // Disable send button
 		document.getElementById('chatboxHeader').innerHTML = `<div class="chatbox-header"">
 		Chat
-		<img src="/static/icons/plus.svg">
+			<div class="dropup">
+				<button class="btn " type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
+					<img src="/static/icons/plus.svg">
+				</button>
+				<div class="dropdown-menu form-floating" aria-labelledby="dropdownMenuButton" style="
+				align-items: center;
+				padding: 15px 10px;
+				translate: 30px 10px;
+				width: 350px;
+				height: 100px;
+				
+				">
+					<div class="form-floating mb-3">
+						<input type="email" class="form-control" id="floatingInput" placeholder="name@example.com">
+						<label for="floatingInput">Friend's Name</label>
+					</div>
+				</div>
+			</div>
 		</div>
 		`; // Set the title to "Chat"
 	}
