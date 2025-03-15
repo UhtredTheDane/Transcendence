@@ -1,28 +1,18 @@
-import os
-import uuid
-import base64
-import json
 import requests
 from django.conf import settings
 from django.shortcuts import get_object_or_404, render, redirect
-from django.http import HttpResponse, HttpResponseNotFound, HttpResponseRedirect, Http404, JsonResponse
-from django.core.files.storage import default_storage
+from django.http import HttpResponseNotFound, HttpResponseRedirect, Http404, JsonResponse
 from django.core.files.base import ContentFile
-from django.core.files.uploadedfile import InMemoryUploadedFile
 from django.contrib import messages
-from django.contrib.auth import authenticate, login, logout, get_backends
+from django.contrib.auth import login, get_backends
 from django.contrib.auth.models import AnonymousUser
 from django.contrib.auth.decorators import login_required
-from django.views.decorators.csrf import csrf_exempt
-from django.utils.decorators import method_decorator
 from django.db.models import F
 from allauth.account.forms import LoginForm
 from allauth.account.forms import SignupForm
 from allauth.account.views import login as allauth_login
 from allauth.account.views import signup as allauth_signup
-from allauth.socialaccount.models import SocialAccount
-from .models import User, Channel, ChannelUser, Message, Game
-from app.tests import Test
+from .models import User, Channel, Message, Game
 
 API_42_AUTH_URL = "https://api.intra.42.fr/oauth/authorize"
 API_42_TOKEN_URL = "https://api.intra.42.fr/oauth/token"
