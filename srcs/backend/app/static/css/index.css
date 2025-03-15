@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Sora:wght@100..800&display=swap');
+
 body {
     background-color: black;
     color: white;
@@ -20,8 +22,6 @@ body {
     font-weight: normal;
     font-style: normal;
 }
-
-@import url('https://fonts.googleapis.com/css2?family=Sora:wght@100..800&display=swap');
 
 .primary-font{
     font-family: 'TF-Spike', sans-serif !important;
@@ -326,7 +326,7 @@ body {
 
         /* Game window */
         .game-window {
-            width: 802;
+            width: 802px;
             height: 455px;
             border: 2px solid white;
             background-color: #222 !important;

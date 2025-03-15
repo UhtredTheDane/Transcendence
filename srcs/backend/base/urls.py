@@ -25,32 +25,30 @@ urlpatterns = [
 	path('JoinTournament/', views.jointournament, name='jointournament'),	
 	path('TournamentPage/', views.tounrnamentpage, name='tournamentpage'),
 	path('PongTourny/', views.pongtourny, name='pongtourny'),	
-	path('MaxScoreMode/', views.maxscoremode, name='maxscoremode'),	
-	path('UnrankedMode/', views.unrankedmode, name='unrankedmode'),	
-	path('RankedMode/', views.rankedmode, name='rankedmode'),	
-	path('RushMode/', views.rushmode, name='rushmode'),	
-	path('TimerMode/', views.timermode, name='timermode'),
 	path('TicTacToe/', views.tictactoe, name='tictactoe'),
 	path('MyFriends/', views.myfriends, name='myfriends'),
 	path('NewProfilePage/', views.newprofile, name='newprofilepage'),
-    # path('tournament/<int:tournament_id>/', views.get_tournament, name='get_tournament'),
+
 	path('leaderboard/', views.leaderboard, name='leaderboard'),
 	path('PongRules/', views.rules, name='rules'),
 	path('create_channel/<int:user_id>/', views.create_or_get_channel, name='create_or_get_channel'),
 	path('channel/<int:channel_id>/', views.channel_page, name='channel_page'),
 	path('send_message/<int:channel_id>/', views.send_message, name='send_message'),
-	# path('create-tournament/', views.create_tournament, name='create_tournament'),
 	##path('matchmaking/', views.matchmaking2, name='matchmaking2'),
 	path('create-game/', views.create_game, name='create_game'),
-	path('RankedMode/<int:game_id>/', views.game, name='game'),
+	path('RankedMode/<int:game_id>/', views.RankedMode, name='RankedMode'),
+ 	path('UnrankedMode/<int:game_id>/', views.UnrankedMode, name='UnrankedMode'),
+  	path('RushMode/<int:game_id>/', views.RushMode, name='RushMode'),
+   	path('TimerMode/<int:game_id>/', views.TimerMode, name='TimerMode'),
+	path('MaxScoreMode/<int:game_id>/', views.MaxScoreMode, name='MaxScoreMode'),
+
 	path('game-ia/', views.game_ia, name='game-ia'),
  	path('MatchMaking/', views.matchmaking, name='matchmaking'),
-    path('create-tournament/', views.create_tournament, name='create_tournament'),
+	path('create-tournament/', views.create_tournament, name='create_tournament'),
     path('checkMatches/<int:tournament_id>', views.check_matches, name='check_matches'),
     path('add-match/', views.add_match, name='add_match'),
-    path('getPlayerMatches/<int:tournament_id>/<str:player_name>/', views.get_player_matches, name='get_player_matches'),
+    path('getPlayerMatches/<int:tournament_id>/<str:player_name>/', views.get_player_matches, name='get_player_matches')
 ]
-
 
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

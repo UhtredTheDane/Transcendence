@@ -22,12 +22,6 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
-
-
-# WEB3_PROVIDER_URI = "http://127.0.0.1:8545"  # Ou l'URL de votre nœud Ethereum
-# CONTRACT_ADDRESS = "0x5FbDB2315678afecb367f032d93F642f64180aa3"  # L'adresse de votre contrat déployé
-# PRIVATE_KEY = "0xYourPrivateKey"
-
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = config('DJANGO_SECRET_KEY')
 

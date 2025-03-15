@@ -2,9 +2,9 @@ import Game from './Game.js';
 
 export default class OnlineGame extends Game{
 
-	constructor(fieldValue) {
+	constructor(fieldValue, mode) {
 		super(fieldValue);
-		this.socket = new WebSocket("ws://" + window.location.host + "/ws/RankedMode/" + gameId + "/");
+		this.socket = new WebSocket("ws://" + window.location.host + "/ws/" + mode + "/" + gameId + "/");
 		this.isSocketOpen = false;
 		this.isBallMover = false;
 		this.#initOnOpen();
@@ -44,7 +44,8 @@ export default class OnlineGame extends Game{
 				tempoGame.field.ball.xPos = data.ball_x;
 				tempoGame.field.ball.yPos = data.ball_y;
 			} else if (data.type === "update_game_score") {
-				tempoGame.field.player.playerScore = data.s 13ata.score_player2;
+				tempoGame.field.player.playerScore = data.score_player1;
+				tempoGame.field.opponent.playerScore = data.score_player2;
 			} else if (data.type === "update_pause") {
 				tempoGame.isPaused = data.is_paused;
 				if (tempoGame.isPaused)
@@ -99,7 +100,9 @@ export default class OnlineGame extends Game{
 		if (this._isPaused || this._isGameEnded)
 			return;
 		if (this._isBallMover)
-			this._field.ball.updateBall(this._field, this);
+		{
+			this._field.ball.updateOnlineBall(this._field, this);
+		}
 	}
 
 	sendBallPosition() {

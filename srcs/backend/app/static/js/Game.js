@@ -17,15 +17,7 @@ export default class Game {
 	{
 		this._field = value;
 	}
-	
-	get isBallMover() {
-		return this._isBallMover;
-	}
 
-	set isBallMover(value) {
-		this._isBallMover = value;
-	}
- 
 	get isGameEnded() {
 		return this._isGameEnded;
 	}
@@ -49,6 +41,7 @@ export default class Game {
 	}
 
 	updateBall() {
+		console.log("cupdateball");
 		if (this._isPaused || this._isGameEnded)
 			return;
 		this._field.ball.updateBall(this._field, this);

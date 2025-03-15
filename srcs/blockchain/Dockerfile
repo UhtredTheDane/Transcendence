@@ -5,7 +5,6 @@ FROM node:22
 #RUN npm -v
 # Créer un répertoire de travail
 WORKDIR /app
-
 # Copier package.json et package-lock.json pour installer les dépendances
 COPY package.json package-lock.json ./
 RUN npm install express
@@ -17,6 +16,4 @@ COPY . .
 EXPOSE 8545
 EXPOSE 3000
 
-# Commande par défaut pour démarrer le nœud Hardhat
-#CMD ["npx", "hardhat", "node", "--hostname", "0.0.0.0"]
-CMD [ "sh", "./hardhat.sh" ]   
+CMD [ "npm", "start"]   
