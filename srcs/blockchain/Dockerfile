@@ -4,11 +4,14 @@ FROM node:22
 #RUN npm install -g npm@latest
 #RUN npm -v
 # Créer un répertoire de travail
-WORKDIR /app
 # Copier package.json et package-lock.json pour installer les dépendances
-COPY package.json package-lock.json ./
+
+COPY ./package-lock.json ./
+COPY  ./package.json ./
+WORKDIR /app
+
 RUN npm install express
-RUN npm install
+RUN npm install --save-dev hardhat
 # Copier tous les fichiers du projet dans le conteneur après l'installation des dépendances
 COPY . .
 
