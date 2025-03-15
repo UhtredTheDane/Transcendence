@@ -46,8 +46,9 @@ urlpatterns = [
 	path('game-ia/', views.game_ia, name='game-ia'),
  	path('MatchMaking/', views.matchmaking, name='matchmaking'),
     path('create-tournament/', views.create_tournament, name='create_tournament'),
-    path('checkMatches/', views.check_matches, name='check_matches'),
+    path('checkMatches/<int:tournament_id>', views.check_matches, name='check_matches'),
     path('add-match/', views.add_match, name='add_match'),
+    path('getPlayerMatches/<int:tournament_id>/<str:player_name>/', views.get_player_matches, name='get_player_matches'),
 ]
 
 

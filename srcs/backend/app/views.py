@@ -259,8 +259,6 @@ def profile(request, user_id=None):
     })
     return JsonResponse({"error": str(e)}, status=400)
 
-import requests
-from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 
 # Express server URL (Hardhat container should expose this service)
@@ -281,51 +279,90 @@ def create_tournament(request):
 
 @csrf_exempt
 def add_match(request):
-    if request.method == 'POST':
-        # Extract parameters from the request (tournament ID, player names, scores)
-        tournament_id = request.POST.get('tournament_id')
-        player1 = request.POST.get('player1')
-        player2 = request.POST.get('player2')
-        score1 = request.POST.get('score1')
-        score2 = request.POST.get('score2')
+    if request.method == "POST":
+        try:
+            # Parse JSON data from request body
+            data = json.loads(request.body)
+        except json.JSONDecodeError:
+            return JsonResponse({"status": "error", "message": "Invalid JSON payload"})
+        
+        # Extract values from the parsed JSON data
+        tournament_id = data.get("tournament_id")
+        player1 = data.get("player1")
+        player2 = data.get("player2")
+        score1 = data.get("score1")
+        score2 = data.get("score2")
+
+        if not all([tournament_id, player1, player2, score1, score2]):
+            return JsonResponse({"status": "error", "message": "Missing required fields."})
+        
+        # Prepare payload for Express request
+        payload = {
+            "tournamentid": tournament_id,
+            "player1": player1,
+            "player2": player2,
+            "score1": score1,
+            "score2": score2
+        }
         
         try:
-            # Send a POST request to the Express server to add a match
-            data = {
-                'tournamentid': tournament_id,
-                'player1': player1,
-                'player2': player2,
-                'score1': score1,
-                'score2': score2
-            }
-            response = requests.post(f"{EXPRESS_SERVER_URL}/add-match", json=data)
+            # Send POST request to Express server
+            response = requests.post(
+                "http://blockchain-node:3000/add-match", 
+                json=payload,  # Send as JSON
+                headers={"Content-Type": "application/json"}
+            )
             
-            # Return the response from thse Express server
-            return JsonResponse(response.json(), safe=False)
+            return JsonResponse(response.json())
         except Exception as e:
-            return JsonResponse({'status': 'error', 'message': str(e)})
-    return JsonResponse({'status': 'error', 'message': 'Invalid request method'})
+            return JsonResponse({"status": "error", "message": str(e)})
+    
+    return JsonResponse({"status": "error", "message": "Invalid request method"})
+
 
 @csrf_exempt
-def check_matches(request):
+def check_matches(request, tournament_id):  # Accepter tournament_id ici
+    if request.method == "GET":
+        try:
+            # Envoyer la requête GET au serveur Express avec l'ID du tournoi
+            response = requests.get(f"http://blockchain-node:3000/checkMatches/{tournament_id}")
+            
+            # Vérifier si la réponse est vide ou a un statut non valide
+            if response.status_code != 200 or not response.text:
+                return JsonResponse({"status": "error", "message": "Invalid response from blockchain service."})
+
+            try:
+                # Tenter de parser la réponse JSON
+                data = response.json()
+            except ValueError:
+                return JsonResponse({"status": "error", "message": "Invalid JSON received from blockchain service."})
+
+            # Retourner les données provenant du serveur Express
+            return JsonResponse(data)
+        except Exception as e:
+            return JsonResponse({"status": "error", "message": str(e)})
+    
+    return JsonResponse({"status": "error", "message": "Invalid request method"})
+
+@csrf_exempt  # If you want to disable CSRF protection for this view
+def get_player_matches(request, tournament_id, player_name):
     try:
-        # Get tournament_id from the query string
-        tournament_id = request.GET.get('tournament_id')
-        
-        if not tournament_id:
-            return JsonResponse({"status": "error", "message": "Tournament ID is required"}, status=400)
-        
-        # Send GET request to the Express server
-        response = requests.get(f"{EXPRESS_SERVER_URL}/checkMatches/", params={"tournament_id": tournament_id})
-        
-        # Check if the response is valid JSON
+        # Make a request to the Express server using blockchain-node
+        url = f"http://blockchain-node:3000/getPlayerMatches/{tournament_id}/{player_name}"
+        response = requests.get(url)
+
+        # Check if the response is successful
         if response.status_code == 200:
-            return JsonResponse(response.json(), status=response.status_code)
+            return JsonResponse(response.json())  # Return matches from Express server
         else:
-            return JsonResponse({"status": "error", "message": "Failed to fetch matches"}, status=response.status_code)
-        
-    except requests.exceptions.RequestException as e:
-        return JsonResponse({"status": "error", "message": str(e)}, status=500)
+            return JsonResponse({
+                'status': 'error',
+                'message': 'Failed to fetch player matches from Express server',
+                'error': response.json()
+            })
+
+    except Exception as e:
+        return JsonResponse({'status': 'error', 'message': str(e)})
 
 
 def leaderboard(request):

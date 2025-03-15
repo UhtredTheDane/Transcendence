@@ -41,48 +41,48 @@ task("add-match", "Adds a match to a tournament")
     const addMatchTx = await pongTournament.addMatch(tournamentId, taskArgs.player1, taskArgs.player2, score1, score2);
     await addMatchTx.wait();
 
-    console.log(`Match ajouté au tournoi ID ${tournamentId}: ${taskArgs.player1} vs ${taskArgs.player2}, score: ${score1}-${score2}`);
+    console.log(`Match ajoute au tournoi ID:${tournamentId}, ${taskArgs.player1}, ${taskArgs.player2}, ${score1}, ${score2}`);
   });
 
-module.exports = {
-  solidity: "0.8.20",
-};
+// Register a custom task to get player matches
 
-task("getPlayerMatches", "Fetches all matches of a specific player in a tournament")
+task("getPlayerMatches", "Get matches for a player in a tournament")
   .addParam("tournamentid", "The ID of the tournament")
   .addParam("playername", "The name of the player")
-  .setAction(async (taskArgs) => {
+  .setAction(async (taskArgs, hre) => {
     const { tournamentid, playername } = taskArgs;
-
+    
     const contractAddress = process.env.CONTRACT_ADDRESS;
-    if (!contractAddress) {
-        throw new Error("Contract address is not set in environment variables.");
-    }
 
+    // Contract address and name must be updated as per your deployment
     const PongTournament = await ethers.getContractFactory("PongTournament");
     const pongTournament = PongTournament.attach(contractAddress);
 
-    // Fetch the matches of the tournament
-    const matches = await pongTournament.getTournamentMatches(tournamentid);
+    try {
+      // Call the function from the contract
+      const matches = await pongTournament.getPlayerMatches(tournamentid, playername);
 
-    if (matches.length === 0) {
-        console.log(`No matches found for tournament with ID ${tournamentid}`);
-    } else {
-        // Filter matches by the player's name
-        const playerMatches = matches.filter(
-            (match) => match.player1 === playername || match.player2 === playername
-        );
+      // Ensure the result is in the expected format
+      if (!matches) {
+        throw new Error('No matches found for this player');
+      }
 
-        if (playerMatches.length === 0) {
-            console.log(`No matches found for player ${playername} in tournament ID ${tournamentid}`);
-        } else {
-            // Display each match for the player
-            playerMatches.forEach((match, index) => {
-                console.log(`Match ${index + 1}: ${match.player1} vs ${match.player2}, score: ${match.score1}-${match.score2}`);
-            });
-        }
+      // Convert the result to JSON
+      const matchesJson = matches.map(match => ({
+        player1: match.player1,
+        player2: match.player2,
+        score1: match.score1.toString(),  // Convert BigNumber to string
+        score2: match.score2.toString()   // Convert BigNumber to string
+      }));
+
+      // Log the result as a JSON string
+      console.log(JSON.stringify(matchesJson, null, 2));
+    } catch (error) {
+      console.error("Error fetching player matches:", error);
+      process.exit(1); // Exit with error code
     }
   });
+
 
   // Register custom Hardhat task to check matches
   task("checkMatches", "Get matches for a specific tournament")
