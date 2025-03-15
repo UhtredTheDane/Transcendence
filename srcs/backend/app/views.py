@@ -9,12 +9,17 @@ from django.http import HttpResponse, HttpResponseNotFound, HttpResponseRedirect
 from django.core.files.storage import default_storage
 from django.core.files.base import ContentFile
 from django.core.files.uploadedfile import InMemoryUploadedFile
+from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout, get_backends
 from django.contrib.auth.models import AnonymousUser
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.csrf import csrf_exempt
 from django.utils.decorators import method_decorator
 from django.db.models import F
+from allauth.account.forms import LoginForm
+from allauth.account.forms import SignupForm
+from allauth.account.views import login as allauth_login
+from allauth.account.views import signup as allauth_signup
 from allauth.socialaccount.models import SocialAccount
 from .models import User, Channel, ChannelUser, Message, Game
 from app.tests import Test
@@ -355,7 +360,28 @@ def rules(request):
     return render(request, 'PongRules.html')
 
 def signin(request):
-    return render(request, 'SignIn.html')
+	form = LoginForm(data=request.POST or None, request=request)  # Passe explicitement request
+
+	if request.method == "POST":
+		if form.is_valid():
+			response = allauth_login(request)  # Gère l'authentification avec Allauth
+			if request.user.is_authenticated:  # Vérifie si l'utilisateur est bien connecté
+				return redirect("/ProfilePage/")  # Redirige vers la page de profil après connexion
+		else:
+			messages.error(request, "Identifiants invalides")
+
+	return render(request, "SignIn.html", { "form": form })
+
+def signup(request):
+    form = SignupForm(request.POST or None)
+
+    if request.method == "POST":
+        if form.is_valid():
+            response = allauth_signup(request)
+            if request.user.is_authenticated:
+                return redirect("/ProfilePage/")
+
+    return render(request, "SignUp.html", {"form": form})
 
 def	aimode(request):
     return render(request, 'AIMode.html')
@@ -387,9 +413,6 @@ def	myfriends(request):
 
 def	error404(request):
     return render(request, 'Error404.html')
-
-def	signup(request):
-    return render(request, 'SignUp.html')
 
 @login_required
 def	passwordreset(request):
