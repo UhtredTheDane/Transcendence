@@ -57,10 +57,6 @@ fclean:
 	@docker system prune -f -a --volumes
 	@echo "$(RED)[Containers]$(DEFAULT) Fully deleted !"
 
-# fclean: clean
-# 	@sudo rm -rf $(DB_DATA) || true
-# 	@echo "$(RED)[Containers]$(DEFAULT) Fully cleaned !"
-
 # down, clean and start the containers
 re: down clean all
 

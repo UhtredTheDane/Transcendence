@@ -55,8 +55,11 @@ function setGameMode(mode) {
 		case "MaxScoreMode":
 			window.location.href='/MatchMaking/?typegame=MaxScoreMode';
 			break;
+		case "ChallengeMode":
+			window.location.href='MatchMaking/?typegame=ChallengeMode';
+			break;
 		case "TicTacToe":
-			window.location.href='/TicTacToe';
+			window.location.href='/MatchMaking/?typegame=TicTacToe';
 			break;
 		default:
 			console.log("Invalid mode: " + mode);

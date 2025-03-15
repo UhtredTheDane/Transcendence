@@ -102,11 +102,6 @@
     <div class="container">
         <h1 class="mb-3 primary-font grid text-center">PvP - Max Score Mode</h1>
 
-        <div>
-            <label for="maxScore">Set Max Score: </label>
-            <input type="number" id="maxScore" min="1" value="5">
-        </div>
-
         <!-- Scores -->
         <div class="scores secondary-font">
             <!-- Player's score container (always on the left) -->
@@ -133,25 +128,17 @@
         </div>
     </div>
 
-    <!-- <script>
-        let playerScore = 0;
-        let aiScore = 0;
-        function updateScore(playerPoint, aiPoint) {
-            playerScore += playerPoint;
-            aiScore += aiPoint;
-            document.getElementById("playerScore").innerText = playerScore;
-            document.getElementById("aiScore").innerText = aiScore;
-            let maxScore = parseInt(document.getElementById("maxScore").value);
-            if (playerScore >= maxScore || aiScore >= maxScore) {
-                let winner = playerScore > aiScore ? "Player1 wins!" : "Player2 wins!";
-                alert(winner);
-                playerScore = 0;
-                aiScore = 0;
-                document.getElementById("playerScore").innerText = playerScore;
-                document.getElementById("aiScore").innerText = aiScore;
+    <script>
+        document.getElementById("maxScore").addEventListener("input", function(event) {
+            let maxScoreValue = event.target.value;
+            // Set max score in your game logic (this assumes the Launcher class is already instantiated)
+            if (launcher && launcher.game instanceof MaxScoreGame) {
+                launcher.game.maxscore = parseInt(maxScoreValue);
+                console.log("Max score updated to: ", maxScoreValue);
             }
-        }
-    </script> -->
+        });
+    </script>
+    
 
         <!-- Chatbox -->
 	{% include 'ChatBox.html' %}

@@ -158,13 +158,6 @@
             </div>
         </div>
 
-        <div class="timer">
-            <label for="timeInput">Set Timer (seconds): </label>
-            <input type="number" id="timeInput" min="10" max="300" value="60">
-            <button onclick="startTimer()" class="btn btn-primary">Start</button>
-            <p id="timeDisplay">Time Left: 60s</p>
-        </div>
-
         <!-- Game Window -->
         <div class="game-window ">
             <canvas id="field" width="802px" height="455px">
@@ -179,24 +172,6 @@
         </div>
 
     </div>
-
-    <!-- <script>
-        let timer;
-        function startTimer() {
-            clearInterval(timer);
-            let timeLeft = parseInt(document.getElementById("timeInput").value);
-            document.getElementById("timeDisplay").textContent = `Time Left: ${timeLeft}s`;
-
-            timer = setInterval(() => {
-                timeLeft--;
-                document.getElementById("timeDisplay").textContent = `Time Left: ${timeLeft}s`;
-                if (timeLeft <= 0) {
-                    clearInterval(timer);
-                    alert("Time's up!");
-                }
-            }, 1000);
-        }
-    </script> -->
 
     <!-- Chatbox -->
 	{% include 'ChatBox.html' %}
