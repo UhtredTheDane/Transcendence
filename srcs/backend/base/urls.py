@@ -44,6 +44,8 @@ urlpatterns = [
 
 	path('game-ia/', views.game_ia, name='game-ia'),
  	path('MatchMaking/', views.matchmaking, name='matchmaking'),
+    path('get_messages/<str:contact_username>/', views.get_messages, name='get_messages'),
+	
 ]
 
 if settings.DEBUG:

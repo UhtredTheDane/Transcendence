@@ -12,55 +12,55 @@
 	<link rel="icon" href="{% static 'icons/42_logo.png' %}" type="image/png">
 	<link rel="stylesheet" href="{% static 'css/index.css' %}">
     <link rel="stylesheet" href="{% static 'css/chatbox.css' %}">
-		<style>
-	body {
-		background-color: black;
-		color: white;
-		text-align: center;
-		position: relative;
-		overflow: hidden;
-	}
-	/* Profile section */
-	.page-profile-container {
-		display: flex;
-		flex-direction: column;
-		width: 1860px;
-		height: 518px;
-		align-items: center;
-		justify-content: center;
-		height: 100vh;
-		padding-top: 60px;
-	}
+	<style>
+body {
+	background-color: black;
+	color: white;
+	text-align: center;
+	position: relative;
+	overflow: hidden;
+}
+/* Profile section */
+.page-profile-container {
+	display: flex;
+	flex-direction: column;
+	width: 1860px;
+	height: 518px;
+	align-items: center;
+	justify-content: center;
+	height: 100vh;
+	padding-top: 60px;
+}
 
-	.profile-box {
-		background-color: rgba(255, 255, 255, 0.1);
-		width: 90%;
-		max-width: 1200px;
-		padding: 60px;
-		border-radius: 15px;
-		margin-bottom: 40px;
-		display: flex;
-		align-items: center;
-		justify-content: space-between;
-		flex-wrap: wrap;
-	}
+.profile-box {
+	background-color: rgba(255, 255, 255, 0.1);
+	width: 90%;
+	max-width: 1200px;
+	padding: 60px;
+	border-radius: 15px;
+	margin-bottom: 40px;
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	flex-wrap: wrap;
+}
 
-	/* Vertical separator */
-	.vertical-bar {
-		width: 3px;
-		background-color: white;
-		height: 100%;
-		margin: 0 40px;
-	}
+/* Vertical separator */
+.vertical-bar {
+	width: 3px;
+	background-color: white;
+	height: 100%;
+	margin: 0 40px;
+}
 
-	/* Profile picture */
-	.profile-btn {
-		background-image: url('https://cdn.discordapp.com/avatars/960896510017544282/b1e2132267708f74ca6f42674ef274d4.webp');
-		background-size: cover;
-		background-position: center;
-	}
+/* Profile picture */
+.profile-btn {
+	background-image: url('https://cdn.discordapp.com/avatars/960896510017544282/b1e2132267708f74ca6f42674ef274d4.webp');
+	background-size: cover;
+	background-position: center;
+}
 
-		</style>
+	</style>
 		<link rel="stylesheet" href="{% static 'css/index.css' %}">
 		<link rel="stylesheet" href="{% static 'css/profilepage.css' %}">
 		
@@ -143,12 +143,12 @@
 		</div>
 		<script>
 			const updateAvatarUrl = "{% url 'update_avatar' %}";
+			const username = "{{ user.username }}"; // Embed the username variable
 			console.log('{{ user.avatar }}')
 		</script>
-
 		<!-- Chatbox -->
 		{% include 'ChatBox.html' %}
-
+		
 		<script src="{% static 'js/index.js' %}"></script>
 		<script src="{% static 'js/profile.js' %}"></script>
 
