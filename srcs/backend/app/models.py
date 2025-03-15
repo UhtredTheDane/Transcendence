@@ -3,6 +3,8 @@ from django.contrib.auth.models import AbstractUser
 from django.core.validators import FileExtensionValidator, MaxValueValidator, MinValueValidator
 from django.utils.translation import gettext_lazy as _
 
+
+
 class User(AbstractUser):
 	STATUS_CHOICES = [
 		('on', 'online'),
@@ -109,3 +111,12 @@ class Message(models.Model):
 
 	def __str__(self):
 		return f"Message {self.id} by {self.user.username} in {self.channel.name}"
+
+class Messages(models.Model):
+    sender = models.ForeignKey(User, related_name='sent_messages', on_delete=models.CASCADE)
+    receiver = models.ForeignKey(User, related_name='received_messages', on_delete=models.CASCADE)
+    content = models.TextField()
+    timestamp = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['timestamp']

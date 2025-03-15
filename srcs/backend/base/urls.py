@@ -12,7 +12,6 @@ urlpatterns = [
     path("auth/42/login/", views.auth_42_login, name="auth_42_login"),
     path("auth/42/callback/", views.auth_42_callback, name="auth_42_callback"),
 	path('SignIn/', views.signin, name='signin'),
-	path('ProfilePage/', views.profile, name='profile'),
 	path('profile/<int:user_id>/', views.profile, name='profile_other'),
 	path('update_avatar/', views.update_avatar, name='update_avatar'),
 	path('SignUp/', views.signup, name='signup'),
@@ -45,6 +44,11 @@ urlpatterns = [
 
 	path('game-ia/', views.game_ia, name='game-ia'),
  	path('MatchMaking/', views.matchmaking, name='matchmaking'),
+    path('get_messages/<str:contact_username>/', views.get_messages, name='get_messages'),
+    
+	path('ProfilePage/<str:username>/', views.profile, name='user_profile'),
+	path('ProfilePage/', views.profile, name='profile'),
+	
 ]
 
 if settings.DEBUG:
