@@ -255,83 +255,135 @@ def update_avatar(request):
 
 
 @login_required
-def profile(request, user_id=None):
-    if user_id is None:
-        user_data = request.user
-    else:
-        user_data = get_object_or_404(User, id=user_id)
-
-    user_games = Game.objects.filter(player1=user_data)
-
-    wins = user_games.filter(score_player1__gt=F('score_player2')).count()
-    losses = user_games.filter(score_player1__lt=F('score_player2')).count()
-
-    last_games = user_games.order_by('-created_at')[:4]
-
-    scores = []
-    for game in last_games:
-        if game.player1 == user_data:
-            user_score = game.score_player1
-            opponent = game.player2 if game.player2 else None
-            opponent_score = game.score_player2 if opponent else 0
+def profile(request, username=None):
+    try:
+        if username is None:
+            user_data = request.user
         else:
-            user_score = game.score_player2
-            opponent = game.player1
-            opponent_score = game.score_player1
+            user_data = User.objects.get(username=username)
 
-        result = "Victory" if user_score > opponent_score else "Defeat"
+        user_games = Game.objects.filter(Q(player1=user_data) | Q(player2=user_data))
 
-        scores.append({
-            'result': result,
-            'opponent': opponent.username if opponent else "AI",
-            'score': f"{user_score} - {opponent_score}",
-            'created_at': game.created_at.strftime("%Y-%m-%d %H:%M")
+        wins = user_games.filter(
+            (Q(player1=user_data) & Q(score_player1__gt=F('score_player2'))) |
+            (Q(player2=user_data) & Q(score_player2__gt=F('score_player1')))
+        ).count()
+
+        losses = user_games.filter(
+            (Q(player1=user_data) & Q(score_player1__lt=F('score_player2'))) |
+            (Q(player2=user_data) & Q(score_player2__lt=F('score_player1')))
+        ).count()
+
+        last_games = user_games.order_by('-created_at')[:4]
+
+        scores = []
+        for game in last_games:
+            if game.player1 == user_data:
+                user_score = game.score_player1
+                opponent = game.player2
+                opponent_score = game.score_player2
+            else:
+                user_score = game.score_player2
+                opponent = game.player1
+                opponent_score = game.score_player1
+
+            scores.append({
+                'user_score': user_score,
+                'opponent_score': opponent_score,
+                'opponent': opponent.username if opponent else 'AI'
             })
 
-    return render(request, 'ProfilePage.html', {
-        'user': user_data,
-        'scores': scores,
-        'wins': wins,
-        'losses': losses
-        })
-    if user_id is None:
-        user_data = request.user
-    else:
-        user_data = get_object_or_404(User, id=user_id)
+        context = {
+            'user_data': user_data,
+            'wins': wins,
+            'losses': losses,
+            'scores': scores,
+            'is_own_profile': user_data == request.user,
+            'viewing_username': username  # Add this to help template know which profile we're viewing
+        }
 
-    user_games = Game.objects.filter(player1=user_data)
+        return render(request, 'ProfilePage.html', context)
+    except User.DoesNotExist:
+        return redirect('Error404')
 
-    wins = user_games.filter(score_player1__gt=F('score_player2')).count()
-    losses = user_games.filter(score_player1__lt=F('score_player2')).count()
+# @login_required
+# def profile(request, user_id=None):
+#     if user_id is None:
+#         user_data = request.user
+#     else:
+#         user_data = get_object_or_404(User, id=user_id)
 
-    last_games = user_games.order_by('-created_at')[:4]
+#     user_games = Game.objects.filter(player1=user_data)
 
-    scores = []
-    for game in last_games:
-        if game.player1 == user_data:
-            user_score = game.score_player1
-            opponent = game.player2 if game.player2 else None
-            opponent_score = game.score_player2 if opponent else 0
-        else:
-            user_score = game.score_player2
-            opponent = game.player1
-            opponent_score = game.score_player1
+#     wins = user_games.filter(score_player1__gt=F('score_player2')).count()
+#     losses = user_games.filter(score_player1__lt=F('score_player2')).count()
 
-        result = "Victory" if user_score > opponent_score else "Defeat"
+#     last_games = user_games.order_by('-created_at')[:4]
 
-        scores.append({
-            'result': result,
-            'opponent': opponent.username if opponent else "AI",
-            'score': f"{user_score} - {opponent_score}",
-            'created_at': game.created_at.strftime("%Y-%m-%d %H:%M")
-            })
+#     scores = []
+#     for game in last_games:
+#         if game.player1 == user_data:
+#             user_score = game.score_player1
+#             opponent = game.player2 if game.player2 else None
+#             opponent_score = game.score_player2 if opponent else 0
+#         else:
+#             user_score = game.score_player2
+#             opponent = game.player1
+#             opponent_score = game.score_player1
 
-    return render(request, 'ProfilePage.html', {
-        'user': user_data,
-        'scores': scores,
-        'wins': wins,
-        'losses': losses
-        })
+#         result = "Victory" if user_score > opponent_score else "Defeat"
+
+#         scores.append({
+#             'result': result,
+#             'opponent': opponent.username if opponent else "AI",
+#             'score': f"{user_score} - {opponent_score}",
+#             'created_at': game.created_at.strftime("%Y-%m-%d %H:%M")
+#             })
+
+#     return render(request, 'ProfilePage.html', {
+#         'user': user_data,
+#         'scores': scores,
+#         'wins': wins,
+#         'losses': losses
+#         })
+#     if user_id is None:
+#         user_data = request.user
+#     else:
+#         user_data = get_object_or_404(User, id=user_id)
+
+#     user_games = Game.objects.filter(player1=user_data)
+
+#     wins = user_games.filter(score_player1__gt=F('score_player2')).count()
+#     losses = user_games.filter(score_player1__lt=F('score_player2')).count()
+
+#     last_games = user_games.order_by('-created_at')[:4]
+
+#     scores = []
+#     for game in last_games:
+#         if game.player1 == user_data:
+#             user_score = game.score_player1
+#             opponent = game.player2 if game.player2 else None
+#             opponent_score = game.score_player2 if opponent else 0
+#         else:
+#             user_score = game.score_player2
+#             opponent = game.player1
+#             opponent_score = game.score_player1
+
+#         result = "Victory" if user_score > opponent_score else "Defeat"
+
+#         scores.append({
+#             'result': result,
+#             'opponent': opponent.username if opponent else "AI",
+#             'score': f"{user_score} - {opponent_score}",
+#             'created_at': game.created_at.strftime("%Y-%m-%d %H:%M")
+#             })
+
+#     return render(request, 'ProfilePage.html', {
+#         'user': user_data,
+#         'scores': scores,
+#         'wins': wins,
+#         'losses': losses
+#         })
 
 def get_messages(request, contact_username):
     if not request.user.is_authenticated:

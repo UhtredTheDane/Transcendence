@@ -80,48 +80,58 @@ body {
 		<div id="content">
 			<div class="my-profile-box">
 				<div class="profile-box-left">
+					{% if is_own_profile %}
 					<form id="csrf-form">
 						{% csrf_token %}
 					</form>
-					<div class="profile-picture-box" id="profile-picture-box" style="background-image: url('{{ user.avatar.url }}');">
+					{% endif %}
+					<div class="profile-picture-box" id="profile-picture-box" style="background-image: url('{{ user_data.avatar.url }}');">
+						{% if is_own_profile %}
 						<input type="file" id="profile-pic-input" accept="image/*" style="display: none;" onchange="uploadProfilePicture(this)">
 						<img src="{% static 'icons/edit-pp.svg' %}" class="edit-icon" alt="Edit Profile Picture" onclick="triggerUpload()">
+						{% endif %}
 					</div>
-
+	
 					<div class="profile-box-infos">
 						<div class="with-edit">
-							{% if user.username %}
-								<h1>{{ user.username }}</h1>
+							{% if user_data.username %}
+								<h1>{{ user_data.username }}</h1>
 							{% else %}
 								<h1>Player 1</h1>
 							{% endif %}
-							<img src="{% static 'icons/edit-pp.svg' %}" class="edit-icon" alt="" onclick="" >
+							{% if is_own_profile %}
+							<img src="{% static 'icons/edit-pp.svg' %}" class="edit-icon" alt="" onclick="">
+							{% endif %}
 						</div>
-							<p>Email:
-								{% if user.email %}
-									<span>{{ user.email }}</span>
-								{% else %}
-									<span>No mail found.</span>
-								{% endif %}
-								<img src="{% static 'icons/edit-pp.svg' %}" class="edit-icon" alt="" onclick="" >
-							</p>
-
+						<p>Email:
+							{% if user_data.email %}
+								<span>{{ user_data.email }}</span>
+							{% else %}
+								<span>No mail found.</span>
+							{% endif %}
+							{% if is_own_profile %}
+							<img src="{% static 'icons/edit-pp.svg' %}" class="edit-icon" alt="" onclick="">
+							{% endif %}
+						</p>
+	
+						{% if is_own_profile %}
 						<p>Password:
 							<span>*********</span>
-							<img src="{% static 'icons/edit-pp.svg' %}" class="edit-icon" alt="" onclick="" >
+							<img src="{% static 'icons/edit-pp.svg' %}" class="edit-icon" alt="" onclick="">
 						</p>
 						<p>
 							<button type="button" class="btn btn-primary signout-btn" style="background-color: #4423ff; border-color: #4423ff;">
 								<a href="/accounts/logout" style="text-decoration: none; color: #ffffff;">Logout</a>
 							</button>
 						</p>
+						{% endif %}
 					</div>
 				</div>
 				<div class="vertical-bar"></div>
 				<div class="profile-stats">
 					<div style="text-align: center"><span class="score">{{ wins }}</span><span class="win">W</span></div>
 					<div class="vertical-bar"></div>
-					<div style="text-align: center"><span  class="score">{{ losses }}</span><span class="lose">L</span></div>
+					<div style="text-align: center"><span class="score">{{ losses }}</span><span class="lose">L</span></div>
 				</div>
 			</div>
 			{% for game in scores %}
@@ -134,17 +144,18 @@ body {
 						{{ game.opponent }}
 					</div>
 					<div class="secondary-font score">
-						{{ game.score }}
+						{{ game.user_score }} - {{ game.opponent_score }}
 					</div>
 				</div>
-				{% empty %}
+			{% empty %}
 				<p class="secondary-font">No recent matches found.</p>
 			{% endfor %}
 		</div>
+	
 		<script>
 			const updateAvatarUrl = "{% url 'update_avatar' %}";
-			const username = "{{ user.username }}"; // Embed the username variable
-			console.log('{{ user.avatar }}')
+			const username = "{{ user_data.username }}"; // Using user_data instead of user
+			console.log('{{ user_data.avatar }}')
 		</script>
 		<!-- Chatbox -->
 		{% include 'ChatBox.html' %}

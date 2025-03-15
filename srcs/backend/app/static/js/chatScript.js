@@ -148,15 +148,15 @@ function addFriend() {
 
 function selectContact(contact) {
     selectedContact = contact;
-    // Update header
+    // Update header with redirection to ProfilePage with user_id
     document.getElementById('chatboxHeader').innerHTML = `
-        <img class="back-btn" onclick="goBackToContacts()" src="/static/icons/arrow-left.png" style="height: 24px; width: 24px;">${contact}
+        <img class="back-btn" onclick="goBackToContacts()" src="/static/icons/arrow-left.png" style="height: 24px; width: 24px;">
+        <span onclick="window.location.href='/ProfilePage/${contact}'" style="cursor: pointer;">${contact}</span>
         <div>
             <img class="back-btn" onclick="blockContact()" src="/static/icons/bloquer.png" style="height: 24px; width: 24px; margin-left: -15px;">
             <img class="back-btn" onclick="challengeContact()" src="/static/icons/combat.png" style="height: 24px; width: 24px;">
         </div>
     `;
-    
     // Clear chat
     let chatboxBody = document.getElementById('chatboxBody');
     chatboxBody.innerHTML = '';
