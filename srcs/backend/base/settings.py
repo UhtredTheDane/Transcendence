@@ -208,7 +208,7 @@ STATICFILES_DIRS = [os.path.join(BASE_DIR, 'app/static')]
 
 # Répertoire pour les fichiers média (avatars, uploads)
 MEDIA_URL = '/media/'
-MEDIA_ROOT = "/app/media/"
+MEDIA_ROOT = "/app/app/media/"
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
