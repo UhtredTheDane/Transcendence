@@ -69,13 +69,17 @@
 		matchmakingSocket.onmessage = function (e) {
 			const data = JSON.parse(e.data);
 	
-			if (data.type === "match_found") {
-				document.getElementById("parag").innerHTML = `Match trouvé !<br>ID du match : ${data.game_id}<br>Joueurs : ${data.player1} vs ${data.player2} (Mode: ${data.mode})`;
+			const paragElement = document.getElementById("parag");
+			if (paragElement) {
+    			paragElement.innerHTML = `Match trouvé !<br>ID du match : ${data.game_id}<br>Joueurs : ${data.player1} vs ${data.player2} (Mode: ${data.mode})`;
+			}
+			else {
+    			console.warn("Element with ID 'parag' not found.");
+			}
 	
 				setTimeout(() => {
 					window.location.href = `/${data.mode}/${data.game_id}`;
 				}, 1500);
-			}
 		};
 	
 		matchmakingSocket.onclose = function (e) {
