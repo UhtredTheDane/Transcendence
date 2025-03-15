@@ -141,14 +141,13 @@
 				<p class="secondary-font">No recent matches found.</p>
 			{% endfor %}
 		</div>
-		<script>
-			const updateAvatarUrl = "{% url 'update_avatar' %}";
-			console.log('{{ user.avatar }}')
-		</script>
 
 		<!-- Chatbox -->
 		{% include 'ChatBox.html' %}
 
+		<script>
+			console.log("{{ user.avatar.url }}")
+		</script>
 		<script src="{% static 'js/index.js' %}"></script>
 		<script src="{% static 'js/profile.js' %}"></script>
 

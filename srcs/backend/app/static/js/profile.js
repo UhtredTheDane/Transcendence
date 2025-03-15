@@ -18,7 +18,7 @@ function uploadProfilePicture(input) {
     const csrftoken = getCSRFToken();
     if (!csrftoken) return console.error('CSRF token not found');
 
-    fetch(updateAvatarUrl, {
+    fetch(input, {
         method: 'POST',
         body: formData,
         headers: {

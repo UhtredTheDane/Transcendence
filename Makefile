@@ -67,4 +67,4 @@ re: down clean all
 mre: down all
 
 logs:
-	@$(DOCKERCOMPOSE) logs --tail=50 --follow --timestamps
+	@$(DOCKERCOMPOSE) logs --tail=50 site

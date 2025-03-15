@@ -4,7 +4,7 @@ from app import models
 # Register your models here.
 
 class UserAdmin(admin.ModelAdmin):
-	list_display = ['id', 'username', "first_name", "last_name", 'email', 'is_waiting', 'elo_rating', 'is_active', 'channel_name', 'is_staff', 'is_superuser', 'date_joined']
+	list_display = ['id', 'username', "first_name", "last_name", 'email', 'is_waiting', 'elo_rating', 'is_active', 'avatar', 'channel_name', 'is_staff', 'is_superuser', 'date_joined']
 	list_editable = ['first_name', 'last_name', 'email', 'is_waiting', 'elo_rating', 'is_active', 'channel_name', 'is_staff', 'is_superuser']
 
 class GameAdmin(admin.ModelAdmin):
