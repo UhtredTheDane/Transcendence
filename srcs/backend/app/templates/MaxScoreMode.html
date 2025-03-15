@@ -1,0 +1,148 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="icon" type="image/png" href="{% static 'icons/42_logo.png' %}"  />
+    <title>Rush Mode - Game</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: black;
+            color: white;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: auto;
+            padding-top: 100px;
+        }
+
+        .navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 999;
+            background-color: #343a40;
+            width: 100%;
+            padding: 10px;
+        }
+
+        .navbar a {
+            color: white !important;
+            font-weight: bold;
+            font-size: 16px;
+            padding: 10px 15px;
+        }
+
+        .navbar-nav {
+            display: flex;
+            justify-content: flex-start;
+            width: 100%;
+        }
+
+        .background-text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 12vw;
+            font-weight: bold;
+            color: white;
+            opacity: 0.1;
+            user-select: none;
+            z-index: -1;
+        }
+
+        .scores {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 30px;
+            font-size: 40px;
+            font-weight: bold;
+        }
+
+        .game-window {
+            width: 802px;
+            height: 455px;
+            border: 2px solid white;
+            background-color: #222;
+            margin-top: 20px;
+        }
+
+        /* Back button styling */
+        .back-btn {
+            background-color: transparent;
+            color: white;
+            border: none;
+            font-size: 20px;
+            cursor: pointer;
+        }
+    </style>
+    <link rel="stylesheet" href="{% static 'css/chatbox.css' %}">
+    <link rel="stylesheet" href="{% static 'css/index.css' %}">
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark">
+        <div class="container-fluid">
+            <div class="navbar-nav">
+                <a class="nav-link" href="/GameModes">Change Mode</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class=" position-absolute top-50 start-50 translate-middle">
+        <img class="transcendence-icon" alt="" src="{% static 'images/bg-text.svg' %}">
+    </div>
+
+    <div class="container">
+        <h1 class="mb-3 primary-font grid text-center">PvP - Max Score Mode</h1>
+
+        <!-- Scores -->
+        <div class="scores secondary-font">
+            <!-- Player's score container (always on the left) -->
+            <div id="player-side" class="score container px-4 text-center">
+                <p>Player 1: 0</p>
+            </div>
+            <!-- AI's score container (always on the right) -->
+            <div id="ai-side" class="score container px-4 text-center">
+                <p>Player 2: 0</p>
+            </div>
+        </div>
+
+        <!-- Game Window -->
+        <div class="game-window ">
+            <canvas id="field" width="802px" height="455px">
+                Votre Navigateur ne supporte pas la balise canvas.
+            </canvas>
+            <script>
+                const gameId = '{{ game_id }}';
+                const playerRole = '{{player_role }}';
+                var typegame = '/MaxScoreMode/';
+            </script>
+            <script type="module" src="{% static 'js/MaxScoreMode.js' %}"></script>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById("maxScore").addEventListener("input", function(event) {
+            let maxScoreValue = event.target.value;
+            // Set max score in your game logic (this assumes the Launcher class is already instantiated)
+            if (launcher && launcher.game instanceof MaxScoreGame) {
+                launcher.game.maxscore = parseInt(maxScoreValue);
+                console.log("Max score updated to: ", maxScoreValue);
+            }
+        });
+    </script>
+    
+
+        <!-- Chatbox -->
+	{% include 'ChatBox.html' %}
+    <script src="{% static 'js/chatScript.js' %}"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.min.js"></script>
+</body>
+</html>

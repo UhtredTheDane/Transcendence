@@ -55,13 +55,15 @@ INSTALLED_APPS = [
 	'django.contrib.messages',
 	'django.contrib.staticfiles',
 	'app',
+	'channels',
 	'allauth',
 	'allauth.account',
 	'allauth.socialaccount',
 	'allauth.socialaccount.providers.google',
-	'channels',
-	#'allauth.socialaccount.providers.oauth2',
+	'allauth.socialaccount.providers.oauth2',
 ]
+
+SITE_ID = 1
 
 MIDDLEWARE = [
 	'django.middleware.security.SecurityMiddleware',
@@ -111,8 +113,6 @@ DATABASES = {
 	}
 }
 
-SITE_ID = 1
-
 # User default model schema
 AUTH_USER_MODEL = 'app.User'
 
@@ -140,6 +140,9 @@ AUTH_PASSWORD_VALIDATORS = [
 	},
 ]
 
+FORTYTWO_CLIENT_ID = config("FORTYTWO_CLIENT_ID")
+FORTYTWO_CLIENT_SECRET = config("FORTYTWO_SECRET")
+FORTYTWO_REDIRECT_URI = "http://localhost:8000/auth/42/callback/"
 
 SOCIALACCOUNT_PROVIDERS = {
 	'google': {
@@ -152,13 +155,25 @@ SOCIALACCOUNT_PROVIDERS = {
 		'AUTH_PARAMS': {'access_type': 'online'},
 		'FIELDS': ['id', 'email', 'name', 'picture'], 
 	},
+	'fortytwo': {
+		'APP': {
+			'client_id': FORTYTWO_CLIENT_ID,
+			'secret': FORTYTWO_CLIENT_SECRET,
+			'key': ''
+		},
+        'SCOPE': ['public'],
+        'AUTH_PARAMS': {'access_type': 'online'},
+    }
 }
 
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
-ACCOUNT_AUTHENTICATION_METHOD = "username_email"
-ACCOUNT_SIGNUP_REDIRECT_URL = "/"
+SOCIALACCOUNT_LOGIN_ON_GET = True
+ACCOUNT_LOGOUT_ON_GET = True
+LOGIN_URL = '/SignIn/'
+ACCOUNT_LOGIN_METHODS = {"username", "email"}
+ACCOUNT_SIGNUP_REDIRECT_URL = "/ProfilePage"
 LOGIN_REDIRECT_URL = "/" 
-ACCOUNT_LOGOUT_REDIRECT_URL ='/accounts/login'
+ACCOUNT_LOGOUT_REDIRECT_URL ='/'
 ACCOUNT_EMAIL_VERIFICATION = "optional"
 ACCOUNT_EMAIL_REQUIRED = True
 ACCOUNT_USERNAME_REQUIRED = True
@@ -191,7 +206,7 @@ STATICFILES_DIRS = [os.path.join(BASE_DIR, 'app/static')]
 
 # Répertoire pour les fichiers média (avatars, uploads)
 MEDIA_URL = '/media/'
-MEDIA_ROOT = os.path.join(BASE_DIR, 'app/media')
+MEDIA_ROOT = "/app/media/"
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
