@@ -52,6 +52,9 @@ function setGameMode(mode) {
 		case "TimerMode":
 			window.location.href='/MatchMaking/?typegame=TimerMode';
 			break;
+		case "MaxScoreMode":
+			window.location.href='/MatchMaking/?typegame=MaxScoreMode';
+			break;
 		case "TicTacToe":
 			window.location.href='/TicTacToe';
 			break;
