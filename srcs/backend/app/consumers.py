@@ -446,13 +446,13 @@ class ChatboxConsumer(AsyncWebsocketConsumer):
                     'error': str(e)
                 }))
 
-    async def chat_message(self, event):
-        await self.send(text_data=json.dumps({
-            'type': 'message',
-            'sender': event['sender'],
-            'receiver': event['receiver'],
-            'content': event['content']
-        }))
+    # async def chat_message(self, event):
+    #     await self.send(text_data=json.dumps({
+    #         'type': 'message',
+    #         'sender': event['sender'],
+    #         'receiver': event['receiver'],
+    #         'content': event['content']
+    #     }))
     
     async def chat_message(self, event):
         await self.send(text_data=json.dumps({
