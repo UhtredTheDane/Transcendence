@@ -21,24 +21,31 @@ socket.onmessage = function(event) {
             timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
         });
 
-		if (data.sender === selectedContact) {
+        if (data.sender === selectedContact) {
             displayMessage(data.sender, data.content, 'left');
         }
-	}
+    }
 	else if (data.type === 'friend_added') {
         if (data.success) {
+            // Initialize messages array for new friend
+            if (!messages[data.friend_name]) {
+                messages[data.friend_name] = [];
+            }
             alert('Friend added successfully!');
-            // Refresh contact list
-            location.reload(); // Or implement a more elegant refresh
+            location.reload();
         } else {
             alert('Failed to add friend: ' + data.error);
         }
     }
 	else if (data.type === 'unfriended') {
-		if (data.success) {
+        if (data.success) {
             alert('Contact removed from friends');
+            // Clear messages when unfriended
+            if (messages[selectedContact]) {
+                delete messages[selectedContact];
+            }
             goBackToContacts();
-            location.reload(); // Refresh to update friend list
+            location.reload();
         } else {
             alert('Failed to remove contact: ' + data.error);
         }
@@ -70,8 +77,7 @@ socket.onmessage = function(event) {
         acceptButton.textContent = 'Accept Challenge';
         acceptButton.classList.add('btn', 'btn-primary', 'mt-2');
         acceptButton.onclick = function() {
-            // Redirect to game page with challenger info
-            window.location.href = `/game/pong?challenger=${data.sender}`; // ! A MODIFIER
+            window.location.href = `/RankedMode/${data.sender}`;
         };
         
         messageContainer.appendChild(senderName);
@@ -79,6 +85,16 @@ socket.onmessage = function(event) {
         messageContainer.appendChild(acceptButton);
         chatboxBody.appendChild(messageContainer);
         chatboxBody.scrollTop = chatboxBody.scrollHeight;
+
+        // Store the challenge message
+        if (!messages[data.sender]) {
+            messages[data.sender] = [];
+        }
+        messages[data.sender].push({
+            sender: data.sender,
+            content: data.content,
+            timestamp: timestamp
+        });
     }
 };
 
@@ -143,6 +159,11 @@ function addFriend() {
             friend_name: friendName
         }));
         document.getElementById('floatingInput').value = ''; // Clear input
+        
+        // Clear any existing messages for this contact
+        if (messages[friendName]) {
+            delete messages[friendName];
+        }
     }
 }
 
@@ -258,23 +279,38 @@ function blockContact() {
             sender: user,
             contact_name: selectedContact
         }));
+        
+        // Clear messages for unfriended contact
+        if (messages[selectedContact]) {
+            delete messages[selectedContact];
+        }
     }
 }
 
 function challengeContact() {
-	if (selectedContact) {
+    if (selectedContact) {
         const challengeMessage = "I challenge you to a Pong duel!";
         
-        // Send challenge message through websocket
+        // Store challenge message
+        if (!messages[selectedContact]) {
+            messages[selectedContact] = [];
+        }
+        messages[selectedContact].push({
+            sender: user,
+            content: challengeMessage,
+            timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+        });
+
+        // Display challenge message
+        displayMessage(user, challengeMessage, 'right');
+
+        // Send challenge through websocket
         socket.send(JSON.stringify({
             type: "challenge",
             sender: user,
             receiver: selectedContact,
             content: challengeMessage
         }));
-
-        // Display the challenge message for the sender
-        displayMessage(user, challengeMessage, 'right');
     }
 }
 

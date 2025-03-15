@@ -378,28 +378,48 @@ class ChatboxConsumer(AsyncWebsocketConsumer):
                 receiver=receiver,
                 content=data['content']
             )
+
+            # Send to receiver's group
+            receiver_group = f"user_{data['receiver']}"
+            await self.channel_layer.group_send(
+                receiver_group,
+                {
+                    'type': 'chat_message',
+                    'message_type': 'message',
+                    'sender': data['sender'],
+                    'receiver': data['receiver'],
+                    'content': data['content']
+                }
+            )
+
+            # Also send back to sender's group
+            sender_group = f"user_{data['sender']}"
+            await self.channel_layer.group_send(
+                sender_group,
+                {
+                    'type': 'chat_message',
+                    'message_type': 'message',
+                    'sender': data['sender'],
+                    'receiver': data['receiver'],
+                    'content': data['content']
+                }
+            )
         elif data['type'] == 'add_friend':
             try:
                 user = self.scope["user"]
                 friend = await database_sync_to_async(User.objects.get)(username=data['friend_name'])
                 
-                if friend != user:
-                    await database_sync_to_async(user.friends.add)(friend)
-                    await self.send(text_data=json.dumps({
-                        'type': 'friend_added',
-                        'success': True
-                    }))
-                else:
-                    await self.send(text_data=json.dumps({
-                        'type': 'friend_added',
-                        'success': False,
-                        'error': 'Cannot add yourself as friend'
-                    }))
-            except User.DoesNotExist:
+                await database_sync_to_async(user.friends.add)(friend)
+                await self.send(text_data=json.dumps({
+                    'type': 'friend_added',
+                    'success': True,
+                    'friend_name': friend.username
+                }))
+            except Exception as e:
                 await self.send(text_data=json.dumps({
                     'type': 'friend_added',
                     'success': False,
-                    'error': 'User not found'
+                    'error': str(e)
                 }))
         elif data['type'] == 'unfriend':
             try:
