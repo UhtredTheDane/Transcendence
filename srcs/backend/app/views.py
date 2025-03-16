@@ -551,9 +551,9 @@ def	tounrnamentpage(request):
 	participants = ['John', "Doe", "Alice", "Bob", "Charlie", "Eve", "Mallory", "Oscar"]
 	random.shuffle(participants)
 
-	tournament_response = create_tournament_request(request)
-	if tournament_response.get('status') == 'error':
-		return JsonResponse({'status': 'error', 'message': tournament_response.get('message')})
+	# tournament_response = create_tournament_request(request)
+	# if tournament_response.get('status') == 'error':
+	# 	return JsonResponse({'status': 'error', 'message': tournament_response.get('message')})
 	
 	matches = [(participants[i], participants[i+1]) for i in range(0, len(participants), 2)]
 	
