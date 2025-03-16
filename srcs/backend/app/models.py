@@ -3,8 +3,6 @@ from django.contrib.auth.models import AbstractUser
 from django.core.validators import FileExtensionValidator, MaxValueValidator, MinValueValidator
 from django.utils.translation import gettext_lazy as _
 
-
-
 class User(AbstractUser):
 	STATUS_CHOICES = [
 		('on', 'online'),
@@ -19,6 +17,7 @@ class User(AbstractUser):
 	status = models.CharField(max_length=50, choices=STATUS_CHOICES, default='off')
 	visual_impairment_level = models.IntegerField(default=0, validators=[MinValueValidator(0), MaxValueValidator(5)]) # Visually Impaired User (daltonisme)
 	is_waiting = models.BooleanField(default=False)
+	is_ready = models.BooleanField(default=False)
 	elo_rating = models.IntegerField(default=1000)
 	channel_name = models.CharField(max_length=255, blank=True, null=True)
 

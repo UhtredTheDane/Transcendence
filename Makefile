@@ -53,7 +53,7 @@ clean: down
 	@$(DOCKERCOMPOSE) down --remove-orphans
 	@echo "$(RED)[Containers]$(DEFAULT) Cleaned !"
 
-fclean:
+fclean: clean
 	@docker system prune -f -a --volumes
 	@echo "$(RED)[Containers]$(DEFAULT) Fully deleted !"
 
@@ -63,4 +63,4 @@ re: down clean all
 mre: down all
 
 logs:
-	@$(DOCKERCOMPOSE) logs --tail=50 site
+	@$(DOCKERCOMPOSE) logs site
