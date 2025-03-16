@@ -1,23 +1,16 @@
-import os
-import uuid
 import json
 import requests
 import random
 from django.conf import settings
 from django.shortcuts import get_object_or_404, render, redirect
-from django.http import HttpResponse, HttpResponseNotFound, HttpResponseRedirect, Http404, JsonResponse
-from django.core.files.storage import default_storage
+from django.http import HttpResponseNotFound, HttpResponseRedirect, Http404, JsonResponse
 from django.core.files.base import ContentFile
 from django.contrib import messages
-from django.core.files.uploadedfile import InMemoryUploadedFile
-from django.contrib.auth import authenticate, login, logout, get_backends
+from django.contrib.auth import login, get_backends
 from django.contrib.auth.models import AnonymousUser
 from django.contrib.auth.decorators import login_required
-from django.utils.decorators import method_decorator
 from django.db.models import F, Q
-from allauth.socialaccount.models import SocialAccount
-from .models import User, Channel, ChannelUser,  Message, Messages, Game
-from app.tests import Test
+from .models import User, Channel,  Message, Messages, Game
 from django.views.decorators.csrf import csrf_exempt
 from allauth.account.forms import LoginForm
 from allauth.account.forms import SignupForm
