@@ -314,6 +314,121 @@ def profile(request, username=None):
     except User.DoesNotExist:
         return redirect('Error404')
 
+def get_messages(request, contact_username):
+    if not request.user.is_authenticated:
+        return JsonResponse({'error': 'Not authenticated'}, status=401)
+    
+    try:
+        messages = Messages.objects.filter(
+            Q(sender=request.user, receiver__username=contact_username) |
+            Q(receiver=request.user, sender__username=contact_username)
+        ).order_by('timestamp')
+        
+        return JsonResponse({
+            'messages': [{
+                'sender': msg.sender.username,
+                'content': msg.content,
+                'timestamp': msg.timestamp.strftime('%H:%M')
+            } for msg in messages]
+        })
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)
+
+
+def leaderboard(request):
+    leaderboard = User.objects.order_by('-elo_rating')[:10]
+    print(leaderboard)
+    return render(request, 'leaderboard.html', { 'leaderboard': leaderboard })
+
+def game_modes(request):
+    return render(request, 'GameModes.html')
+
+def rules(request):
+    return render(request, 'PongRules.html')
+
+def signin(request):
+	form = LoginForm(data=request.POST or None, request=request)
+
+	if request.method == "POST":
+		if form.is_valid():
+			response = allauth_login(request)
+			if request.user.is_authenticated:
+				return redirect("/ProfilePage/") 
+		else:
+			messages.error(request, "Identifiants invalides")
+
+	return render(request, "SignIn.html", { "form": form })
+
+def signup(request):
+    form = SignupForm(request.POST or None)
+
+    if request.method == "POST":
+        if form.is_valid():
+            response = allauth_signup(request)
+            if request.user.is_authenticated:
+                return redirect("/ProfilePage/")
+
+    return render(request, "SignUp.html", {"form": form })
+
+def	aimode(request):
+    return render(request, 'AIMode.html')
+
+def	tictactoe(request):
+    return render(request, 'TicTacToe.html')
+
+@login_required
+def	tounrnamentpage(request):
+    return render(request, 'TournamentPage.html')
+
+@login_required
+def	invitetournament(request):
+    return render(request, 'InviteTournament.html')
+
+@login_required
+def	jointournament(request):
+    return render(request, 'JoinTournament.html')
+
+def	pongtourny(request):
+    return render(request, 'PongTourny.html')
+
+def	newprofile(request):
+    return render(request, 'NewProfilePage.html')
+
+@login_required
+def	myfriends(request):
+    return render(request, 'MyFriends.html')
+
+def	error404(request):
+    return render(request, 'Error404.html')
+
+@login_required
+def	passwordreset(request):
+    return render(request, 'PasswordReset.html')
+
+def	tictactoe(request):
+    return render(request, 'TicTacToe.html')
+
+@login_required
+def	matchmaking(request):
+    return render(request, 'MatchMaking.html')
+
+@login_required
+def	ChallengeMode(request):
+    return render(request, 'ChallengeMode.html')
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 # @login_required
 # def profile(request, user_id=None):
 #     if user_id is None:
@@ -392,105 +507,3 @@ def profile(request, username=None):
 #         'wins': wins,
 #         'losses': losses
 #         })
-
-def get_messages(request, contact_username):
-    if not request.user.is_authenticated:
-        return JsonResponse({'error': 'Not authenticated'}, status=401)
-    
-    try:
-        messages = Messages.objects.filter(
-            Q(sender=request.user, receiver__username=contact_username) |
-            Q(receiver=request.user, sender__username=contact_username)
-        ).order_by('timestamp')
-        
-        return JsonResponse({
-            'messages': [{
-                'sender': msg.sender.username,
-                'content': msg.content,
-                'timestamp': msg.timestamp.strftime('%H:%M')
-            } for msg in messages]
-        })
-    except Exception as e:
-        return JsonResponse({'error': str(e)}, status=500)
-
-
-def leaderboard(request):
-    leaderboard = User.objects.order_by('-elo_rating')[:10]
-    print(leaderboard)
-    return render(request, 'leaderboard.html', { 'leaderboard': leaderboard })
-
-def game_modes(request):
-    return render(request, 'GameModes.html')
-
-def rules(request):
-    return render(request, 'PongRules.html')
-
-def signin(request):
-	form = LoginForm(data=request.POST or None, request=request)  # Passe explicitement request
-
-	if request.method == "POST":
-		if form.is_valid():
-			response = allauth_login(request)  # Gère l'authentification avec Allauth
-			if request.user.is_authenticated:  # Vérifie si l'utilisateur est bien connecté
-				return redirect("/ProfilePage/")  # Redirige vers la page de profil après connexion
-		else:
-			messages.error(request, "Identifiants invalides")
-
-	return render(request, "SignIn.html", { "form": form })
-
-def signup(request):
-    form = SignupForm(request.POST or None)
-
-    if request.method == "POST":
-        if form.is_valid():
-            response = allauth_signup(request)
-            if request.user.is_authenticated:
-                return redirect("/ProfilePage/")
-
-    return render(request, "SignUp.html", {"form": form})
-
-def	aimode(request):
-    return render(request, 'AIMode.html')
-
-def	tictactoe(request):
-    return render(request, 'TicTacToe.html')
-
-@login_required
-def	tounrnamentpage(request):
-    return render(request, 'TournamentPage.html')
-
-@login_required
-def	invitetournament(request):
-    return render(request, 'InviteTournament.html')
-
-@login_required
-def	jointournament(request):
-    return render(request, 'JoinTournament.html')
-
-def	pongtourny(request):
-    return render(request, 'PongTourny.html')
-
-def	newprofile(request):
-    return render(request, 'NewProfilePage.html')
-
-@login_required
-def	myfriends(request):
-    return render(request, 'MyFriends.html')
-
-def	error404(request):
-    return render(request, 'Error404.html')
-
-@login_required
-def	passwordreset(request):
-    return render(request, 'PasswordReset.html')
-
-def	tictactoe(request):
-    return render(request, 'TicTacToe.html')
-
-@login_required
-def	matchmaking(request):
-    return render(request, 'MatchMaking.html')
-
-@login_required
-def	ChallengeMode(request):
-    return render(request, 'ChallengeMode.html')
