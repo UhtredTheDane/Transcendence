@@ -40,6 +40,13 @@ urlpatterns = [
   	path('RushMode/<int:game_id>/', views.RushMode, name='RushMode'),
    	path('TimerMode/<int:game_id>/', views.TimerMode, name='TimerMode'),
 	path('MaxScoreMode/<int:game_id>/', views.MaxScoreMode, name='MaxScoreMode'),
+
+
+	# path('create-tournament/', views.create_tournament, name='create_tournament'),
+    path('checkMatches/<int:tournament_id>', views.check_matches, name='check_matches'),
+    path('add-match/', views.add_match, name='add_match'),
+    path('getPlayerMatches/<int:tournament_id>/<str:player_name>/', views.get_player_matches, name='get_player_matches'),
+
 	path('ChallengeMode/<int:game_id>/', views.ChallengeMode, name='ChallengeMode'),
 
 	path('game-ia/', views.game_ia, name='game-ia'),

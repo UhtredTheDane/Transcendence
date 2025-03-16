@@ -135,13 +135,8 @@
         const selectedPlayers = [];
 
 		function checkPlayers() {
-			if (selectedPlayers.length < 4) {
-				alert('You need at least 4 players to start a tournament.');
-			} else if (selectedPlayers.length % 4 !== 0) {
-				alert('You need a multiple of 4 players to start a tournament.');
-			} else {
-				window.location.href = '/TournamentPage'; // Redirect to TournamentPage
-			}
+			if (![4, 8, 16].includes(selectedPlayers.length))
+				alert('You need to select 4, 8, or 16 players to start a tournament.');
 		}
 
         function addPlayer(player) {

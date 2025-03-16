@@ -1,6 +1,6 @@
+import json
 import requests
 import random
-
 from django.conf import settings
 from django.shortcuts import get_object_or_404, render, redirect
 from django.http import HttpResponseNotFound, HttpResponseRedirect, Http404, JsonResponse
@@ -10,11 +10,12 @@ from django.contrib.auth import login, get_backends
 from django.contrib.auth.models import AnonymousUser
 from django.contrib.auth.decorators import login_required
 from django.db.models import F, Q
+from .models import User, Channel,  Message, Messages, Game
+from django.views.decorators.csrf import csrf_exempt
 from allauth.account.forms import LoginForm
 from allauth.account.forms import SignupForm
 from allauth.account.views import login as allauth_login
 from allauth.account.views import signup as allauth_signup
-from .models import User, Channel, Message, Messages, Game
 
 API_42_AUTH_URL = "https://api.intra.42.fr/oauth/authorize"
 API_42_TOKEN_URL = "https://api.intra.42.fr/oauth/token"
@@ -47,7 +48,7 @@ def leaderboard(request):
 def create_or_get_channel(request, user_id):
 	if not request.user.is_authenticated:
 		return HttpResponseRedirect('/SignIn')
-
+		
 	other_user = get_object_or_404(User, id=user_id)
 	current_user = request.user
 
@@ -331,6 +332,170 @@ def get_messages(request, contact_username):
 	except Exception as e:
 		return JsonResponse({'error': str(e)}, status=500)
 
+		result = "Victory" if user_score > opponent_score else "Defeat"
+
+		scores.append({
+			'result': result,
+			'opponent': opponent.username if opponent else "AI",
+			'score': f"{user_score} - {opponent_score}",
+			'created_at': game.created_at.strftime("%Y-%m-%d %H:%M")
+			})
+
+	return render(request, 'ProfilePage.html', {
+		'user': user_data,
+		'scores': scores,
+		'wins': wins,
+		'losses': losses
+		})
+	if user_id is None:
+		user_data = request.user
+	else:
+		user_data = get_object_or_404(User, id=user_id)
+
+	user_games = Game.objects.filter(player1=user_data)
+
+	wins = user_games.filter(score_player1__gt=F('score_player2')).count()
+	losses = user_games.filter(score_player1__lt=F('score_player2')).count()
+
+	last_games = user_games.order_by('-created_at')[:4]
+
+	scores = []
+	for game in last_games:
+		if game.player1 == user_data:
+			user_score = game.score_player1
+			opponent = game.player2 if game.player2 else None
+			opponent_score = game.score_player2 if opponent else 0
+		else:
+			user_score = game.score_player2
+			opponent = game.player1
+			opponent_score = game.score_player1
+
+		result = "Victory" if user_score > opponent_score else "Defeat"
+
+		scores.append({
+			'result': result,
+			'opponent': opponent.username if opponent else "AI",
+			'score': f"{user_score} - {opponent_score}",
+			'created_at': game.created_at.strftime("%Y-%m-%d %H:%M")
+			})
+
+	return render(request, 'ProfilePage.html', {
+		'user': user_data,
+		'scores': scores,
+		'wins': wins,
+		'losses': losses
+		})
+
+EXPRESS_SERVER_URL = "http://blockchain-node:3000"
+
+@csrf_exempt
+def create_tournament_request(request):
+	try:
+		response = requests.post(f"{EXPRESS_SERVER_URL}/create-tournament")
+		return response.json()
+	except Exception as e:
+		return {'status': 'error', 'message': str(e)}
+
+# @csrf_exempt
+# def create_tournament(request):
+#     if request.method == 'POST':
+#         try:
+#             response = requests.post(f"{EXPRESS_SERVER_URL}/create-tournament")
+			
+#             return JsonResponse(response.json(), safe=False)
+#         except Exception as e:
+#             return JsonResponse({'status': 'error', 'message': str(e)})
+#     return JsonResponse({'status': 'error', 'message': 'Invalid request method'})
+
+@csrf_exempt
+def add_match(request):
+	if request.method == "POST":
+		try:
+			# Parse JSON data from request body
+			data = json.loads(request.body)
+		except json.JSONDecodeError:
+			return JsonResponse({"status": "error", "message": "Invalid JSON payload"})
+		
+		# Extract values from the parsed JSON data
+		tournament_id = data.get("tournament_id")
+		player1 = data.get("player1")
+		player2 = data.get("player2")
+		score1 = data.get("score1")
+		score2 = data.get("score2")
+		date = data.get("date")  # Extract the date
+
+		# Check if all required fields are present, including the date
+		if not all([tournament_id, player1, player2, score1, score2, date]):
+			return JsonResponse({"status": "error", "message": "Missing required fields."})
+		
+		# Prepare payload for Express request, including the date
+		payload = {
+			"tournamentid": tournament_id,
+			"player1": player1,
+			"player2": player2,
+			"score1": score1,
+			"score2": score2,
+			"date": date  # Add the date to the payload
+		}
+		
+		try:
+			# Send POST request to Express server
+			response = requests.post(
+				"http://blockchain-node:3000/add-match", 
+				json=payload,  # Send as JSON
+				headers={"Content-Type": "application/json"}
+			)
+			
+			return JsonResponse(response.json())
+		except Exception as e:
+			return JsonResponse({"status": "error", "message": str(e)})
+	
+	return JsonResponse({"status": "error", "message": "Invalid request method"})
+
+
+@csrf_exempt
+def check_matches(request, tournament_id):  # Accepter tournament_id ici
+	if request.method == "GET":
+		try:
+			# Envoyer la requête GET au serveur Express avec l'ID du tournoi
+			response = requests.get(f"http://blockchain-node:3000/checkMatches/{tournament_id}")
+			
+			# Vérifier si la réponse est vide ou a un statut non valide
+			if response.status_code != 200 or not response.text:
+				return JsonResponse({"status": "error", "message": "Invalid response from blockchain service."})
+
+			try:
+				# Tenter de parser la réponse JSON
+				data = response.json()
+			except ValueError:
+				return JsonResponse({"status": "error", "message": "Invalid JSON received from blockchain service."})
+
+			# Retourner les données provenant du serveur Express
+			return JsonResponse(data)
+		except Exception as e:
+			return JsonResponse({"status": "error", "message": str(e)})
+	
+	return JsonResponse({"status": "error", "message": "Invalid request method"})
+
+@csrf_exempt  # If you want to disable CSRF protection for this view
+def get_player_matches(request, tournament_id, player_name):
+	try:
+		# Make a request to the Express server using blockchain-node
+		url = f"http://blockchain-node:3000/getPlayerMatches/{tournament_id}/{player_name}"
+		response = requests.get(url)
+
+		# Check if the response is successful
+		if response.status_code == 200:
+			return JsonResponse(response.json())  # Return matches from Express server
+		else:
+			return JsonResponse({
+				'status': 'error',
+				'message': 'Failed to fetch player matches from Express server',
+				'error': response.json()
+			})
+
+	except Exception as e:
+		return JsonResponse({'status': 'error', 'message': str(e)})
 
 def leaderboard(request):
 	leaderboard = User.objects.order_by('-elo_rating')[:10]
@@ -365,7 +530,7 @@ def signup(request):
 			if request.user.is_authenticated:
 				return redirect("/ProfilePage/")
 
-	return render(request, "SignUp.html", {"form": form })
+	return render(request, "SignUp.html", { "form": form })
 
 def	aimode(request):
 	return render(request, 'AIMode.html')
@@ -377,8 +542,14 @@ def	tictactoe(request):
 def	tounrnamentpage(request):
 	participants = ['John', "Doe", "Alice", "Bob", "Charlie", "Eve", "Mallory", "Oscar"]
 	random.shuffle(participants)
+
+	# tournament_response = create_tournament_request(request)
+	# if tournament_response.get('status') == 'error':
+	# 	return JsonResponse({'status': 'error', 'message': tournament_response.get('message')})
+	
 	matches = [(participants[i], participants[i+1]) for i in range(0, len(participants), 2)]
 	
+	# create_tournament(participants)
 	return render(request, 'TournamentPage.html', { 'matches': matches })
 
 @login_required

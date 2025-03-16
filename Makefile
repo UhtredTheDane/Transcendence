@@ -50,7 +50,7 @@ build:
 # remove the wordpress and mariadb data directories.
 # the (|| true) is used to ignore the error if there are no containers running to prevent the make command from stopping.
 clean: down
-	@$(DOCKERCOMPOSE) down --remove-orphans
+	@$(DOCKERCOMPOSE) down --rmi all --volumes --remove-orphans
 	@echo "$(RED)[Containers]$(DEFAULT) Cleaned !"
 
 fclean: clean
