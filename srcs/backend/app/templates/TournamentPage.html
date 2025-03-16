@@ -117,13 +117,12 @@
             let bracketContainer = document.getElementById('bracket');
             if (!bracketContainer) {
                 console.error('Bracket container not found');
-                return; // Return early if the container isn't found
+                return;
             }
-            bracketContainer.innerHTML = '';  // Clear any existing content
-    
+            bracketContainer.innerHTML = '';
             console.log('initbracket called');
     
-            let numPlayers = 4;  // Set your number of players here
+            let numPlayers = 4;  // SET NUMVBER OF PLAYERS
             if (numPlayers === 16) {
                 console.log('Setting up Eight Finals for 16 players');
                 createEightFinals(bracketContainer);
