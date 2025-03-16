@@ -8,7 +8,9 @@ contract PongTournament {
         string player2;
         uint256 score1;
         uint256 score2;
-    }
+        uint256 date; // Ajout du champ date dans la structure Match
+}
+
 
     // Structure pour représenter un tournoi
     struct Tournament {
@@ -27,7 +29,7 @@ contract PongTournament {
 
     // Événements
     event TournamentCreated(uint256 indexed tournamentId, string name);
-    event MatchAdded(uint256 indexed tournamentId, string player1, string player2, uint256 score1, uint256 score2);
+    event MatchAdded(uint256 tournamentId, string player1, string player2, uint256 score1, uint256 score2, uint256 date);
     event AdminChanged(address indexed oldAdmin, address indexed newAdmin);
 
     // Modificateur pour restreindre l'accès à l'admin
@@ -58,19 +60,22 @@ contract PongTournament {
         string memory _player1,
         string memory _player2,
         uint256 _score1,
-        uint256 _score2
+        uint256 _score2,
+        uint256 _date // Ajout du paramètre date
     ) public onlyAdmin {
         require(_tournamentId <= tournamentCounter, "Tournament does not exist"); // Vérifie que le tournoi existe
         tournamentMatches[_tournamentId].push(Match({
             tournamentId: _tournamentId,
             player1: _player1,
             player2: _player2,
-            score1: _score1,
-            score2: _score2
-        }));
-        tournaments[_tournamentId].matchCount++; // Incrémente le nombre de matchs dans le tournoi
-        emit MatchAdded(_tournamentId, _player1, _player2, _score1, _score2);
-    }
+                score1: _score1,
+            score2: _score2,
+            date: _date // Stockage de la date dans le match
+    }));
+    tournaments[_tournamentId].matchCount++; // Incrémente le nombre de matchs dans le tournoi
+    emit MatchAdded(_tournamentId, _player1, _player2, _score1, _score2, _date); // Modification de l'événement pour inclure la date
+}
+
 
     // Récupérer les informations d'un tournoi
     function getTournament(uint256 _tournamentId) public view returns (Tournament memory) {

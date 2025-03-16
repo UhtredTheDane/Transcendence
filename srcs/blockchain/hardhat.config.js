@@ -18,6 +18,7 @@ task("add-match", "Adds a match to a tournament")
   .addParam("player2", "The name of player 2")
   .addParam("score1", "The score of player 1")
   .addParam("score2", "The score of player 2")
+  .addParam("date", "The date of the match in Unix timestamp") // Ajout du paramètre date
   .setAction(async (taskArgs, hre) => {
     const { ethers } = hre;
 
@@ -36,13 +37,15 @@ task("add-match", "Adds a match to a tournament")
     const tournamentId = parseInt(taskArgs.tournamentid);
     const score1 = parseInt(taskArgs.score1);
     const score2 = parseInt(taskArgs.score2);
+    const date = parseInt(taskArgs.date); // Convertir la date en timestamp Unix
 
     // Ajouter un match au tournoi
-    const addMatchTx = await pongTournament.addMatch(tournamentId, taskArgs.player1, taskArgs.player2, score1, score2);
+    const addMatchTx = await pongTournament.addMatch(tournamentId, taskArgs.player1, taskArgs.player2, score1, score2, date); // Passer la date ici
     await addMatchTx.wait();
 
-    console.log(`Match ajoute au tournoi ID:${tournamentId}, ${taskArgs.player1}, ${taskArgs.player2}, ${score1}, ${score2}`);
+    console.log(`Match ajouté au tournoi ID:${tournamentId}, ${taskArgs.player1}, ${taskArgs.player2}, ${score1}, ${score2}, Date: ${date}`);
   });
+
 
 // Register a custom task to get player matches
 
@@ -63,7 +66,7 @@ task("getPlayerMatches", "Get matches for a player in a tournament")
       const matches = await pongTournament.getPlayerMatches(tournamentid, playername);
 
       // Ensure the result is in the expected format
-      if (!matches) {
+      if (!matches || matches.length === 0) {
         throw new Error('No matches found for this player');
       }
 
@@ -72,10 +75,11 @@ task("getPlayerMatches", "Get matches for a player in a tournament")
         player1: match.player1,
         player2: match.player2,
         score1: match.score1.toString(),  // Convert BigNumber to string
-        score2: match.score2.toString()   // Convert BigNumber to string
+        score2: match.score2.toString(),  // Convert BigNumber to string
+        date: new Date(match.date * 1000).toLocaleString() // Convert Unix timestamp to readable date
       }));
 
-      // Log the result as a JSON string
+      // Log the result as a JSON string with dates
       console.log(JSON.stringify(matchesJson, null, 2));
     } catch (error) {
       console.error("Error fetching player matches:", error);
@@ -84,34 +88,36 @@ task("getPlayerMatches", "Get matches for a player in a tournament")
   });
 
 
+
   // Register custom Hardhat task to check matches
   task("checkMatches", "Get matches for a specific tournament")
-    .addParam("tournamentid", "The tournament ID")
-    .setAction(async ({ tournamentid }) => {
-      // Load contract address from environment variables
-      const contractAddress = process.env.CONTRACT_ADDRESS;
-      if (!contractAddress) {
-        throw new Error("Contract address not set in the environment");
-      }
-  
-      // Attach to the contract
-      const PongTournament = await ethers.getContractFactory("PongTournament");
-      const pongTournament = PongTournament.attach(contractAddress);
-  
-      // Fetch tournament matches
-      const matches = await pongTournament.getTournamentMatches(tournamentid);
-  
-      // Check if matches exist
-      if (matches.length === 0) {
-        console.log(`No matches found for tournament ID ${tournamentid}`);
-        return;
-      }
-  
-      // Format and display the matches
-      matches.forEach((match, index) => {
-        console.log(`Match ${index + 1}: ${match.player1} vs ${match.player2}, score: ${match.score1.toString()} - ${match.score2.toString()}`);
-      });
+  .addParam("tournamentid", "The tournament ID")
+  .setAction(async ({ tournamentid }) => {
+    // Load contract address from environment variables
+    const contractAddress = process.env.CONTRACT_ADDRESS;
+    if (!contractAddress) {
+      throw new Error("Contract address not set in the environment");
+    }
+
+    // Attach to the contract
+    const PongTournament = await ethers.getContractFactory("PongTournament");
+    const pongTournament = PongTournament.attach(contractAddress);
+
+    // Fetch tournament matches
+    const matches = await pongTournament.getTournamentMatches(tournamentid);
+
+    // Check if matches exist
+    if (matches.length === 0) {
+      console.log(`No matches found for tournament ID ${tournamentid}`);
+      return;
+    }
+
+    // Format and display the matches with dates
+    matches.forEach((match, index) => {
+      console.log(`Match ${index + 1}: ${match.player1} vs ${match.player2}, score: ${match.score1.toString()} - ${match.score2.toString()}, Date: ${new Date(match.date * 1000).toLocaleString()}`);
     });
+  });
+
 
 module.exports = {
   solidity: "0.8.20",

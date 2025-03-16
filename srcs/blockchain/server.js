@@ -24,15 +24,15 @@ app.post("/create-tournament", (req, res) => {
 // Add Match Endpoint
 app.post("/add-match", async (req, res) => {
   try {
-    const { tournamentid, player1, player2, score1, score2 } = req.body;
+    const { tournamentid, player1, player2, score1, score2, date } = req.body;
 
-    if (!tournamentid || !player1 || !player2 || !score1 || !score2) {
+    if (!tournamentid || !player1 || !player2 || !score1 || !score2 || !date) {
       return res.status(400).json({ status: "error", message: "Missing required fields" });
     }
 
-    // Call the Hardhat script with the received parameters
+    // Call the Hardhat script with the received parameters, including the date
     const exec = require("child_process").exec;
-    const command = `npx hardhat add-match --tournamentid ${tournamentid} --player1 "${player1}" --player2 "${player2}" --score1 ${score1} --score2 ${score2} --network localhost`;
+    const command = `npx hardhat add-match --tournamentid ${tournamentid} --player1 "${player1}" --player2 "${player2}" --score1 ${score1} --score2 ${score2} --date ${date} --network localhost`;
     
     exec(command, (error, stdout, stderr) => {
       if (error) {
@@ -46,6 +46,7 @@ app.post("/add-match", async (req, res) => {
     res.status(500).json({ status: "error", message: "Failed to add match" });
   }
 });
+
 
 
 // Check Matches Endpoint

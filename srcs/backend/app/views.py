@@ -361,17 +361,20 @@ def add_match(request):
         player2 = data.get("player2")
         score1 = data.get("score1")
         score2 = data.get("score2")
+        date = data.get("date")  # Extract the date
 
-        if not all([tournament_id, player1, player2, score1, score2]):
+        # Check if all required fields are present, including the date
+        if not all([tournament_id, player1, player2, score1, score2, date]):
             return JsonResponse({"status": "error", "message": "Missing required fields."})
         
-        # Prepare payload for Express request
+        # Prepare payload for Express request, including the date
         payload = {
             "tournamentid": tournament_id,
             "player1": player1,
             "player2": player2,
             "score1": score1,
-            "score2": score2
+            "score2": score2,
+            "date": date  # Add the date to the payload
         }
         
         try:
