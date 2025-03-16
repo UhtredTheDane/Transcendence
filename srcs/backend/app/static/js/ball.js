@@ -9,11 +9,20 @@ export default class Ball {
 		this.xSpeed = -0.5;
 		this.ySpeed = -0.5;
 		this.ballSpeed = 1.5;
+		this.multSpeed = 3;
 		this.ballSpeedIncrement = 0.05;
 		this.ballSpeedMax = 2.0;
 		this.diameter = 30.0;
 		this.img = new Image();
 		this.img.src = imgSrc;
+	}
+
+	get multSpeed() {
+		return this._multSpeed;
+	}
+
+	set multSpeed(value) {
+		this._multSpeed = value;
 	}
 
 	get xPos() {
@@ -88,8 +97,8 @@ export default class Ball {
 	resetBall() {
 		this._xPos = 802 / 2;
 		this._yPos = 455 / 2;
-		this._xSpeed = (Math.random() > 0.5 ? 1 : -1) * 3;
-		this._ySpeed = (Math.random() > 0.5 ? 1 : -1) * 3;
+		this._xSpeed = (Math.random() > 0.5 ? 1 : -1) * this._multSpeed;
+		this._ySpeed = (Math.random() > 0.5 ? 1 : -1) * this._multSpeed;
 	}
 
 	increaseBallSpeed() {
@@ -178,8 +187,8 @@ export default class Ball {
 						newSpeedy = this._ySpeed * -1;
 				}
 				this._ballSpeed = Math.sqrt(Math.pow(newSpeedx, 2) + Math.pow(newSpeedy, 2));
-				this._xSpeed = newSpeedx/this._ballSpeed * 5;
-				this._ySpeed = newSpeedy/this._ballSpeed * 5;
+				this._xSpeed = newSpeedx/this._ballSpeed * this._multSpeed;
+				this._ySpeed = newSpeedy/this._ballSpeed * this._multSpeed;
 				//this.increaseBallSpeed(); // Augmenter la vitesse de la balle
 			if (this._xPos <= 30)
 				this._xPos = 31;
@@ -238,8 +247,6 @@ export default class Ball {
 				player.playerScore++;
 			this.resetBall();
 			game.sendUpdateGameScore();
-			if (player.playerScore >= 2 || opponent.playerScore >= 2)
-				game.endGame();
 		}
 				game.sendBallPosition();
 	}

@@ -17,6 +17,7 @@ class User(AbstractUser):
 	status = models.CharField(max_length=50, choices=STATUS_CHOICES, default='off')
 	visual_impairment_level = models.IntegerField(default=0, validators=[MinValueValidator(0), MaxValueValidator(5)]) # Visually Impaired User (daltonisme)
 	is_waiting = models.BooleanField(default=False)
+	is_ready = models.BooleanField(default=False)
 	elo_rating = models.IntegerField(default=1000)
 	channel_name = models.CharField(max_length=255, blank=True, null=True)
 
@@ -109,3 +110,12 @@ class Message(models.Model):
 
 	def __str__(self):
 		return f"Message {self.id} by {self.user.username} in {self.channel.name}"
+
+class Messages(models.Model):
+    sender = models.ForeignKey(User, related_name='sent_messages', on_delete=models.CASCADE)
+    receiver = models.ForeignKey(User, related_name='received_messages', on_delete=models.CASCADE)
+    content = models.TextField()
+    timestamp = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['timestamp']

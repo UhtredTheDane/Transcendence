@@ -47,7 +47,7 @@ contract PongTournament {
         tournamentCounter++; // Incrémente le compteur de tournoi
         tournaments[tournamentCounter] = Tournament({
             id: tournamentCounter,
-            name: _name,
+            name: _name
         });
         emit TournamentCreated(tournamentCounter, _name);
     }

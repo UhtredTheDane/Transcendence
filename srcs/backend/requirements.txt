@@ -1,12 +1,7 @@
 asgiref
 Django
-django-cors-headers
-djangorestframework
-djangorestframework-simplejwt
-pytz
-sqlparse
+PyJWT==2.4.0
 psycopg2-binary
-python-dotenv
 requests
 django-allauth
 channels==3.0.5

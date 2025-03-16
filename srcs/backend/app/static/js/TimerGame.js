@@ -2,28 +2,24 @@ import OnlineGame from './OnlineGame.js';
 
 export default class TimerGame extends OnlineGame{
 
-	constructor(fieldValue, mode) {
+	constructor(fieldValue, mode, timerValue) {
 		super(fieldValue, mode);
-        this._timer = 60;
-
+        this._timer = timerValue;
+        this.startTimer()
     }
 
     startTimer() {
-        let timer = this._timer;
-        clearInterval(timer);
-        let timeLeft = parseInt(document.getElementById("timeInput").value);
-        document.getElementById("timeDisplay").textContent = `Time Left: ${timeLeft}s`;
-
-        timer = setInterval(() => {
-            timeLeft--;
-            document.getElementById("timeDisplay").textContent = `Time Left: ${timeLeft}s`;
-            if (timeLeft <= 0) {
-                clearInterval(timer);
-                alert("Time's up!");
+        this._intervalId = setInterval(() => {
+            if (this._timer > 0) {
+                this._timer--;
+                console.log("Time left: " + this._timer + " seconds");
+            } else {
+                this.endGame();  
+                clearInterval(this._intervalId);
+                console.log("Game over!");
             }
         }, 1000);
     }
-
     get time() {
 		return this._timer;
 	}

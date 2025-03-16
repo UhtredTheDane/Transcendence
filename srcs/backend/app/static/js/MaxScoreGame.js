@@ -2,31 +2,26 @@ import OnlineGame from './OnlineGame.js';
 
 export default class MaxScoreGame extends OnlineGame{
 
-	constructor(fieldValue, mode) {
+	constructor(fieldValue, mode, maxScoreValue) {
 		super(fieldValue, mode);
-        this._player1score = 0;
-        this._player2score = 0;
-        this._maxscore = 0;
+        this._maxscore = maxScoreValue;
+        this.initOnMessage();	
     }
  
-    updateScore(playerPoint, aiPoint) {
-        playerScore += playerPoint;
-        aiScore += aiPoint;
-        document.getElementById("playerScore").innerText = playerScore;
-        document.getElementById("aiScore").innerText = aiScore;
-        let maxScore = parseInt(document.getElementById("maxScore").value);
-        if (playerScore >= maxScore || aiScore >= maxScore) {
-            let winner = playerScore > aiScore ? "Player1 wins!" : "Player2 wins!";
-            alert(winner);
-            playerScore = 0;
-            aiScore = 0;
-            document.getElementById("playerScore").innerText = playerScore;
-            document.getElementById("aiScore").innerText = aiScore;
-        }
+    updateScore() {
+      let playerScore = this.field.player.playerScore;
+      let opponentScore = this.field.opponent.playerScore;
+      if (playerScore == this._maxscore || opponentScore == this._maxScore) {
+        console.log("playerScore: ", playerScore);
+        console.log("opponentScore: ", opponentScore);
+        console.log("MaxScore: ", this._maxscore);
+        console.log("game will end now");
+        this.endGame();
+      }
     }
 
-
-    get player1score() {
+    
+  get player1score() {
 		return this._maxscore;
 	}
 
