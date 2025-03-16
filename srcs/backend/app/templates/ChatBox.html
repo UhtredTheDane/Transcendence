@@ -1,4 +1,7 @@
 {% load static %}
+
+{% if user.is_authenticated %}
+
 <div class="chatbox-btn" onclick="toggleChatbox()">💬</div>
 
 <div class="chatbox secondary-font" id="chatbox">
@@ -20,25 +23,26 @@
 
 	<!-- Contact List -->
 	<div class="contact-list" id="contactList">
-		<div class="contact-item" onclick="selectContact('John')" style="
-					display: flex;
-					justify-content: left;
-					align-items: center; ">
-					<div class="">
-						<img src="{% static 'icons/default_pfp.png' %}" alt="John" style="
-							width: 50px;
-							height: 50px;
-							border-radius: 50%;
-							margin-right: 10px;">
-					</div>
-					<div class="">
-						<p style="font-size: 18px; margin-bottom: 2px;">SEBASTIEN</p>
-						<!-- <p style="font-size: 12px; font-style: italic;">You : Hey ! What's up ?</p> -->
-					</div>
-			</div>
-		<div class="contact-item" onclick="selectContact('Sarah')">Sarah</div>
-		<div class="contact-item" onclick="selectContact('Alex')">Alex</div>
-	</div>
+    {% if user.is_authenticated %}
+        {% for friend in user.friends.all %}
+        <div class="contact-item" onclick="selectContact('{{ friend.username }}')" style="
+                    display: flex;
+                    justify-content: left;
+                    align-items: center;">
+                    <div class="">
+                        <img src="{{ friend.avatar.url }}"  style="
+                            width: 50px;
+                            height: 50px;
+                            border-radius: 50%;
+                            margin-right: 10px;">
+                    </div>
+                    <div class="">
+                        <p style="font-size: 18px; margin-bottom: 2px;">{{ friend.username }}</p>
+                    </div>
+            </div>
+        {% endfor %}
+    {% endif %}
+</div>
 
 	<!-- Chat Content -->
 	<div class="chatbox-body" id="chatboxBody"></div>
@@ -49,4 +53,11 @@
 	</div>
 </div>
 
+<script>
+	if (!username_defined) {
+    const username = "{{ user.username }}"
+	};
+</script>
 <script src="{% static 'js/chatScript.js' %}"></script>
+
+{% endif %}

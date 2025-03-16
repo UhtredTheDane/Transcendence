@@ -59,7 +59,7 @@ export default class OnlineGame extends Game{
 					tempoGame.field.ball.yPos = data.ball_y;
 					tempoGame.isBallMover = (playerRole === "player1");
 			} else if (data.type === "game_over") {
-				document.getElementById("pauseButton").display = "none";
+				//document.getElementById("pauseButton").display = "none";
 				window.location.href = "/";
 			}
 			tempoGame.field.draw();
@@ -97,12 +97,10 @@ export default class OnlineGame extends Game{
 	}
 
 	updateBall() {
-		console.log("update ball online");
 		if (this._isPaused || this._isGameEnded)
 			return;
 		if (this._isBallMover)
 		{
-			console.log("is ball mover");
 			this._field.ball.updateOnlineBall(this._field, this);
 		}
 	}
@@ -123,7 +121,6 @@ export default class OnlineGame extends Game{
 		this._isGameEnded = true;
 		if (this._isSocketOpen && this._socket.readyState === WebSocket.OPEN)
 			this._socket.send(JSON.stringify({ type: "end", score_player1: this._field.player.playerScore, score_player2: this._field.opponent.playerScore }));
-		document.getElementById("pauseButton").display = "none";
 		if (this._field.getWinner())
 			alert("Vous avez gagné !")
 		else

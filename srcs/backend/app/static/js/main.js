@@ -35,7 +35,7 @@ function setGameMode(mode) {
 	console.log("Mode: " + mode);
 	switch (mode) {
 		case "AI":
-			window.location.href = '/AIMode/?typegame=AIMode';
+			window.location.href = '/AIMode/';
 	  		break;
 		case "Unranked":
 			window.location.href = '/MatchMaking/?typegame=UnrankedMode';
@@ -52,8 +52,14 @@ function setGameMode(mode) {
 		case "TimerMode":
 			window.location.href='/MatchMaking/?typegame=TimerMode';
 			break;
+		case "MaxScoreMode":
+			window.location.href='/MatchMaking/?typegame=MaxScoreMode';
+			break;
+		case "ChallengeMode":
+			window.location.href='MatchMaking/?typegame=ChallengeMode';
+			break;
 		case "TicTacToe":
-			window.location.href='/TicTacToe';
+			window.location.href='/MatchMaking/?typegame=TicTacToe';
 			break;
 		default:
 			console.log("Invalid mode: " + mode);
@@ -72,90 +78,4 @@ window.customMode = customMode;
 
 window.main = function (mode) {
 	setGameMode(mode);
-
-/*
-
-		// Gestion des collisions avec les bords du terrain (haut et bas)
-	if (ball.yPos + ball.diameter + ball.ySpeed * 2.5 > fieldPong.canevas.height || ball.yPos + ball.ySpeed * 2.5 < 0)
-		ball.ySpeed = ball.ySpeed * -1;
-
-	// Gestion des collisions avec les raquettes
-	// Joueur 1 (gauche)
-	if (ball.xPos + ball.xSpeed * 2.5 <= player1.xPos + player1.width &&
-		ball.yPos + 30 > player1.yPos && // La balle est en dessous du haut de la raquette
-		ball.yPos < player1.yPos + player1.height // La balle est au-dessus du bas de la raquette
-	) {
-		ball.xSpeed = ball.xSpeed * -1; // Inverser la direction horizontale de la balle	
-		var newSpeedx = ball.xSpeed;
-		var newSpeedy = ball.ySpeed;
-		
-		if (ball.yPos + ball.diameter/ 2 >= player1.yPos && ball.yPos + ball.diameter/2 < player1.yPos + 40)
-		{
-			if (ball.ySpeed < 0.0)
-			{
-				//Angle de deviation de -40 degre
-				newSpeedx = ball.xSpeed * Math.cos(Math.PI / 180 * -40) - ball.ySpeed * Math.sin(Math.PI/180 * -40);
-				newSpeedy = ball.xSpeed * Math.sin(Math.PI / 180 * -40) + ball.ySpeed * Math.cos(Math.PI/180 * -40);
-			}
-			else
-				newSpeedy = ball.ySpeed * -1;
-			alert("sa touche haut");
-		}
-		else if (ball.yPos + ball.diameter/2 >= player1.yPos + 40 && ball.yPos + ball.diameter/2 <= player1.yPos + 80)
-			alert("sa touche milieu");
-		else if (ball.yPos + ball.diameter/2 > player1.yPos + 80 && ball.yPos + ball.diameter/2 <= player1.yPos + 120)
-		{	
-			alert("sa touche bas");
-			if (ball.ySpeed >= 0.0)
-			{
-				//Angle de deviation de 40 degre
-				newSpeedx = ball.xSpeed * Math.cos(Math.PI / 180 * 40) - ball.ySpeed * Math.sin(Math.PI/180 * 40);
-				newSpeedy = ball.xSpeed * Math.sin(Math.PI / 180 * 40) + ball.ySpeed * Math.cos(Math.PI/180 * 40);
-			}
-			else
-				newSpeedy = ball.ySpeed * -1;
-		}
-		ball.xSpeed = newSpeedx;
-		ball.ySpeed = newSpeedy;
-		ball.increaseBallSpeed(); // Augmenter la vitesse de la balle
-	}
-	else if (//Joueur 2 droite
-		ball.xPos + ball.diameter + ball.xSpeed * 2.5 >= player2.xPos && // La balle est à droite de la raquette
-		ball.yPos + ball.diameter > player2.yPos && // La balle est en dessous du haut de la raquette
-		ball.yPos < player2.yPos + player2.height // La balle est au-dessus du bas de la raquette
-	) {
-		ball.xSpeed = ball.xSpeed * -1; // Inverser la direction horizontale de la balle	
-		var newSpeedx = ball.xSpeed;
-		var newSpeedy = ball.ySpeed;
-		if (ball.yPos + ball.diameter / 2 >= player2.yPos && ball.yPos + ball.diameter / 2 < player2.yPos + 40)
-		{
-			if (ball.ySpeed < 0.0)
-			{
-				//Angle de deviation de 40 degre
-				newSpeedx = ball.xSpeed * Math.cos(Math.PI / 180 * 40) - ball.ySpeed * Math.sin(Math.PI/180 * 40);
-				newSpeedy = ball.xSpeed * Math.sin(Math.PI / 180 * 40) + ball.ySpeed * Math.cos(Math.PI/180 * 40);
-			}
-			else
-				newSpeedy = ball.ySpeed * -1;
-			alert("sa touche haut");
-		}
-		else if (ball.yPos + ball.diameter / 2 >= player2.yPos + 40 && ball.yPos + ball.diameter / 2 <= player2.yPos + 80)
-			alert("sa touche milieu");
-		else if (ball.yPos + ball.diameter / 2 > player2.yPos + 80 && ball.yPos + ball.diameter / 2 <= player2.yPos + 120)
-		{	
-			alert("sa touche bas");
-			if (ball.ySpeed >= 0.0)
-			{
-				//Angle de deviation de -40 degre
-				newSpeedx = ball.xSpeed * Math.cos(Math.PI / 180 * -40) - ball.ySpeed * Math.sin(Math.PI/180 * -40);
-				newSpeedy = ball.xSpeed * Math.sin(Math.PI / 180 * -40) + ball.ySpeed * Math.cos(Math.PI/180 * -40);
-			}
-			else
-				newSpeedy = ball.ySpeed * -1;
-		}
-		ball.xSpeed = newSpeedx;
-		ball.ySpeed = newSpeedy;
-		ball.increaseBallSpeed(); // Augmenter la vitesse de la balle
-	}
-	*/
 };

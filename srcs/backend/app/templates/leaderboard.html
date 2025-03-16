@@ -1,11 +1,12 @@
 {% load static %}
 <div class="leaderboard-popup" id="leaderboardPopup">
+		
 	<div class="popup-content">
 		<div class=" position-absolute top-50 start-50 translate-middle">
 			<img class="transcendence-icon" src="{% static 'images/bg-text.svg' %}">
 		</div>
 		<button class="close-btn" onclick="closeLeaderboard()">×</button>
-		<h2 class="primary-font" style="font-size: 42pt; text-decoration: underline; color: #4423ff;">Leader Board</h2>
+		<h2 class="primary-font" style="font-size: 42pt"><a href='/leaderboard'>Leader Board</a></h2>
 		<Table class="table table-hover table-responsive secondary-font" style="table-layout: auto; font-size: 21pt;">
 			<thead>
 				<tr>
@@ -15,18 +16,33 @@
 				</tr>
 			</thead>
 			<tbody>
-				{% for player in top_players %}
-					<tr>
-						<th scope="row">{{ forloop.counter }}</th>
-						<td>{{ player.username }}</td>
-						<td style="text-align: right;">{{ player.elo_rating }}</td>
-					</tr>
-				{% empty %}
-					<tr>
-						<td colspan="3" style="text-align: center;">No players found</td>
-					</tr>
-				{% endfor %}
-			</tbody>			
+				<tr>
+					<th scope="row">1</th>
+					<td>Player One</td>
+					<td style="text-align: right;" >500</td>
+				</tr>
+				<tr>
+					<th scope="row">2</th>
+					<td>Player Two</td>
+					<td style="text-align: right;">450</td>
+				</tr>
+				<tr>
+					<th scope="row">3</th>
+					<td>Player Three</td>
+					<td style="text-align: right;">400</td>
+				</tr>
+				<tr>
+					<th scope="row">4</th>
+					<td>Player Four</td>
+					<td style="text-align: right;">350</td>
+				</tr>
+				<tr>
+					<th scope="row">5</th>
+					<td>Player Five</td>
+					<td style="text-align: right;">300</td>
+				</tr>
+			</tbody>
 		</Table>
+		
 	</div>
 </div>
