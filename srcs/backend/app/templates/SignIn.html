@@ -129,7 +129,7 @@
 	<link rel="stylesheet" href="{% static 'css/index.css' %}">
 </head>
 <body>
-        <img class="transcendence-icon position-absolute top-50 start-50 translate-middle" style="z-index: -1;" alt="" src="{% static 'images/bg-text.svg' %}">
+    <img class="transcendence-icon position-absolute top-50 start-50 translate-middle" style="z-index: -1;" alt="" src="{% static 'images/bg-text.svg' %}">
 
     <!-- Navbar at the top -->
     <nav class="navbar navbar-expand-lg navbar-dark">
@@ -167,7 +167,9 @@
 		{% if messages %}
 			<div class="alert alert-danger">
 				{% for message in messages %}
-					<p>{{ message }}</p>
+					{% if "Connexion avec" not in message|stringformat:"s" %}
+						<p>{{ message }}</p>
+					{% endif %}
 				{% endfor %}
 			</div>
 		{% endif %}
