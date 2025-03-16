@@ -1,6 +1,5 @@
 import os
 import uuid
-import base64
 import json
 import requests
 import random
@@ -538,7 +537,7 @@ def signup(request):
 			if request.user.is_authenticated:
 				return redirect("/ProfilePage/")
 
-	return render(request, "SignUp.html", {"form": form })
+	return render(request, "SignUp.html", { "form": form })
 
 def	aimode(request):
 	return render(request, 'AIMode.html')
