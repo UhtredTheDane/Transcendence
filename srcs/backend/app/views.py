@@ -422,14 +422,6 @@ def	ChallengeMode(request):
 
 
 
-
-
-
-
-
-
-
-
 # @login_required
 # def profile(request, user_id=None):
 #     if user_id is None:
