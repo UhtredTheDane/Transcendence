@@ -16,7 +16,6 @@ contract PongTournament {
     struct Tournament {
         uint256 id;
         string name;
-        uint256 matchCount;
     }
 
     // Variables d'état
@@ -49,7 +48,6 @@ contract PongTournament {
         tournaments[tournamentCounter] = Tournament({
             id: tournamentCounter,
             name: _name,
-            matchCount: 0
         });
         emit TournamentCreated(tournamentCounter, _name);
     }
@@ -72,7 +70,6 @@ contract PongTournament {
             score2: _score2,
             date: _date // Stockage de la date dans le match
     }));
-    tournaments[_tournamentId].matchCount++; // Incrémente le nombre de matchs dans le tournoi
     emit MatchAdded(_tournamentId, _player1, _player2, _score1, _score2, _date); // Modification de l'événement pour inclure la date
 }
 

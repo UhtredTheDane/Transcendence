@@ -76,7 +76,7 @@ task("getPlayerMatches", "Get matches for a player in a tournament")
         player2: match.player2,
         score1: match.score1.toString(),  // Convert BigNumber to string
         score2: match.score2.toString(),  // Convert BigNumber to string
-        date: new Date(match.date * 1000).toLocaleString() // Convert Unix timestamp to readable date
+        date: new Date(Number(match.date.toString()) * 1000).toLocaleString() // Convert Unix timestamp to readable date
       }));
 
       // Log the result as a JSON string with dates
@@ -86,7 +86,6 @@ task("getPlayerMatches", "Get matches for a player in a tournament")
       process.exit(1); // Exit with error code
     }
   });
-
 
 
   // Register custom Hardhat task to check matches
@@ -112,11 +111,14 @@ task("getPlayerMatches", "Get matches for a player in a tournament")
       return;
     }
 
-    // Format and display the matches with dates
+    // Format and display the matches
     matches.forEach((match, index) => {
-      console.log(`Match ${index + 1}: ${match.player1} vs ${match.player2}, score: ${match.score1.toString()} - ${match.score2.toString()}, Date: ${new Date(match.date * 1000).toLocaleString()}`);
+      // Convert BigInt to string for scores, and convert date from Unix timestamp to human-readable format
+      console.log(`Match ${index + 1}: ${match.player1} vs ${match.player2}, score: ${match.score1.toString()} - ${match.score2.toString()}, date: ${new Date(Number(match.date.toString()) * 1000).toLocaleString()}`);
     });
   });
+
+
 
 
 module.exports = {

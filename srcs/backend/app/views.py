@@ -333,6 +333,17 @@ def profile(request, user_id=None):
 # Express server URL (Hardhat container should expose this service)
 EXPRESS_SERVER_URL = "http://blockchain-node:3000"
 
+
+# def create_tournament_request():
+#     try:
+#         # Send a POST request to the Express server for creating a tournament
+#         response = requests.post(f"{EXPRESS_SERVER_URL}/create-tournament")
+        
+#         # Return the response from the Express server
+#         return response.json()
+#     except Exception as e:
+#         return {'status': 'error', 'message': str(e)}
+
 @csrf_exempt
 def create_tournament(request):
     if request.method == 'POST':
