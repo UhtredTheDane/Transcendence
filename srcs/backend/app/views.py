@@ -379,6 +379,7 @@ def	tounrnamentpage(request):
 	random.shuffle(participants)
 	matches = [(participants[i], participants[i+1]) for i in range(0, len(participants), 2)]
 	
+	# create_tournament(participants)
 	return render(request, 'TournamentPage.html', { 'matches': matches })
 
 @login_required
