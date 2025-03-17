@@ -293,8 +293,8 @@ class MatchmakingConsumer(AsyncWebsocketConsumer):
             print(f"❌ ERREUR: {player2_name} n'existe pas.")
             return
 
-        game = await sync_to_async(Game.objects.create)(player1=player1, player2=player2)
-        print(f"🎮 Match trouvé : {player1.username} vs {player2.username} (Game ID: {game.id})")
+        # game = await sync_to_async(Game.objects.create)(player1=player1, player2=player2)
+        # print(f"🎮 Match trouvé : {player1.username} vs {player2.username} (Game ID: {game.id})")
         game = await sync_to_async(Game.objects.create)(
                 player1=player1,
                 player2=player2,

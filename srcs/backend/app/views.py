@@ -99,69 +99,104 @@ def send_message(request, channel_id):
 
 
 # Games
-
 @login_required
 def create_game(request):   
-	mode = request.GET.get('mode', 'multiplayer')  # Par défaut, mode multijoueur
-	player1 = request.user  # Joueur 1 est l'utilisateur connecté
-	print("Hello function create_game")
+    game_type = request.GET.get('type', 'unranked')  
+    player1 = request.user
 
-	if mode == 'solo':
-		# Mode solo : pas de joueur 2
-		game = Game.objects.create(player1=player1, mode='solo')
-	else:
-		# Mode multijoueur : récupérer le joueur 2 via le matchmaking
-		player2_id = request.GET.get('player2_id')
-		if not player2_id:
-			return JsonResponse({ 'error': 'player2_id is required for multiplayer mode' }, status=400)
-		try:
-			player2 = get_object_or_404(User, id=player2_id)
-		except:
-			raise Http404("Opponent does not exist")
-		game = Game.objects.create(player1=player1, player2=player2, mode='multiplayer')
+    try:
+        if game_type == 'solo':
+            game = Game.objects.create(
+                player1=player1,
+                mode='solo'
+            )
+        else:
+            player2_id = request.GET.get('player2_id')
+            if not player2_id:
+                return JsonResponse({'error': 'player2_id is required'}, status=400)
+            
+            player2 = get_object_or_404(User, id=player2_id)
+            game = Game.objects.create(
+                player1=player1,
+                player2=player2,
+                mode=game_type
+            )
+        
+        return JsonResponse({'game_id': game.id})
+            
+    except Http404:
+        return JsonResponse({'error': 'Opponent not found'}, status=404)
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)
 
-	return JsonResponse({ 'game_id': game.id })
+@login_required # ! POUR REVIEW LES FONCTIONS ET POUVOIRS LES DISPLAY DANS LE PROFIL
+def RankedMode(request, game_id):
+    game = get_object_or_404(Game, id=game_id)
+    game.mode = 'ranked'  # ! Commande a modifier
+    game.save() # ! Commande a ajouter
+    if request.user == game.player1:
+        player_role = 'player1'
+    else:
+        player_role = 'player2'
+    return render(request, 'RankedMode.html', {'game_id': game_id, 'player_role': player_role})
+
+
+# ! A FAIRE #################################
+
+@login_required # ! POUR REVIEW LES FONCTIONS ET POUVOIRS LES DISPLAY DANS LE PROFIL
+def TicTacToeMode(request, game_id):
+    game = get_object_or_404(Game, id=game_id)
+    game.mode = 'TicTacToe'  # ! Commande a modifier
+    game.save() # ! Commande a ajouter
+    if request.user == game.player1:
+        player_role = 'player1'
+    else:
+        player_role = 'player2'
+    return render(request, 'TicTacToe.html', {'game_id': game_id, 'player_role': player_role})
+
+# ! A FAIRE #################################
+
 
 @login_required
-def RankedMode(request, game_id):
-	game = get_object_or_404(Game, id=game_id)
-	if request.user == game.player1:
-		player_role = 'player1'
-	else:
-		player_role = 'player2'
-	return render(request, 'RankedMode.html', { 'game_id': game_id, 'player_role': player_role })
-
 def UnrankedMode(request, game_id):
-	game = get_object_or_404(Game, id=game_id)
-	if request.user == game.player1:
-		player_role = 'player1'
-	else:
-		player_role = 'player2'
-	return render(request, 'UnrankedMode.html', { 'game_id': game_id, 'player_role': player_role })
+    game = get_object_or_404(Game, id=game_id)
+    game.mode = 'unranked'  # Set mode to unranked
+    game.save()
+    if request.user == game.player1:
+        player_role = 'player1'
+    else:
+        player_role = 'player2'
+    return render(request, 'UnrankedMode.html', {'game_id': game_id, 'player_role': player_role})
 
 def RushMode(request, game_id):
-	game = get_object_or_404(Game, id=game_id)
-	if request.user == game.player1:
-		player_role = 'player1'
-	else:
-		player_role = 'player2'
-	return render(request, 'RushMode.html', { 'game_id': game_id, 'player_role': player_role })
+    game = get_object_or_404(Game, id=game_id)
+    game.mode = 'rushmode'  # Set mode to rushmode
+    game.save()
+    if request.user == game.player1:
+        player_role = 'player1'
+    else:
+        player_role = 'player2'
+    return render(request, 'RushMode.html', {'game_id': game_id, 'player_role': player_role})
 
 def TimerMode(request, game_id):
-	game = get_object_or_404(Game, id=game_id)
-	if request.user == game.player1:
-		player_role = 'player1'
-	else:
-		player_role = 'player2'
-	return render(request, 'TimerMode.html', { 'game_id': game_id, 'player_role': player_role })
+    game = get_object_or_404(Game, id=game_id)
+    game.mode = 'timermode'  # Set mode to timermode
+    game.save()
+    if request.user == game.player1:
+        player_role = 'player1'
+    else:
+        player_role = 'player2'
+    return render(request, 'TimerMode.html', {'game_id': game_id, 'player_role': player_role})
 
 def MaxScoreMode(request, game_id):
-	game = get_object_or_404(Game, id=game_id)
-	if request.user == game.player1:
-		player_role = 'player1'
-	else:
-		player_role = 'player2'
-	return render(request, 'MaxScoreMode.html', { 'game_id': game_id, 'player_role': player_role })
+    game = get_object_or_404(Game, id=game_id)
+    game.mode = 'maxscoremode'  # Set mode to maxscoremode
+    game.save()
+    if request.user == game.player1:
+        player_role = 'player1'
+    else:
+        player_role = 'player2'
+    return render(request, 'MaxScoreMode.html', {'game_id': game_id, 'player_role': player_role})
 
 def game_ia(request):
 	mode = request.GET.get('mode', 'medium')
@@ -260,6 +295,58 @@ def update_avatar(request):
 	return JsonResponse({'status': 'error', 'message': 'Invalid request'}, status=400)
 
 
+# @login_required
+# def profile(request, username=None):
+# 	try:
+# 		if username is None:
+# 			user_data = request.user
+# 		else:
+# 			user_data = User.objects.get(username=username)
+
+# 		user_games = Game.objects.filter(Q(player1=user_data) | Q(player2=user_data))
+
+# 		wins = user_games.filter(
+# 			(Q(player1=user_data) & Q(score_player1__gt=F('score_player2'))) |
+# 			(Q(player2=user_data) & Q(score_player2__gt=F('score_player1')))
+# 		).count()
+
+# 		losses = user_games.filter(
+# 			(Q(player1=user_data) & Q(score_player1__lt=F('score_player2'))) |
+# 			(Q(player2=user_data) & Q(score_player2__lt=F('score_player1')))
+# 		).count()
+
+# 		last_games = user_games.order_by('-created_at')[:4]
+
+# 		scores = []
+# 		for game in last_games:
+# 			if game.player1 == user_data:
+# 				user_score = game.score_player1
+# 				opponent = game.player2
+# 				opponent_score = game.score_player2
+# 			else:
+# 				user_score = game.score_player2
+# 				opponent = game.player1
+# 				opponent_score = game.score_player1
+
+# 			scores.append({
+# 				'user_score': user_score,
+# 				'opponent_score': opponent_score,
+# 				'opponent': opponent.username if opponent else 'AI'
+# 			})
+
+# 		context = {
+# 			'user_data': user_data,
+# 			'wins': wins,
+# 			'losses': losses,
+# 			'scores': scores,
+# 			'is_own_profile': user_data == request.user,
+# 			'viewing_username': username  # Add this to help template know which profile we're viewing
+# 		}
+
+# 		return render(request, 'ProfilePage.html', context)
+# 	except User.DoesNotExist:
+# 		return redirect('Error404')
+
 @login_required
 def profile(request, username=None):
 	try:
@@ -270,6 +357,7 @@ def profile(request, username=None):
 
 		user_games = Game.objects.filter(Q(player1=user_data) | Q(player2=user_data))
 
+		# Calculate wins and losses
 		wins = user_games.filter(
 			(Q(player1=user_data) & Q(score_player1__gt=F('score_player2'))) |
 			(Q(player2=user_data) & Q(score_player2__gt=F('score_player1')))
@@ -280,32 +368,44 @@ def profile(request, username=None):
 			(Q(player2=user_data) & Q(score_player2__lt=F('score_player1')))
 		).count()
 
-		last_games = user_games.order_by('-created_at')[:4]
+		# Separate games by mode
+		ranked_games = user_games.filter(mode='ranked')
+		unranked_games = user_games.filter(mode='unranked')
+		tournament_games = user_games.filter(mode='tournament')
+		tictactoe_games = user_games.filter(mode='tictactoe')
 
-		scores = []
-		for game in last_games:
-			if game.player1 == user_data:
-				user_score = game.score_player1
-				opponent = game.player2
-				opponent_score = game.score_player2
-			else:
-				user_score = game.score_player2
-				opponent = game.player1
-				opponent_score = game.score_player1
+		def format_game_list(games):
+			formatted_games = []
+			for game in games:
+				if game.player1 == user_data:
+					user_score = game.score_player1
+					opponent = game.player2
+					opponent_score = game.score_player2
+				else:
+					user_score = game.score_player2
+					opponent = game.player1
+					opponent_score = game.score_player1
 
-			scores.append({
-				'user_score': user_score,
-				'opponent_score': opponent_score,
-				'opponent': opponent.username if opponent else 'AI'
-			})
+				result = "Victory" if user_score > opponent_score else "Defeat"
+				formatted_games.append({
+					'result': result,
+					'user_score': user_score,
+					'opponent_score': opponent_score,
+					'opponent': opponent.username if opponent else 'AI'
+				})
+			return formatted_games
 
 		context = {
 			'user_data': user_data,
 			'wins': wins,
 			'losses': losses,
-			'scores': scores,
+			'scores': format_game_list(user_games),  # All games
+			'ranked_scores': format_game_list(ranked_games),
+			'unranked_scores': format_game_list(unranked_games),
+			'tournament_scores': format_game_list(tournament_games),
+			'tictactoe_scores': format_game_list(tictactoe_games),
 			'is_own_profile': user_data == request.user,
-			'viewing_username': username  # Add this to help template know which profile we're viewing
+			'viewing_username': username
 		}
 
 		return render(request, 'ProfilePage.html', context)
@@ -588,8 +688,15 @@ def	matchmaking(request):
 def	ChallengeMode(request):
 	return render(request, 'ChallengeMode.html')
 
-
-
+def profile_view(request):
+	context = {
+		'ranked_scores': Game.objects.filter(game_type='ranked'),
+		'unranked_scores': Game.objects.filter(game_type='unranked'),
+		'tournament_scores': Game.objects.filter(game_type='tournament'),
+		'tictactoe_scores': Game.objects.filter(game_type='tictactoe'),
+		# ... rest of your context
+	}
+	return render(request, 'ProfilePage.html', context)
 
 
 
