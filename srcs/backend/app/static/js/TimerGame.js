@@ -16,13 +16,22 @@ export default class TimerGame extends OnlineGame {
         const playerNameInput = document.getElementById("customValue");
         
         let tempoGame = this;
-
+        let tempoIntervalID = this._intervalId
         // Gérer l'événement de réception de messages du serveur
         this.socket.onmessage = function (event) {
             const data = JSON.parse(event.data);
             if (data.type === "update_timer")
-            {
+            { 
                 tempoGame.timer = data.timer;
+                console.log(tempoGame.idIntervalle)
+                if (!tempoGame.idIntervalle)
+                {
+                    console.log("sa passe pas l intervalle")
+                    tempoGame.idIntervalle = setInterval(() => {
+                    tempoGame.updateBall(tempoGame.field, this);
+                    tempoGame.field.draw();
+                }, 16);
+                }
                 console.log("player: " + playerRole + " et timer: " + tempoGame.timer)
             }
             else if (data.type === "update_position") {
@@ -94,7 +103,7 @@ export default class TimerGame extends OnlineGame {
                 }));
                 tempoGame.timer = timerValue;
                 // Afficher un message de confirmation et fermer la modale
-                alert("Timer envoyé : " + tempoGame.timer);
+                //alert("Timer envoyé : " + tempoGame.timer);
                 closeModal();
             } else {
                 alert("Veuillez entrer un timer valide.");
@@ -125,6 +134,15 @@ export default class TimerGame extends OnlineGame {
 
 	set timer(value) {
 		this._timer = value;
+    }
+
+    get intervalId() {
+		return this._intervalId;
+	}
+
+
+	set intervalId(value) {
+		this._intervalId = value;
     }
 
 }

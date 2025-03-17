@@ -52,9 +52,12 @@ export default class Field {
 
 	getWinner() {
 		if (this._player.playerScore > this._opponent.opponentScore)
-			return "player1";
-		else if (this._player.playerScore < this._opponent.opponentScore)
-			return "player2";
+		{
+			if (playerRole == "player1")
+				return "player1";
+			else
+				return "player2"
+		}
 	}
 
 	draw() {

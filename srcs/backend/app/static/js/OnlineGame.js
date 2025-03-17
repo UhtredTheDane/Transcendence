@@ -117,14 +117,23 @@ export default class OnlineGame extends Game{
 		this._socket.send(JSON.stringify({ type: "score", score_player1: this._field.player.playerScore, score_player2: this._field.opponent.playerScore }));
 	}
 
+	updateScore() {
+        let playerScore = this.field.player.playerScore;
+        let opponentScore = this.field.opponent.playerScore;
+        if (playerScore >= this.maxScore || opponentScore >= this.maxScore) {
+          console.log("playerScore: ", playerScore);
+          console.log("opponentScore: ", opponentScore);
+          console.log("MaxScore: ", this.maxScore);
+          console.log("game will end now");
+          this.endGame();
+        }
+      }
+
+
 	endGame() {
 		this._isGameEnded = true;
 		if (this._isSocketOpen && this._socket.readyState === WebSocket.OPEN)
 			this._socket.send(JSON.stringify({ type: "end", score_player1: this._field.player.playerScore, score_player2: this._field.opponent.playerScore }));
-		if (this._field.getWinner())
-			alert("Vous avez gagné !");
-		else
-			alert("Vous avez perdu !");
 		window.location.href = "/";
 	}
 

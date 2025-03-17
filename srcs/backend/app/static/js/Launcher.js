@@ -37,36 +37,19 @@ export default class Launcher {
         }
         else
         {
-            if (this._mode == 'TimerMode')
+            if (this._mode == 'MaxScoreMode')
+                this._game = new MaxScoreGame(this._fieldPong, mode);
+            else if (this._mode == 'RushMode')
+                this._game = new RushGame(this._fieldPong, mode);
+            else
             {
-                this._game = new TimerGame(this._fieldPong, mode);
-            }
-            else if (this._mode == 'MaxScoreMode')
-            {
-                let maxScore = parseInt(document.getElementById("maxScore").value) || 5;
-                this._game = new MaxScoreGame(this._fieldPong, mode, maxScore);
-                
-               /* this._idIntervalle = setInterval(() => {
+                this._game = new OnlineGame(this._fieldPong, mode);
+                this._idIntervalle = setInterval(() => {
                     this._game.updateBall(this._fieldPong, this._game);
                     this._fieldPong.draw();
                     this._game.updateScore();
-                }, 16);*/
+                }, 16);
             }
-            else if (this._mode == 'RushMode')
-            {
-                let speed = 6;
-                this._game = new RushGame(this._fieldPong, mode, speed);
-                /*this._idIntervalle = setInterval(() => {
-                    this._game.updateBall(this._fieldPong, this._game);
-                    this._fieldPong.draw();
-                }, 16);*/
-            }
-            else
-                this._game = new OnlineGame(this._fieldPong, mode);
-                /*this._idIntervalle = setInterval(() => {
-                    this._game.updateBall(this._fieldPong, this._game);
-                    this._fieldPong.draw();
-                }, 16);*/
         }
     }
 
