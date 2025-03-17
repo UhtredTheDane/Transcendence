@@ -33,18 +33,17 @@
 
     <!-- Matchmaking Lobby Title -->
     <div class="text-center mt-5">
-        <h1 class="fw-bold">Matchmaking Lobby</h1>
+        <h1 class="fw-bold secondary-font" style="margin-top: 21px">Matchmaking Lobby</h1>
     </div>
 
-	
-		<span class="loader" role="status"></span>
+		<span class="loader position-absolute top-50 start-50 translate-middle" role="status" style="z-index: 2;"></span>
 
 
     <!-- Player Names Row -->
     <div class="d-flex justify-content-center mt-4">
         <div class="d-flex w-50 justify-content-between">
-            <h3 class="text-primary">{{ player1_name }}</h3>
-            <h3 class="text-danger">{{ player2_name }}</h3>
+            <h3 class="text-primary secondary-font">{{ player1_name }}</h3>
+            <h3 class="text-danger secondary-font">{{ player2_name }}</h3>
         </div>
     </div>
 
@@ -61,10 +60,9 @@
 	
 		console.log("WebSocket matchmaking connecté en mode", typegame);
 	
-		const wsProtocol = window.location.protocol === 'https:' ? 'wss://' : 'ws://';
-const matchmakingSocket = new WebSocket(
-    `${wsProtocol}${window.location.host}/wss/MatchMaking/?mode=${typegame}`
-);
+		const matchmakingSocket = new WebSocket(
+			'ws://' + window.location.host + '/ws/MatchMaking/?mode=' + typegame
+		);
 	
 		matchmakingSocket.onopen = function () {
 			console.log("✅ WebSocket matchmaking connecté en mode", typegame);

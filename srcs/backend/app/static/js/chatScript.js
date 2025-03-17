@@ -5,8 +5,9 @@ let messages = {};
 if (!user) {
     console.error('Username not defined');
 }
-const wsProtocol = window.location.protocol === 'https:' ? 'wss://' : 'ws://';
-const socket = new WebSocket(`${wsProtocol}${window.location.host}/wss/chatbox/`);
+
+const socket = new WebSocket(`ws://${window.location.host}/ws/chatbox/`);
+
 
 socket.onopen = function(event) {
 	console.log('WebSocket is connected.');

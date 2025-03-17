@@ -4,8 +4,8 @@ export default class OnlineGame extends Game{
 
 	constructor(fieldValue, mode) {
 		super(fieldValue);
-		const wsProtocol = window.location.protocol === 'https:' ? 'wss://' : 'ws://';
-		this.socket = new WebSocket(`${wsProtocol}${window.location.host}/wss/${mode}/${gameId}/`);
+		this.socket = new WebSocket("ws://" + window.location.host + "/ws/" + mode + "/" + gameId + "/");
+
 		this.isSocketOpen = false;
 		this.isBallMover = false;
 		this.#initOnOpen();

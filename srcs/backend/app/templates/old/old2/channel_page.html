@@ -23,7 +23,7 @@
 
     <script>
 		const channelName = "{{ channel.id }}";
-		const chatSocket = new WebSocket('ws://' + window.location.host + '/wss/channel/' + channelName + '/');
+		const chatSocket = new WebSocket('ws://' + window.location.host + '/ws/channel/' + channelName + '/');
 	
 		chatSocket.onopen = function(e) {
 			console.log('WebSocket ouvert!');
