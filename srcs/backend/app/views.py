@@ -3,14 +3,14 @@ import requests
 import random
 from django.conf import settings
 from django.shortcuts import get_object_or_404, render, redirect
-from django.http import HttpResponseNotFound, HttpResponseRedirect, Http404, JsonResponse
+from django.http import HttpResponseNotFound, HttpResponseRedirect, HttpResponseForbidden, Http404, JsonResponse
 from django.core.files.base import ContentFile
 from django.contrib import messages
 from django.contrib.auth import login, get_backends
 from django.contrib.auth.models import AnonymousUser
 from django.contrib.auth.decorators import login_required
 from django.db.models import F, Q
-from .models import User, Channel,  Message, Messages, Game
+from .models import User, Channel,  Message, Messages, Game, Tournament, TournamentGame, TournamentPlayer
 from django.views.decorators.csrf import csrf_exempt
 from allauth.account.forms import LoginForm
 from allauth.account.forms import SignupForm
@@ -99,69 +99,104 @@ def send_message(request, channel_id):
 
 
 # Games
-
 @login_required
 def create_game(request):   
-	mode = request.GET.get('mode', 'multiplayer')  # Par défaut, mode multijoueur
-	player1 = request.user  # Joueur 1 est l'utilisateur connecté
-	print("Hello function create_game")
+    game_type = request.GET.get('type', 'unranked')  
+    player1 = request.user
 
-	if mode == 'solo':
-		# Mode solo : pas de joueur 2
-		game = Game.objects.create(player1=player1, mode='solo')
-	else:
-		# Mode multijoueur : récupérer le joueur 2 via le matchmaking
-		player2_id = request.GET.get('player2_id')
-		if not player2_id:
-			return JsonResponse({ 'error': 'player2_id is required for multiplayer mode' }, status=400)
-		try:
-			player2 = get_object_or_404(User, id=player2_id)
-		except:
-			raise Http404("Opponent does not exist")
-		game = Game.objects.create(player1=player1, player2=player2, mode='multiplayer')
+    try:
+        if game_type == 'solo':
+            game = Game.objects.create(
+                player1=player1,
+                mode='solo'
+            )
+        else:
+            player2_id = request.GET.get('player2_id')
+            if not player2_id:
+                return JsonResponse({'error': 'player2_id is required'}, status=400)
+            
+            player2 = get_object_or_404(User, id=player2_id)
+            game = Game.objects.create(
+                player1=player1,
+                player2=player2,
+                mode=game_type
+            )
+        
+        return JsonResponse({'game_id': game.id})
+            
+    except Http404:
+        return JsonResponse({'error': 'Opponent not found'}, status=404)
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)
 
-	return JsonResponse({ 'game_id': game.id })
+@login_required # ! POUR REVIEW LES FONCTIONS ET POUVOIRS LES DISPLAY DANS LE PROFIL
+def RankedMode(request, game_id):
+    game = get_object_or_404(Game, id=game_id)
+    game.mode = 'ranked'  # ! Commande a modifier
+    game.save() # ! Commande a ajouter
+    if request.user == game.player1:
+        player_role = 'player1'
+    else:
+        player_role = 'player2'
+    return render(request, 'RankedMode.html', {'game_id': game_id, 'player_role': player_role})
+
+
+# ! A FAIRE #################################
+
+@login_required # ! POUR REVIEW LES FONCTIONS ET POUVOIRS LES DISPLAY DANS LE PROFIL
+def TicTacToeMode(request, game_id):
+    game = get_object_or_404(Game, id=game_id)
+    game.mode = 'TicTacToe'  # ! Commande a modifier
+    game.save() # ! Commande a ajouter
+    if request.user == game.player1:
+        player_role = 'player1'
+    else:
+        player_role = 'player2'
+    return render(request, 'TicTacToe.html', {'game_id': game_id, 'player_role': player_role})
+
+# ! A FAIRE #################################
+
 
 @login_required
-def RankedMode(request, game_id):
-	game = get_object_or_404(Game, id=game_id)
-	if request.user == game.player1:
-		player_role = 'player1'
-	else:
-		player_role = 'player2'
-	return render(request, 'RankedMode.html', { 'game_id': game_id, 'player_role': player_role })
-
 def UnrankedMode(request, game_id):
-	game = get_object_or_404(Game, id=game_id)
-	if request.user == game.player1:
-		player_role = 'player1'
-	else:
-		player_role = 'player2'
-	return render(request, 'UnrankedMode.html', { 'game_id': game_id, 'player_role': player_role })
+    game = get_object_or_404(Game, id=game_id)
+    game.mode = 'unranked'  # Set mode to unranked
+    game.save()
+    if request.user == game.player1:
+        player_role = 'player1'
+    else:
+        player_role = 'player2'
+    return render(request, 'UnrankedMode.html', {'game_id': game_id, 'player_role': player_role})
 
 def RushMode(request, game_id):
-	game = get_object_or_404(Game, id=game_id)
-	if request.user == game.player1:
-		player_role = 'player1'
-	else:
-		player_role = 'player2'
-	return render(request, 'RushMode.html', { 'game_id': game_id, 'player_role': player_role })
+    game = get_object_or_404(Game, id=game_id)
+    game.mode = 'rushmode'  # Set mode to rushmode
+    game.save()
+    if request.user == game.player1:
+        player_role = 'player1'
+    else:
+        player_role = 'player2'
+    return render(request, 'RushMode.html', {'game_id': game_id, 'player_role': player_role})
 
 def TimerMode(request, game_id):
-	game = get_object_or_404(Game, id=game_id)
-	if request.user == game.player1:
-		player_role = 'player1'
-	else:
-		player_role = 'player2'
-	return render(request, 'TimerMode.html', { 'game_id': game_id, 'player_role': player_role })
+    game = get_object_or_404(Game, id=game_id)
+    game.mode = 'timermode'  # Set mode to timermode
+    game.save()
+    if request.user == game.player1:
+        player_role = 'player1'
+    else:
+        player_role = 'player2'
+    return render(request, 'TimerMode.html', {'game_id': game_id, 'player_role': player_role})
 
 def MaxScoreMode(request, game_id):
-	game = get_object_or_404(Game, id=game_id)
-	if request.user == game.player1:
-		player_role = 'player1'
-	else:
-		player_role = 'player2'
-	return render(request, 'MaxScoreMode.html', { 'game_id': game_id, 'player_role': player_role })
+    game = get_object_or_404(Game, id=game_id)
+    game.mode = 'maxscoremode'  # Set mode to maxscoremode
+    game.save()
+    if request.user == game.player1:
+        player_role = 'player1'
+    else:
+        player_role = 'player2'
+    return render(request, 'MaxScoreMode.html', {'game_id': game_id, 'player_role': player_role})
 
 def game_ia(request):
 	mode = request.GET.get('mode', 'medium')
@@ -260,6 +295,58 @@ def update_avatar(request):
 	return JsonResponse({'status': 'error', 'message': 'Invalid request'}, status=400)
 
 
+# @login_required
+# def profile(request, username=None):
+# 	try:
+# 		if username is None:
+# 			user_data = request.user
+# 		else:
+# 			user_data = User.objects.get(username=username)
+
+# 		user_games = Game.objects.filter(Q(player1=user_data) | Q(player2=user_data))
+
+# 		wins = user_games.filter(
+# 			(Q(player1=user_data) & Q(score_player1__gt=F('score_player2'))) |
+# 			(Q(player2=user_data) & Q(score_player2__gt=F('score_player1')))
+# 		).count()
+
+# 		losses = user_games.filter(
+# 			(Q(player1=user_data) & Q(score_player1__lt=F('score_player2'))) |
+# 			(Q(player2=user_data) & Q(score_player2__lt=F('score_player1')))
+# 		).count()
+
+# 		last_games = user_games.order_by('-created_at')[:4]
+
+# 		scores = []
+# 		for game in last_games:
+# 			if game.player1 == user_data:
+# 				user_score = game.score_player1
+# 				opponent = game.player2
+# 				opponent_score = game.score_player2
+# 			else:
+# 				user_score = game.score_player2
+# 				opponent = game.player1
+# 				opponent_score = game.score_player1
+
+# 			scores.append({
+# 				'user_score': user_score,
+# 				'opponent_score': opponent_score,
+# 				'opponent': opponent.username if opponent else 'AI'
+# 			})
+
+# 		context = {
+# 			'user_data': user_data,
+# 			'wins': wins,
+# 			'losses': losses,
+# 			'scores': scores,
+# 			'is_own_profile': user_data == request.user,
+# 			'viewing_username': username  # Add this to help template know which profile we're viewing
+# 		}
+
+# 		return render(request, 'ProfilePage.html', context)
+# 	except User.DoesNotExist:
+# 		return redirect('Error404')
+
 @login_required
 def profile(request, username=None):
 	try:
@@ -270,6 +357,7 @@ def profile(request, username=None):
 
 		user_games = Game.objects.filter(Q(player1=user_data) | Q(player2=user_data))
 
+		# Calculate wins and losses
 		wins = user_games.filter(
 			(Q(player1=user_data) & Q(score_player1__gt=F('score_player2'))) |
 			(Q(player2=user_data) & Q(score_player2__gt=F('score_player1')))
@@ -280,32 +368,44 @@ def profile(request, username=None):
 			(Q(player2=user_data) & Q(score_player2__lt=F('score_player1')))
 		).count()
 
-		last_games = user_games.order_by('-created_at')[:4]
+		# Separate games by mode
+		ranked_games = user_games.filter(mode='ranked')
+		unranked_games = user_games.filter(mode='unranked')
+		tournament_games = user_games.filter(mode='tournament')
+		tictactoe_games = user_games.filter(mode='tictactoe')
 
-		scores = []
-		for game in last_games:
-			if game.player1 == user_data:
-				user_score = game.score_player1
-				opponent = game.player2
-				opponent_score = game.score_player2
-			else:
-				user_score = game.score_player2
-				opponent = game.player1
-				opponent_score = game.score_player1
+		def format_game_list(games):
+			formatted_games = []
+			for game in games:
+				if game.player1 == user_data:
+					user_score = game.score_player1
+					opponent = game.player2
+					opponent_score = game.score_player2
+				else:
+					user_score = game.score_player2
+					opponent = game.player1
+					opponent_score = game.score_player1
 
-			scores.append({
-				'user_score': user_score,
-				'opponent_score': opponent_score,
-				'opponent': opponent.username if opponent else 'AI'
-			})
+				result = "Victory" if user_score > opponent_score else "Defeat"
+				formatted_games.append({
+					'result': result,
+					'user_score': user_score,
+					'opponent_score': opponent_score,
+					'opponent': opponent.username if opponent else 'AI'
+				})
+			return formatted_games
 
 		context = {
 			'user_data': user_data,
 			'wins': wins,
 			'losses': losses,
-			'scores': scores,
+			'scores': format_game_list(user_games),  # All games
+			'ranked_scores': format_game_list(ranked_games),
+			'unranked_scores': format_game_list(unranked_games),
+			'tournament_scores': format_game_list(tournament_games),
+			'tictactoe_scores': format_game_list(tictactoe_games),
 			'is_own_profile': user_data == request.user,
-			'viewing_username': username  # Add this to help template know which profile we're viewing
+			'viewing_username': username
 		}
 
 		return render(request, 'ProfilePage.html', context)
@@ -387,7 +487,6 @@ def get_messages(request, contact_username):
 		})
 
 EXPRESS_SERVER_URL = "http://blockchain-node:3000"
-
 @csrf_exempt
 def create_tournament_request(request):
 	try:
@@ -406,7 +505,6 @@ def create_tournament_request(request):
 #         except Exception as e:
 #             return JsonResponse({'status': 'error', 'message': str(e)})
 #     return JsonResponse({'status': 'error', 'message': 'Invalid request method'})
-
 @csrf_exempt
 def add_match(request):
 	if request.method == "POST":
@@ -452,7 +550,6 @@ def add_match(request):
 	
 	return JsonResponse({"status": "error", "message": "Invalid request method"})
 
-
 @csrf_exempt
 def check_matches(request, tournament_id):  # Accepter tournament_id ici
 	if request.method == "GET":
@@ -476,26 +573,23 @@ def check_matches(request, tournament_id):  # Accepter tournament_id ici
 			return JsonResponse({"status": "error", "message": str(e)})
 	
 	return JsonResponse({"status": "error", "message": "Invalid request method"})
-
-@csrf_exempt  # If you want to disable CSRF protection for this view
+@csrf_exempt
 def get_player_matches(request, tournament_id, player_name):
-	try:
-		# Make a request to the Express server using blockchain-node
-		url = f"http://blockchain-node:3000/getPlayerMatches/{tournament_id}/{player_name}"
-		response = requests.get(url)
+	# Make a request to the Express server using blockchain-node
+	url = f"http://blockchain-node:3000/getPlayerMatches/{tournament_id}/{player_name}"
+	response = requests.get(url)
 
-		# Check if the response is successful
-		if response.status_code == 200:
-			return JsonResponse(response.json())  # Return matches from Express server
-		else:
-			return JsonResponse({
-				'status': 'error',
-				'message': 'Failed to fetch player matches from Express server',
-				'error': response.json()
-			})
+	# Check if the response is successful
+	if response.status_code == 200:
+		return JsonResponse(response.json())  # Return matches from Express server
+	else:
+		return JsonResponse({
+			'status': 'error',
+			'message': 'Failed to fetch player matches from Express server',
+			'error': response.json()
+		})
 
-	except Exception as e:
-		return JsonResponse({'status': 'error', 'message': str(e)})
+	return JsonResponse({'status': 'error', 'message': str(e)})
 
 def leaderboard(request):
 	leaderboard = User.objects.order_by('-elo_rating')[:10]
@@ -539,18 +633,70 @@ def	tictactoe(request):
 	return render(request, 'TicTacToe.html')
 
 @login_required
-def	tounrnamentpage(request):
-	participants = ['John', "Doe", "Alice", "Bob", "Charlie", "Eve", "Mallory", "Oscar"]
-	random.shuffle(participants)
+def set_ready_status(request, tournament_id):
+	tournament = get_object_or_404(Tournament, id=tournament_id)
+	player = get_object_or_404(TournamentPlayer, tournament=tournament, user=request.user)
 
-	tournament_response = create_tournament_request(request)
-	if tournament_response.get('status') == 'error':
-		return JsonResponse({'status': 'error', 'message': tournament_response.get('message')})
-	
-	matches = [(participants[i], participants[i+1]) for i in range(0, len(participants), 2)]
-	
-	# create_tournament(participants)
-	return render(request, 'TournamentPage.html', { 'matches': matches })
+	# Toggle le statut de ready
+	player.is_ready = not player.is_ready
+	player.save()
+
+	return JsonResponse({ "status": "success", "is_ready": player.is_ready })
+
+@login_required
+def create_tournament(request):
+	if request.method == "POST":
+		data = json.loads(request.body)
+		selected_players = data.get("players", [])
+
+		# Vérification du nombre de joueurs
+		if len(selected_players) not in [4, 8, 16]:
+			return JsonResponse({ "status": "error", "message": "You must select 4, 8, or 16 players." })
+
+		# Vérifier si tous les utilisateurs existent
+		# existing_users = User.objects.filter(username__in=selected_players)
+		# if existing_users.count() != len(selected_players):
+		# 	return JsonResponse({
+		# 		"status": "error",
+		# 		"message": "One or more players do not exist."
+		# 	})
+
+		# Créer le tournoi
+		tournament = Tournament.objects.create(creator=request.user, name=f"Tournament by {request.user.username}")
+		tournament_response = create_tournament_request(request)
+		if tournament_response.get('status') == 'error':
+			return JsonResponse({'status': 'error', 'message': tournament_response.get('message')})
+		# Ajouter les joueurs
+		for idx, user in enumerate(existing_users):
+			TournamentPlayer.objects.create(tournament=tournament, user=user, position=idx + 1)
+
+		return JsonResponse({ "status": "success", "tournament_id": tournament.id })
+
+	return JsonResponse({ "status": "error", "message": "Invalid request method." })
+
+
+@login_required
+def tournamentpage(request, tournament_id):
+	tournament = get_object_or_404(Tournament, id=tournament_id)
+	players = TournamentPlayer.objects.filter(tournament=tournament).select_related("user")
+
+	is_participant = TournamentPlayer.objects.filter(tournament=tournament, user=request.user).exists()
+	if not is_participant:
+		return HttpResponseForbidden("You are not a participant in this tournament.")
+
+	players_data = [
+		{
+			"username": player.user.username,
+			"id": player.user.id,
+			"is_ready": player.is_ready,
+			"current_user": player.user == request.user
+		}
+		for player in players
+	]
+
+	print(players_data)
+
+	return render(request, 'TournamentPage.html', { 'players': players_data, 'tournament_id': tournament.id })
 
 @login_required
 def	invitetournament(request):
@@ -588,8 +734,15 @@ def	matchmaking(request):
 def	ChallengeMode(request):
 	return render(request, 'ChallengeMode.html')
 
-
-
+def profile_view(request):
+	context = {
+		'ranked_scores': Game.objects.filter(game_type='ranked'),
+		'unranked_scores': Game.objects.filter(game_type='unranked'),
+		'tournament_scores': Game.objects.filter(game_type='tournament'),
+		'tictactoe_scores': Game.objects.filter(game_type='tictactoe'),
+		# ... rest of your context
+	}
+	return render(request, 'ProfilePage.html', context)
 
 
 

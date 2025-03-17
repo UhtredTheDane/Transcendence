@@ -22,7 +22,9 @@ urlpatterns = [
 	path('Error404/', views.error404, name='error404'),
 	path('InviteTournament/', views.invitetournament, name='invitetournament'),
 	path('JoinTournament/', views.jointournament, name='jointournament'),	
-	path('TournamentPage/', views.tounrnamentpage, name='TournamentPage'),
+	path('TournamentPage/<int:tournament_id>/', views.tournamentpage, name='TournamentPage'),
+	path('TournamentPage/<int:tournament_id>/ready/', views.set_ready_status, name='set_ready_status'),
+	path('create_tournament/', views.create_tournament, name='create_tournament'),
 	path('PongTourny/', views.pongtourny, name='pongtourny'),	
 	path('TicTacToe/', views.tictactoe, name='tictactoe'),
 	path('MyFriends/', views.myfriends, name='myfriends'),
@@ -42,7 +44,7 @@ urlpatterns = [
 	path('MaxScoreMode/<int:game_id>/', views.MaxScoreMode, name='MaxScoreMode'),
 
 
-	# path('create-tournament/', views.create_tournament, name='create_tournament'),
+	path('create-tournament/', views.create_tournament, name='create_tournament'),
     path('checkMatches/<int:tournament_id>', views.check_matches, name='check_matches'),
     path('add-match/', views.add_match, name='add_match'),
     path('getPlayerMatches/<int:tournament_id>/<str:player_name>/', views.get_player_matches, name='get_player_matches'),

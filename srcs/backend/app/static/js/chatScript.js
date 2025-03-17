@@ -8,6 +8,7 @@ if (!user) {
 
 const socket = new WebSocket(`ws://${window.location.host}/ws/chatbox/`);
 
+
 socket.onopen = function(event) {
 	console.log('WebSocket is connected.');
 };
