@@ -51,6 +51,20 @@ z{% load static %}
 			height: 80px;
 		}
 	</style>
+
+	<script>
+		// When starting a game from ChallengeMode.html or similar
+		fetch('/create_game/', {
+			method: 'GET',
+			headers: {
+				'Content-Type': 'application/json',
+			},
+			params: {
+				mode: 'ranked', // or 'unranked', 'tournament', etc.
+				player2_id: opponentId
+			}
+		})
+	</script>
 </head>
 <body onload="loadTemplate()">
 

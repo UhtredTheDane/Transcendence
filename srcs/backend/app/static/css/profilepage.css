@@ -12,6 +12,14 @@
     color: #FF4C4C;
 }
 
+.head-category {
+	width: 95%;
+	position: relative;
+	display: flex;
+	justify-content: left;
+	margin-bottom: 21px;
+}
+
 .my-profile-box{
 	/* display: block; */
 	background-color: rgba(217, 217, 217, 0.10);
@@ -193,4 +201,36 @@ height: 100%;
 	padding-left: 42px;
 	padding-right: 21px;
 	text-align: right;
+}
+
+.choose-category {
+	font-size: 24px;
+	display: flex;
+	justify-content: left;
+	align-items: center;
+	text-align: left;
+}
+
+.category {
+	font-size: 24px;
+	display: flex;
+	justify-content: left;
+	align-items: center;
+	text-align: left;
+	color: #f0f0f0;
+	transition: color 0.5s ease-in-out, text-decoration 0.5s ease-in-out;
+}
+
+.category:hover {
+	cursor: pointer;
+	text-decoration: underline;
+	color: #4423FF;
+}
+
+.category.active {
+    border-bottom: 2px solid #4423ff;
+}
+
+.game-category-container {
+    margin-top: 20px;
 }
