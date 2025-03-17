@@ -3,14 +3,14 @@ import requests
 import random
 from django.conf import settings
 from django.shortcuts import get_object_or_404, render, redirect
-from django.http import HttpResponseNotFound, HttpResponseRedirect, Http404, JsonResponse
+from django.http import HttpResponseNotFound, HttpResponseRedirect, HttpResponseForbidden, Http404, JsonResponse
 from django.core.files.base import ContentFile
 from django.contrib import messages
 from django.contrib.auth import login, get_backends
 from django.contrib.auth.models import AnonymousUser
 from django.contrib.auth.decorators import login_required
 from django.db.models import F, Q
-from .models import User, Channel,  Message, Messages, Game
+from .models import User, Channel,  Message, Messages, Game, Tournament, TournamentGame, TournamentPlayer
 from django.views.decorators.csrf import csrf_exempt
 from allauth.account.forms import LoginForm
 from allauth.account.forms import SignupForm
@@ -388,7 +388,6 @@ def get_messages(request, contact_username):
 
 EXPRESS_SERVER_URL = "http://blockchain-node:3000"
 
-@csrf_exempt
 def create_tournament_request(request):
 	try:
 		response = requests.post(f"{EXPRESS_SERVER_URL}/create-tournament")
@@ -407,7 +406,6 @@ def create_tournament_request(request):
 #             return JsonResponse({'status': 'error', 'message': str(e)})
 #     return JsonResponse({'status': 'error', 'message': 'Invalid request method'})
 
-@csrf_exempt
 def add_match(request):
 	if request.method == "POST":
 		try:
@@ -453,7 +451,6 @@ def add_match(request):
 	return JsonResponse({"status": "error", "message": "Invalid request method"})
 
 
-@csrf_exempt
 def check_matches(request, tournament_id):  # Accepter tournament_id ici
 	if request.method == "GET":
 		try:
@@ -477,7 +474,6 @@ def check_matches(request, tournament_id):  # Accepter tournament_id ici
 	
 	return JsonResponse({"status": "error", "message": "Invalid request method"})
 
-@csrf_exempt  # If you want to disable CSRF protection for this view
 def get_player_matches(request, tournament_id, player_name):
 	try:
 		# Make a request to the Express server using blockchain-node
@@ -539,18 +535,68 @@ def	tictactoe(request):
 	return render(request, 'TicTacToe.html')
 
 @login_required
-def	tounrnamentpage(request):
-	participants = ['John', "Doe", "Alice", "Bob", "Charlie", "Eve", "Mallory", "Oscar"]
-	random.shuffle(participants)
+def set_ready_status(request, tournament_id):
+	tournament = get_object_or_404(Tournament, id=tournament_id)
+	player = get_object_or_404(TournamentPlayer, tournament=tournament, user=request.user)
 
-	# tournament_response = create_tournament_request(request)
-	# if tournament_response.get('status') == 'error':
-	# 	return JsonResponse({'status': 'error', 'message': tournament_response.get('message')})
-	
-	matches = [(participants[i], participants[i+1]) for i in range(0, len(participants), 2)]
-	
-	# create_tournament(participants)
-	return render(request, 'TournamentPage.html', { 'matches': matches })
+	# Toggle le statut de ready
+	player.is_ready = not player.is_ready
+	player.save()
+
+	return JsonResponse({ "status": "success", "is_ready": player.is_ready })
+
+@login_required
+def create_tournament(request):
+	if request.method == "POST":
+		data = json.loads(request.body)
+		selected_players = data.get("players", [])
+
+		# Vérification du nombre de joueurs
+		if len(selected_players) not in [4, 8, 16]:
+			return JsonResponse({ "status": "error", "message": "You must select 4, 8, or 16 players." })
+
+		# Vérifier si tous les utilisateurs existent
+		existing_users = User.objects.filter(username__in=selected_players)
+		if existing_users.count() != len(selected_players):
+			return JsonResponse({
+				"status": "error",
+				"message": "One or more players do not exist."
+			})
+
+		# Créer le tournoi
+		tournament = Tournament.objects.create(creator=request.user, name=f"Tournament by {request.user.username}")
+
+		# Ajouter les joueurs
+		for idx, user in enumerate(existing_users):
+			TournamentPlayer.objects.create(tournament=tournament, user=user, position=idx + 1)
+
+		return JsonResponse({ "status": "success", "tournament_id": tournament.id })
+
+	return JsonResponse({ "status": "error", "message": "Invalid request method." })
+
+
+@login_required
+def tournamentpage(request, tournament_id):
+	tournament = get_object_or_404(Tournament, id=tournament_id)
+	players = TournamentPlayer.objects.filter(tournament=tournament).select_related("user")
+
+	is_participant = TournamentPlayer.objects.filter(tournament=tournament, user=request.user).exists()
+	if not is_participant:
+		return HttpResponseForbidden("You are not a participant in this tournament.")
+
+	players_data = [
+		{
+			"username": player.user.username,
+			"id": player.user.id,
+			"is_ready": player.is_ready,
+			"current_user": player.user == request.user
+		}
+		for player in players
+	]
+
+	print(players_data)
+
+	return render(request, 'TournamentPage.html', { 'players': players_data, 'tournament_id': tournament.id })
 
 @login_required
 def	invitetournament(request):

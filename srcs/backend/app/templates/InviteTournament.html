@@ -148,56 +148,76 @@
     </div>
 
     <script>
-        const selectedPlayers = [];
-
-        function checkPlayers() {
-            if (![4, 8, 16].includes(selectedPlayers.length)) {
-                alert('You need to select 4, 8, or 16 players to start a tournament.');
-            }
-        }
-
-        function addPlayer(player) {
-            if (!selectedPlayers.includes(player)) {
-                selectedPlayers.push(player);
-                updateSelectedPlayers();
-            }
-        }
-
-        function updateSelectedPlayers() {
-            const selectedListContainer = document.getElementById('selectedPlayers');
-            selectedListContainer.innerHTML = ''; // Clear previous list
-
-            selectedPlayers.forEach(player => {
-                const playerElement = document.createElement('div');
-                playerElement.textContent = player;
-                selectedListContainer.appendChild(playerElement);
-            });
-        }
-
-        function addPlayerFromInput() {
-            const username = document.getElementById('usernameInput').value.trim();
-            if (username === '') {
-                alert('Please enter a valid username.');
-                return;
-            }
-
-            if (!selectedPlayers.includes(username)) {
-                selectedPlayers.push(username);
-                updateSelectedPlayers();
-                document.getElementById('usernameInput').value = '';
-            } else {
-                alert('This player is already added.');
-            }
-        }
-
-        function startTournament() {
-            if (selectedPlayers.length < 4) {
-                alert('You need at least 4 players to start a tournament.');
-            } else {
-                window.location.href = '/TournamentPage';
-            }
-        }
-    </script>
+		const selectedPlayers = [];
+	
+		function addPlayerFromInput() {
+			const username = document.getElementById('usernameInput').value.trim();
+			if (username === '') {
+				alert('Please enter a valid username.');
+				return;
+			}
+	
+			if (!selectedPlayers.includes(username)) {
+				selectedPlayers.push(username);
+				updateSelectedPlayers();
+				document.getElementById('usernameInput').value = '';
+			} else {
+				alert('This player is already added.');
+			}
+		}
+	
+		function updateSelectedPlayers() {
+			const selectedListContainer = document.getElementById('selectedPlayers');
+			selectedListContainer.innerHTML = '';
+	
+			selectedPlayers.forEach(player => {
+				const playerElement = document.createElement('div');
+				playerElement.textContent = player;
+				selectedListContainer.appendChild(playerElement);
+			});
+		}
+	
+		function startTournament() {
+			if (![4, 8, 16].includes(selectedPlayers.length)) {
+				alert('You need to select 4, 8, or 16 players to start a tournament.');
+				return;
+			}
+	
+			fetch('/create_tournament/', {
+				method: 'POST',
+				headers: {
+					'X-CSRFToken': getCookie('csrftoken'),
+					'Content-Type': 'application/json'
+				},
+				body: JSON.stringify({ players: selectedPlayers })
+			})
+			.then(response => response.json())
+			.then(data => {
+				if (data.status === "success") {
+					window.location.href = "{% url 'TournamentPage' 0 %}".replace("0", data.tournament_id);
+				} else {
+					alert(data.message);
+				}
+			})
+			.catch(error => console.error("Error:", error));
+		}
+	
+		function getCookie(name) {
+			let cookieValue = null;
+			if (document.cookie && document.cookie !== '') {
+				const cookies = document.cookie.split(';');
+				for (let i = 0; i < cookies.length; i++) {
+					const cookie = cookies[i].trim();
+					if (cookie.startsWith(name + '=')) {
+						cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+						break;
+					}
+				}
+			}
+			return cookieValue;
+		}
+	</script>
+	
 
     <!-- Chatbox -->
 	{% include 'ChatBox.html' %}

@@ -17,7 +17,6 @@ class User(AbstractUser):
 	status = models.CharField(max_length=50, choices=STATUS_CHOICES, default='off')
 	visual_impairment_level = models.IntegerField(default=0, validators=[MinValueValidator(0), MaxValueValidator(5)]) # Visually Impaired User (daltonisme)
 	is_waiting = models.BooleanField(default=False)
-	is_ready = models.BooleanField(default=False)
 	elo_rating = models.IntegerField(default=1000)
 	channel_name = models.CharField(max_length=255, blank=True, null=True)
 
@@ -63,6 +62,7 @@ class Tournament(models.Model):
 class TournamentPlayer(models.Model):
 	tournament = models.ForeignKey(Tournament, on_delete=models.CASCADE, related_name="players")
 	user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="tournaments_user")
+	is_ready = models.BooleanField(default=False)
 	joined_at = models.DateTimeField(auto_now_add=True)
 	position = models.IntegerField(blank=True, null=True)
 
@@ -102,8 +102,8 @@ class ChannelUser(models.Model):
 
 
 class Message(models.Model):
-	channel = models.ForeignKey(Channel, on_delete=models.CASCADE, related_name="messages")
-	user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="messages")
+	channel = models.ForeignKey(Channel, on_delete=models.CASCADE, related_name="message")
+	user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="message")
 	content = models.TextField()
 	is_read = models.BooleanField(default=False)
 	created_at = models.DateTimeField(auto_now_add=True)
