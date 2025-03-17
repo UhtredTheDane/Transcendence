@@ -9,7 +9,7 @@ export default class OnlineGame extends Game{
 		this.isBallMover = false;
 		this.#initOnOpen();
 		this.#initOnClose();
-		this.initOnMessage();	
+		this.initOnMessage();
 	}
 
 	#initOnOpen() {
@@ -122,7 +122,7 @@ export default class OnlineGame extends Game{
 		if (this._isSocketOpen && this._socket.readyState === WebSocket.OPEN)
 			this._socket.send(JSON.stringify({ type: "end", score_player1: this._field.player.playerScore, score_player2: this._field.opponent.playerScore }));
 		if (this._field.getWinner())
-			alert("Vous avez gagné !")
+			alert("Vous avez gagné !");
 		else
 			alert("Vous avez perdu !");
 		window.location.href = "/";

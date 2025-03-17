@@ -248,6 +248,6 @@ export default class Ball {
 			this.resetBall();
 			game.sendUpdateGameScore();
 		}
-				game.sendBallPosition();
+			game.sendBallPosition();
 	}
 }

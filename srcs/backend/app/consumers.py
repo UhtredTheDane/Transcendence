@@ -11,8 +11,9 @@ class GameConsumer(AsyncWebsocketConsumer):
     async def connect(self):
         self.game_id = self.scope['url_route']['kwargs']['game_id']
         self.game_group_name = f'game_{self.game_id}'
-
+        self.timer_task = None
         try:
+            self.game = await sync_to_async(Game.objects.get)(id=self.game_id)
             self.game = await sync_to_async(Game.objects.get)(id=self.game_id)
             self.player1 = await sync_to_async(lambda: self.game.player1)()
             self.player2 = await sync_to_async(lambda: self.game.player2)()
@@ -28,7 +29,6 @@ class GameConsumer(AsyncWebsocketConsumer):
                     self.channel_name
                     )
             await self.accept()
-
             await self.send(text_data=json.dumps({
                 "type": "game_state",
                 "player1_y": self.game.player1_y,
@@ -37,6 +37,7 @@ class GameConsumer(AsyncWebsocketConsumer):
                 "ball_y": self.game.ball_y,
                 "score_player1": self.game.score_player1,
                 "score_player2": self.game.score_player2,
+                "timer": self.game.timer,
                 }))
 
     async def disconnect(self, close_code):
@@ -49,7 +50,11 @@ class GameConsumer(AsyncWebsocketConsumer):
         data = json.loads(text_data)
         message_type = data.get("type")
 
-        if message_type == "move":
+        if message_type == "set_timer_success":
+            await self.set_timer(data)
+        if message_type == "update_timer":
+            await self.update_timer(event)
+        elif message_type == "move":
             await self.handle_move(data)
         elif message_type == "ball":
             await self.handle_ball_position(data)
@@ -59,6 +64,98 @@ class GameConsumer(AsyncWebsocketConsumer):
             await self.handle_pause(data)
         elif message_type == "end":
             await self.end_game(data)
+
+    async def set_timer(self, data):
+        timer_value = data.get("timer")
+        self.game.timer = timer_value
+        await sync_to_async(self.game.save)()
+        # Diffuser le timer aux deux joueurs
+        await self.channel_layer.group_send(
+            self.game_group_name,
+            {
+                "type": "update_timer",
+                "timer": timer_value,
+                }
+            )
+        print("Lancement de la tâche du timer...")
+        # Vérifier l'état avant de commencer la boucle
+        timer = int(self.game.timer)
+        print(f"Etat initial - is_active: {self.game.is_active}, timer: {timer}")
+    
+        #La boucle ne commencera que si le jeu est actif et si le timer est supérieur à 0
+        while self.game.is_active and timer > 0:
+            print(f"Début de la boucle - timer actuel : {timer}")
+
+            # Attendre 1 seconde
+            await asyncio.sleep(1)
+
+            # Décrémenter le timer
+            timer -= 1
+
+            # Sauvegarder la valeur du timer en base de données
+            await sync_to_async(self.game.save)()
+
+            # Diffuser la mise à jour du timer aux joueurs
+            await self.channel_layer.group_send(
+                self.game_group_name,
+                {
+                    "type": "update_timer",
+                    "timer": timer,
+                    }
+                )
+            print(f"Timer mis à jour : {timer} secondes restantes")
+
+        # Si la boucle se termine, vérifier pourquoi elle a arrêté
+        if timer <= 0:
+            print("Le timer est à 0 ou moins, la boucle est terminée.")
+        elif not self.game.is_active:
+            print("Le jeu n'est plus actif, la boucle est terminée.")
+        
+        # # Si une tâche de timer n'existe pas déjà, la créer
+        # if not hasattr(self, 'timer_task') or self.timer_task is None or self.timer_task.done():
+        #     print("Lancement de la tâche du timer...")
+        #     self.timer_task = asyncio.create_task(self.update_game_timer())
+        # else:
+        #     print("La tâche du timer est déjà en cours.")
+
+    async def update_game_timer(self):
+       # Vérifier l'état avant de commencer la boucle
+        print(f"Etat initial - is_active: {self.game.is_active}, timer: {self.game.timer}")
+    
+        #La boucle ne commencera que si le jeu est actif et si le timer est supérieur à 0
+        while self.game.is_active and self.game.timer > 0:
+            print(f"Début de la boucle - timer actuel : {self.game.timer}")
+
+            # Attendre 1 seconde
+            await asyncio.sleep(1)
+
+            # Décrémenter le timer
+            self.game.timer -= 1
+
+            # Sauvegarder la valeur du timer en base de données
+            await sync_to_async(self.game.save)()
+
+            # Diffuser la mise à jour du timer aux joueurs
+            await self.channel_layer.group_send(
+                self.game_group_name,
+                {
+                    "type": "update_timer",
+                    "timer": self.game.timer,
+                    }
+                )
+            print(f"Timer mis à jour : {self.game.timer} secondes restantes")
+
+        # Si la boucle se termine, vérifier pourquoi elle a arrêté
+        if self.game.timer <= 0:
+            print("Le timer est à 0 ou moins, la boucle est terminée.")
+        elif not self.game.is_active:
+            print("Le jeu n'est plus actif, la boucle est terminée.")
+
+    async def update_timer(self, event):
+        await self.send(text_data=json.dumps({
+            "type": "update_timer",
+            "timer": event['timer'],
+        }))
 
     async def handle_move(self, data):
         player = self.scope['user']
@@ -134,7 +231,7 @@ class GameConsumer(AsyncWebsocketConsumer):
                 self.game_group_name,
                 {
                     "type": "game_over"
-                    }
+                }
                 )
 
         await asyncio.sleep(5)

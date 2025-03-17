@@ -6,7 +6,7 @@ import Ball from './ball.js';
 function redirectToProfile() {
 	window.location.href = "/ProfilePage";
 }
-
+/*
 function runAIGame()
 {
 	let player = new Player(0.0, 167.5, '../../media/textures/Player1.png');
@@ -28,7 +28,7 @@ function runAIGame()
 		game.updateBall(fieldPong, game);
 		fieldPong.draw();
 	}, 16);
-}
+}*/
 
 function setGameMode(mode) {
 	document.getElementById('selectedMode').textContent = "Current Mode: " + mode;

@@ -33,7 +33,7 @@ class Game(models.Model):
 	player1 = models.ForeignKey(User, on_delete=models.CASCADE, related_name='games_as_player1')
 	player2 = models.ForeignKey(User, on_delete=models.CASCADE, related_name='games_as_player2', null=True, blank=True)
 	ball_x = models.FloatField(default=400)
-	ball_y = models.FloatField(default=200)
+	ball_y = models.FloatField(default=400)
 	player1_y = models.FloatField(default=170)
 	player2_y = models.FloatField(default=170)
 	max_score = models.IntegerField(default=11, null=True, blank=True, validators=[MinValueValidator(1), MaxValueValidator(100)])  # Score maximum pour gagner
