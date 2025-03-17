@@ -1,6 +1,10 @@
 let selectedContact = null;
-let user = username ;
+let user = typeof username !== 'undefined' ? username : null;
 let messages = {};
+
+if (!user) {
+    console.error('Username not defined');
+}
 
 const socket = new WebSocket(`ws://${window.location.host}/ws/chatbox/`);
 
