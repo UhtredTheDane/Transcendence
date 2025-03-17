@@ -575,23 +575,21 @@ def check_matches(request, tournament_id):  # Accepter tournament_id ici
 	return JsonResponse({"status": "error", "message": "Invalid request method"})
 
 def get_player_matches(request, tournament_id, player_name):
-	try:
-		# Make a request to the Express server using blockchain-node
-		url = f"http://blockchain-node:3000/getPlayerMatches/{tournament_id}/{player_name}"
-		response = requests.get(url)
+	# Make a request to the Express server using blockchain-node
+	url = f"http://blockchain-node:3000/getPlayerMatches/{tournament_id}/{player_name}"
+	response = requests.get(url)
 
-		# Check if the response is successful
-		if response.status_code == 200:
-			return JsonResponse(response.json())  # Return matches from Express server
-		else:
-			return JsonResponse({
-				'status': 'error',
-				'message': 'Failed to fetch player matches from Express server',
-				'error': response.json()
-			})
+	# Check if the response is successful
+	if response.status_code == 200:
+		return JsonResponse(response.json())  # Return matches from Express server
+	else:
+		return JsonResponse({
+			'status': 'error',
+			'message': 'Failed to fetch player matches from Express server',
+			'error': response.json()
+		})
 
-	except Exception as e:
-		return JsonResponse({'status': 'error', 'message': str(e)})
+	return JsonResponse({'status': 'error', 'message': str(e)})
 
 def leaderboard(request):
 	leaderboard = User.objects.order_by('-elo_rating')[:10]
