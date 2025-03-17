@@ -113,12 +113,23 @@
                 <p>Player 2: 0</p>
             </div>
         </div>
-
+ 
         <!-- Game Window -->
         <div class="game-window ">
             <canvas id="field" width="802px" height="455px">
                 Votre Navigateur ne supporte pas la balise canvas.
             </canvas>
+            
+            <!-- Modale Bloquante -->
+            <div id="modal" class="modal">
+                <div class="modal-content">
+                    <span id="closeBtn" class="close">&times;</span>
+                    <h2>Bienvenue Player 1 !</h2>
+                    <p>Veuillez entrer un timer pour commencer le jeu :</p>
+                    <input type="number" id="customValue" placeholder="Entrez le Max Score" min="1">
+                    <button id="submitBtn">Envoyer</button>
+                </div>
+        </div>
             <script>
                 const gameId = '{{ game_id }}';
                 const playerRole = '{{player_role }}';
@@ -128,19 +139,75 @@
         </div>
     </div>
 
-    <script>
-        document.getElementById("maxScore").addEventListener("input", function(event) {
-            let maxScoreValue = event.target.value;
-            // Set max score in your game logic (this assumes the Launcher class is already instantiated)
-            if (launcher && launcher.game instanceof MaxScoreGame) {
-                launcher.game.maxscore = parseInt(maxScoreValue);
-                console.log("Max score updated to: ", maxScoreValue);
-            }
-        });
-    </script>
-    
+    <!-- Styles CSS pour la modale -->
+<style>
+    /* Modale avec fond bloquant */
+    .modal {
+        display: none; /* Cachée par défaut */
+        position: fixed; /* Fixée à l'écran */
+        z-index: 9999; /* Assure que la modale est par-dessus tout le reste */
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5); /* Fond semi-transparent */
+        overflow: auto; /* Assure que tout débordement est géré */
+    }
 
-        <!-- Chatbox -->
+    .modal-content {
+        background-color: #fff;
+        margin: 15% auto;
+        padding: 20px;
+        border: 1px solid #888;
+        width: 80%;
+        max-width: 400px;
+        text-align: center;
+    }
+
+    .close {
+        color: #aaa;
+        float: right;
+        font-size: 28px;
+        font-weight: bold;
+    }
+
+    .close:hover,
+    .close:focus {
+        color: black;
+        text-decoration: none;
+        cursor: pointer;
+    }
+
+    /* Style du champ de texte */
+    input[type="number"] {
+        width: 80%;
+        padding: 10px;
+        margin: 10px 0;
+        font-size: 16px;
+    }
+
+    /* Style du bouton */
+    button {
+        padding: 10px 20px;
+        background-color: #4CAF50;
+        color: white;
+        border: none;
+        cursor: pointer;
+        font-size: 16px;
+    }
+
+    button:hover {
+        background-color: #45a049;
+    }
+
+    /* Style du message pour Player 2 */
+    #player2-message {
+        font-size: 18px;
+        margin-top: 20px;
+    }
+</style>
+    
+    <!-- Chatbox -->
 	{% include 'ChatBox.html' %}
     <script src="{% static 'js/chatScript.js' %}"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.min.js"></script>

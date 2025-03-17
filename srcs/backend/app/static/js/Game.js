@@ -7,6 +7,7 @@ export default class Game {
 		this.field = fieldValue;
 		this.isPaused = false;
 		this.isGameEnded = false;
+		this.maxScore = 1;
 	}
 
 	get field() {
@@ -34,6 +35,14 @@ export default class Game {
 		this._isPaused = value;
 	}
 
+	get maxscore() {
+		return this._maxscore;
+	}
+
+	set maxscore(value) {
+		this._maxscore = value;
+    }
+	
 	togglePauseGame() {
 		this._isPaused = !this._isPaused;
 		if (this._isGameEnded)

@@ -7,29 +7,6 @@ function redirectToProfile() {
 	window.location.href = "/ProfilePage";
 }
 
-function runAIGame()
-{
-	let player = new Player(0.0, 167.5, '../../media/textures/Player1.png');
-	let opponent = new Player(785, 167.5, '../../media/textures/Player2.png');
-
-	let ball = new Ball(384, 212.5, '../../media/textures/Ball.png');
-	let fieldPong = new Field(player, opponent, ball);
-	let game = new Game(fieldPong);
-
-	document.addEventListener("keydown", function (event) {
-	if (game.isPaused || game.isGameEnded) return;
-	if (event.key === "ArrowUp" || event.key === "w" || event.key === "z")
-		game.makeMove(Math.max(0, game.field.player.yPos - 10));
-	if (event.key === "ArrowDown" || event.key === "s")
-			game.makeMove(Math.min(game.field.canevas.height - game.field.player.height, game.field.player.yPos + 10));
-	});
-
-	setInterval(() => {
-		game.updateBall(fieldPong, game);
-		fieldPong.draw();
-	}, 16);
-}
-
 function setGameMode(mode) {
 	document.getElementById('selectedMode').textContent = "Current Mode: " + mode;
 	console.log("Mode: " + mode);
@@ -48,9 +25,6 @@ function setGameMode(mode) {
 			break;
 		case "RushMode":
 			window.location.href='/MatchMaking/?typegame=RushMode';
-			break;
-		case "TimerMode":
-			window.location.href='/MatchMaking/?typegame=TimerMode';
 			break;
 		case "MaxScoreMode":
 			window.location.href='/MatchMaking/?typegame=MaxScoreMode';

@@ -13,7 +13,7 @@ class GameConsumer(AsyncWebsocketConsumer):
     async def connect(self):
         self.game_id = self.scope['url_route']['kwargs']['game_id']
         self.game_group_name = f'game_{self.game_id}'
-
+        self.timer_task = None
         try:
             self.game = await sync_to_async(Game.objects.get)(id=self.game_id)
             self.player1 = await sync_to_async(lambda: self.game.player1)()
@@ -30,7 +30,6 @@ class GameConsumer(AsyncWebsocketConsumer):
                     self.channel_name
                     )
             await self.accept()
-
             await self.send(text_data=json.dumps({
                 "type": "game_state",
                 "player1_y": self.game.player1_y,
@@ -39,6 +38,8 @@ class GameConsumer(AsyncWebsocketConsumer):
                 "ball_y": self.game.ball_y,
                 "score_player1": self.game.score_player1,
                 "score_player2": self.game.score_player2,
+                "speed": self.game.speed,
+                "maxScore": self.game.maxScore,
                 }))
 
     async def disconnect(self, close_code):
@@ -51,7 +52,15 @@ class GameConsumer(AsyncWebsocketConsumer):
         data = json.loads(text_data)
         message_type = data.get("type")
 
-        if message_type == "move":
+        if message_type == "set_maxScore_success":
+            await self.set_maxScore(data)
+        elif message_type == "set_speed_success":
+            await self.set_speed(data)
+        elif message_type == "update_maxScore":
+            await self.update_maxScore(event)
+        elif message_type == "update_speed":
+            await self.update_speed(event)
+        elif message_type == "move":
             await self.handle_move(data)
         elif message_type == "ball":
             await self.handle_ball_position(data)
@@ -61,6 +70,46 @@ class GameConsumer(AsyncWebsocketConsumer):
             await self.handle_pause(data)
         elif message_type == "end":
             await self.end_game(data)
+
+    async def set_maxScore(self, data):
+        maxScore_value = data.get("maxScore")
+        self.game.maxScore = maxScore_value
+        await sync_to_async(self.game.save)()
+        # Diffuser le speed aux deux joueurs
+        await self.channel_layer.group_send(
+            self.game_group_name,
+            {
+                "type": "update_maxScore",
+                "maxScore": maxScore_value,
+                }
+            )
+        print("Lancement de la tâche du maxScore...")
+
+    async def set_speed(self, data):
+        speed_value = data.get("speed")
+        self.game.speed = speed_value
+        await sync_to_async(self.game.save)()
+        # Diffuser le speed aux deux joueurs
+        await self.channel_layer.group_send(
+            self.game_group_name,
+            {
+                "type": "update_speed",
+                "speed": speed_value,
+                }
+            )
+        print("Lancement de la tâche du speed...")
+
+    async def update_speed(self, event):
+        await self.send(text_data=json.dumps({
+            "type": "update_speed",
+            "speed": event['speed'],
+        }))
+
+    async def update_maxScore(self, event):
+        await self.send(text_data=json.dumps({
+            "type": "update_maxScore",
+            "maxScore": event['maxScore'],
+        }))
 
     async def handle_move(self, data):
         player = self.scope['user']
@@ -136,7 +185,7 @@ class GameConsumer(AsyncWebsocketConsumer):
                 self.game_group_name,
                 {
                     "type": "game_over"
-                    }
+                }
                 )
 
         await asyncio.sleep(5)
