@@ -60,16 +60,16 @@ def create_or_get_channel(request, user_id):
 
 	# Chercher si un channel existe déjà entre les deux utilisateurs
 	channel = Channel.objects.filter(
-			participants=current_user
+			players=current_user
 			).filter(
-					participants=other_user
+					players=other_user
 					).distinct()
 
 
 	if not channel.exists():
 		# Créer un nouveau channel
 		channel = Channel.objects.create(name=f"Channel-{current_user.id}-{other_user.id}")
-		channel.participants.add(current_user, other_user)
+		channel.players.add(current_user, other_user)
 		channel.save()
 	else:
 		channel = channel.first()
@@ -692,9 +692,17 @@ def tournamentpage(request, tournament_id):
 		for player in players
 	]
 
-	print(players_data)
+	random.shuffle(players_data)
+	matches = [
+        (players_data[i], players_data[i+1])
+        for i in range(0, len(players_data) - 1, 2)
+    ]
 
-	return render(request, 'TournamentPage.html', { 'players': players_data, 'tournament_id': tournament.id })
+	print(players_data)
+	print("----------------------")
+	print(matches)
+
+	return render(request, 'TournamentPage.html', { 'players': players_data, 'matches': matches, 'tournament_id': tournament.id })
 
 @login_required
 def	invitetournament(request):
