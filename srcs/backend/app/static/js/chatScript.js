@@ -82,7 +82,11 @@ socket.onmessage = function(event) {
         acceptButton.textContent = 'Accept Challenge';
         acceptButton.classList.add('btn', 'btn-primary', 'mt-2');
         acceptButton.onclick = function() {
-            window.location.href = `/RankedMode/${data.sender}`;
+			socket.send(JSON.stringify({
+				type: "challenge_accepted",
+				sender: data.sender,
+				receiver: data.receiver
+			}));
         };
         
         messageContainer.appendChild(senderName);
@@ -100,6 +104,11 @@ socket.onmessage = function(event) {
             content: data.content,
             timestamp: timestamp
         });
+    } else if (data.type === 'challenge_accepted') {
+		alert(data.message);
+	} else if (data.type === 'game_created') {
+        console.log("Game created, redirecting sender to:", data.game_url);
+		window.location.href = data.game_url;
     }
 };
 

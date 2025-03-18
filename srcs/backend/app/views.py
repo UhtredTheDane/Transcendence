@@ -101,102 +101,117 @@ def send_message(request, channel_id):
 # Games
 @login_required
 def create_game(request):   
-    game_type = request.GET.get('type', 'unranked')  
-    player1 = request.user
+	game_type = request.GET.get('type', 'unranked')  
+	player1 = request.user
 
-    try:
-        if game_type == 'solo':
-            game = Game.objects.create(
-                player1=player1,
-                mode='solo'
-            )
-        else:
-            player2_id = request.GET.get('player2_id')
-            if not player2_id:
-                return JsonResponse({'error': 'player2_id is required'}, status=400)
-            
-            player2 = get_object_or_404(User, id=player2_id)
-            game = Game.objects.create(
-                player1=player1,
-                player2=player2,
-                mode=game_type
-            )
-        
-        return JsonResponse({'game_id': game.id})
-            
-    except Http404:
-        return JsonResponse({'error': 'Opponent not found'}, status=404)
-    except Exception as e:
-        return JsonResponse({'error': str(e)}, status=500)
+	try:
+		if game_type == 'solo':
+			game = Game.objects.create(
+				player1=player1,
+				mode='solo'
+			)
+		else:
+			player2_id = request.GET.get('player2_id')
+			if not player2_id:
+				return JsonResponse({'error': 'player2_id is required'}, status=400)
+			
+			player2 = get_object_or_404(User, id=player2_id)
+			game = Game.objects.create(
+				player1=player1,
+				player2=player2,
+				mode=game_type
+			)
+
+		has_to_redirect = request.GET.get('redirect', 'false')
+		if has_to_redirect == 'true':
+			if game_type == 'ranked':
+				return redirect(f'/RankedMode/{game.id}/')
+			elif game_type == 'tictactoe':
+				return redirect(f'/TicTacToeMode/{game.id}/')
+			elif game_type == 'rushmode':
+				return redirect(f'/RushMode/{game.id}/')
+			elif game_type == 'timermode':
+				return redirect(f'/TimerMode/{game.id}/')
+			elif game_type == 'maxscoremode':
+				return redirect(f'/MaxScoreMode/{game.id}/')
+			else:
+				return redirect(f'/UnrankedMode/{game.id}/')
+		
+		return JsonResponse({ 'game_id': game.id })
+			
+	except Http404:
+		return JsonResponse({'error': 'Opponent not found'}, status=404)
+	except Exception as e:
+		return JsonResponse({'error': str(e)}, status=500)
 
 @login_required # ! POUR REVIEW LES FONCTIONS ET POUVOIRS LES DISPLAY DANS LE PROFIL
 def RankedMode(request, game_id):
-    game = get_object_or_404(Game, id=game_id)
-    game.mode = 'ranked'  # ! Commande a modifier
-    game.save() # ! Commande a ajouter
-    if request.user == game.player1:
-        player_role = 'player1'
-    else:
-        player_role = 'player2'
-    return render(request, 'RankedMode.html', {'game_id': game_id, 'player_role': player_role})
+	game = get_object_or_404(Game, id=game_id)
+	game.mode = 'ranked'  # ! Commande a modifier
+	game.save() # ! Commande a ajouter
+	if request.user == game.player1:
+		player_role = 'player1'
+	else:
+		player_role = 'player2'
+	return render(request, 'RankedMode.html', { 'game_id': game_id, 'player_role': player_role })
 
 
 # ! A FAIRE #################################
 
 @login_required # ! POUR REVIEW LES FONCTIONS ET POUVOIRS LES DISPLAY DANS LE PROFIL
 def TicTacToeMode(request, game_id):
-    game = get_object_or_404(Game, id=game_id)
-    game.mode = 'TicTacToe'  # ! Commande a modifier
-    game.save() # ! Commande a ajouter
-    if request.user == game.player1:
-        player_role = 'player1'
-    else:
-        player_role = 'player2'
-    return render(request, 'TicTacToe.html', {'game_id': game_id, 'player_role': player_role})
+	game = get_object_or_404(Game, id=game_id)
+	game.mode = 'TicTacToe'  # ! Commande a modifier
+	game.save() # ! Commande a ajouter
+	if request.user == game.player1:
+		player_role = 'player1'
+	else:
+		player_role = 'player2'
+	return render(request, 'TicTacToe.html', {'game_id': game_id, 'player_role': player_role})
 
 # ! A FAIRE #################################
 
 
 @login_required
 def UnrankedMode(request, game_id):
-    game = get_object_or_404(Game, id=game_id)
-    game.mode = 'unranked'  # Set mode to unranked
-    game.save()
-    if request.user == game.player1:
-        player_role = 'player1'
-    else:
-        player_role = 'player2'
-    return render(request, 'UnrankedMode.html', {'game_id': game_id, 'player_role': player_role})
+	game = get_object_or_404(Game, id=game_id)
+	game.mode = 'unranked'  # Set mode to unranked
+	game.save()
+	if request.user == game.player1:
+		player_role = 'player1'
+	else:
+		player_role = 'player2'
+	return render(request, 'UnrankedMode.html', {'game_id': game_id, 'player_role': player_role})
 
 def RushMode(request, game_id):
-    game = get_object_or_404(Game, id=game_id)
-    game.mode = 'rushmode'  # Set mode to rushmode
-    game.save()
-    if request.user == game.player1:
-        player_role = 'player1'
-    else:
-        player_role = 'player2'
-    return render(request, 'RushMode.html', {'game_id': game_id, 'player_role': player_role})
+	game = get_object_or_404(Game, id=game_id)
+	game.mode = 'rushmode'  # Set mode to rushmode
+	game.save()
+	if request.user == game.player1:
+		player_role = 'player1'
+	else:
+		player_role = 'player2'
+	return render(request, 'RushMode.html', {'game_id': game_id, 'player_role': player_role})
 
 def TimerMode(request, game_id):
-    game = get_object_or_404(Game, id=game_id)
-    game.mode = 'timermode'  # Set mode to timermode
-    game.save()
-    if request.user == game.player1:
-        player_role = 'player1'
-    else:
-        player_role = 'player2'
-    return render(request, 'TimerMode.html', {'game_id': game_id, 'player_role': player_role})
+	game = get_object_or_404(Game, id=game_id)
+	game.mode = 'timermode'  # Set mode to timermode
+	game.save()
+	if request.user == game.player1:
+		player_role = 'player1'
+	else:
+		player_role = 'player2'
+	return render(request, 'TimerMode.html', {'game_id': game_id, 'player_role': player_role})
 
 def MaxScoreMode(request, game_id):
-    game = get_object_or_404(Game, id=game_id)
-    game.mode = 'maxscoremode'  # Set mode to maxscoremode
-    game.save()
-    if request.user == game.player1:
-        player_role = 'player1'
-    else:
-        player_role = 'player2'
-    return render(request, 'MaxScoreMode.html', {'game_id': game_id, 'player_role': player_role})
+	game = get_object_or_404(Game, id=game_id)
+	game.mode = 'maxscoremode'  # Set mode to maxscoremode
+	game.save()
+	if request.user == game.player1:
+		player_role = 'player1'
+	else:
+		player_role = 'player2'
+	return render(request, 'MaxScoreMode.html', {'game_id': game_id, 'player_role': player_role})
 
 def game_ia(request):
 	mode = request.GET.get('mode', 'medium')
@@ -694,9 +709,9 @@ def tournamentpage(request, tournament_id):
 
 	random.shuffle(players_data)
 	matches = [
-        (players_data[i], players_data[i+1])
-        for i in range(0, len(players_data) - 1, 2)
-    ]
+		(players_data[i], players_data[i+1])
+		for i in range(0, len(players_data) - 1, 2)
+	]
 
 	print(players_data)
 	print("----------------------")
