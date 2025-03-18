@@ -12,7 +12,6 @@ urlpatterns = [
     path("auth/42/login/", views.auth_42_login, name="auth_42_login"),
     path("auth/42/callback/", views.auth_42_callback, name="auth_42_callback"),
 	path('SignIn/', views.signin, name='signin'),
-	path('ProfilePage/', views.profile, name='profile'),
 	path('profile/<int:user_id>/', views.profile, name='profile_other'),
 	path('update_avatar/', views.update_avatar, name='update_avatar'),
 	path('SignUp/', views.signup, name='signup'),
@@ -23,7 +22,9 @@ urlpatterns = [
 	path('Error404/', views.error404, name='error404'),
 	path('InviteTournament/', views.invitetournament, name='invitetournament'),
 	path('JoinTournament/', views.jointournament, name='jointournament'),	
-	path('TournamentPage/', views.tounrnamentpage, name='tournamentpage'),
+	path('TournamentPage/<int:tournament_id>/', views.tournamentpage, name='TournamentPage'),
+	path('TournamentPage/<int:tournament_id>/ready/', views.set_ready_status, name='set_ready_status'),
+	path('create_tournament/', views.create_tournament, name='create_tournament'),
 	path('PongTourny/', views.pongtourny, name='pongtourny'),	
 	path('TicTacToe/', views.tictactoe, name='tictactoe'),
 	path('MyFriends/', views.myfriends, name='myfriends'),
@@ -41,11 +42,22 @@ urlpatterns = [
   	path('RushMode/<int:game_id>/', views.RushMode, name='RushMode'),
    	path('TimerMode/<int:game_id>/', views.TimerMode, name='TimerMode'),
 	path('MaxScoreMode/<int:game_id>/', views.MaxScoreMode, name='MaxScoreMode'),
-	path('ChallengeMode/<int:game_id>/', views.ChallengeMode, name='ChallengeMode'),
 
+
+	# path('create-tournament/', views.create_tournament, name='create_tournament'),
+    path('checkMatches/<int:tournament_id>', views.check_matches, name='check_matches'),
+    path('add-match/', views.add_match, name='add_match'),
+    path('getPlayerMatches/<int:tournament_id>/<str:player_name>/', views.get_player_matches, name='get_player_matches'),
+
+	path('ChallengeMode/<int:game_id>/', views.ChallengeMode, name='ChallengeMode'),
 
 	path('game-ia/', views.game_ia, name='game-ia'),
  	path('MatchMaking/', views.matchmaking, name='matchmaking'),
+    path('get_messages/<str:contact_username>/', views.get_messages, name='get_messages'),
+    
+	path('ProfilePage/<str:username>/', views.profile, name='user_profile'),
+	path('ProfilePage/', views.profile, name='profile'),
+	
 ]
 
 if settings.DEBUG:

@@ -41,3 +41,45 @@ function uploadProfilePicture(input) {
     })
     .catch(error => console.error('Error:', error));
 }
+
+function enableEditing(field){
+    const   textElement = field.previousElementSibling;
+    const   inputElement = document.createElement('input');
+    inputElement.value = textElement.innerText || textElement.innerHTML;
+    textElement.style.display = 'none';
+    field.style.display = 'none';
+    textElement.parentNode.insertBefore(inputElement, textElement);
+    inputElement.focus();
+    inputElement.onblur = function() {
+        textElement.innerHTML = inputElement.value;
+        inputElement.remove();
+        field.style.display = 'inline-block';
+        textElement.style.display = 'block';
+    }
+}
+
+function    saveEdits() {
+    const username = document.getElementById("username").innerText;
+    const email = document.getElementById("email").innerText;
+    const password = document.getElementById("password").innerText;
+
+    fetch("/saveProfile", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            username: username,
+            email: email,
+            password: password
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        alert('Profile saved!');
+    })
+    .catch(error => {
+        console.error("Error did not save profile: ", error);
+        alert("Profile not saved...");
+    });
+}

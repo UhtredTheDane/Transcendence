@@ -1,9 +1,11 @@
 from channels.generic.websocket import AsyncWebsocketConsumer
+from channels.db import database_sync_to_async
 from asgiref.sync import sync_to_async
-from .models import Game, User, Channel, ChannelUser, Message
+from .models import Game, User, Channel, ChannelUser, Message, Messages
 from django.utils import timezone
 import json
 import asyncio
+
 
 active_users = {}
 
@@ -198,7 +200,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
         message_content = text_data_json['message']
         user = self.scope['user']
 
-        await sync_to_async(Message.objects.create)(channel_id=self.channel_id, user=user, content=message_content)
+        await sync_to_async(Messages.objects.create)(channel_id=self.channel_id, user=user, content=message_content)
 
         await self.channel_layer.group_send(
                 self.channel_group_name,
@@ -291,8 +293,8 @@ class MatchmakingConsumer(AsyncWebsocketConsumer):
             print(f"❌ ERREUR: {player2_name} n'existe pas.")
             return
 
-        game = await sync_to_async(Game.objects.create)(player1=player1, player2=player2)
-        print(f"🎮 Match trouvé : {player1.username} vs {player2.username} (Game ID: {game.id})")
+        # game = await sync_to_async(Game.objects.create)(player1=player1, player2=player2)
+        # print(f"🎮 Match trouvé : {player1.username} vs {player2.username} (Game ID: {game.id})")
         game = await sync_to_async(Game.objects.create)(
                 player1=player1,
                 player2=player2,
@@ -326,3 +328,138 @@ class MatchmakingConsumer(AsyncWebsocketConsumer):
         await self.send(text_data=json.dumps(event))
 
 
+class ChatboxConsumer(AsyncWebsocketConsumer):
+    async def connect(self):
+        self.user = self.scope["user"]
+        
+        if not self.user.is_authenticated:
+            await self.close()
+            return
+            
+        # Add user to their personal group
+        self.group_name = f"user_{self.user.username}"
+        await self.channel_layer.group_add(
+            self.group_name,
+            self.channel_name
+        )
+        
+        await self.accept()
+
+    async def disconnect(self, close_code):
+        if hasattr(self, 'group_name'):
+            await self.channel_layer.group_discard(
+                self.group_name,
+                self.channel_name
+            )
+
+    async def receive(self, text_data):
+        data = json.loads(text_data)
+        if data['type'] == 'challenge':
+            receiver_group = f"user_{data['receiver']}"
+            
+            await self.channel_layer.group_send(
+                receiver_group,
+                {
+                    'type': 'chat_message',
+                    'message_type': 'challenge',
+                    'sender': data['sender'],
+                    'receiver': data['receiver'],
+                    'content': data['content']
+                }
+            )
+
+        elif data['type'] == 'message':
+            sender = await database_sync_to_async(User.objects.get)(username=data['sender'])
+            receiver = await database_sync_to_async(User.objects.get)(username=data['receiver'])
+            
+            # Save message to database
+            await database_sync_to_async(Messages.objects.create)(
+                sender=sender,
+                receiver=receiver,
+                content=data['content']
+            )
+
+            # Send to receiver's group
+            receiver_group = f"user_{data['receiver']}"
+            await self.channel_layer.group_send(
+                receiver_group,
+                {
+                    'type': 'chat_message',
+                    'message_type': 'message',
+                    'sender': data['sender'],
+                    'receiver': data['receiver'],
+                    'content': data['content']
+                }
+            )
+
+            # Also send back to sender's group
+            sender_group = f"user_{data['sender']}"
+            await self.channel_layer.group_send(
+                sender_group,
+                {
+                    'type': 'chat_message',
+                    'message_type': 'message',
+                    'sender': data['sender'],
+                    'receiver': data['receiver'],
+                    'content': data['content']
+                }
+            )
+        elif data['type'] == 'add_friend':
+            try:
+                user = self.scope["user"]
+                friend = await database_sync_to_async(User.objects.get)(username=data['friend_name'])
+                
+                await database_sync_to_async(user.friends.add)(friend)
+                await self.send(text_data=json.dumps({
+                    'type': 'friend_added',
+                    'success': True,
+                    'friend_name': friend.username
+                }))
+            except Exception as e:
+                await self.send(text_data=json.dumps({
+                    'type': 'friend_added',
+                    'success': False,
+                    'error': str(e)
+                }))
+        elif data['type'] == 'unfriend':
+            try:
+                user = self.scope["user"]
+                contact = await database_sync_to_async(User.objects.get)(username=data['contact_name'])
+                
+                # Remove contact from user's friends
+                await database_sync_to_async(user.friends.remove)(contact)
+                
+                await self.send(text_data=json.dumps({
+                    'type': 'unfriended',
+                    'success': True
+                }))
+            except User.DoesNotExist:
+                await self.send(text_data=json.dumps({
+                    'type': 'unfriended',
+                    'success': False,
+                    'error': 'User not found'
+                }))
+            except Exception as e:
+                await self.send(text_data=json.dumps({
+                    'type': 'unfriended',
+                    'success': False,
+                    'error': str(e)
+                }))
+
+    # async def chat_message(self, event):
+    #     await self.send(text_data=json.dumps({
+    #         'type': 'message',
+    #         'sender': event['sender'],
+    #         'receiver': event['receiver'],
+    #         'content': event['content']
+    #     }))
+    
+    async def chat_message(self, event):
+        await self.send(text_data=json.dumps({
+            'type': event.get('message_type', 'message'),
+            'sender': event['sender'],
+            'receiver': event['receiver'],
+            'content': event['content']
+        }))
+    
+    

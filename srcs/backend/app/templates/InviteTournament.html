@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Invite to Tournament</title>
-	<link rel="icon" type="image/png" href="{% static 'icons/42_logo.png' %}"  />
+    <link rel="icon" type="image/png" href="{% static 'icons/42_logo.png' %}" />
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
         body {
@@ -77,106 +77,6 @@
             border-radius: 5px;
         }
 
-        /* Chatbox styling */
-        .chatbox-btn {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            background-color: #343a40;
-            color: white;
-            font-size: 32px;
-            border-radius: 50%;
-            padding: 15px;
-            cursor: pointer;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
-            transition: all 0.3s ease-in-out;
-        }
-
-        .chatbox-btn:hover {
-            background-color: #17a2b8;
-        }
-
-        .chatbox {
-            position: fixed;
-            bottom: 80px;
-            right: 20px;
-            width: 300px;
-            height: 400px;
-            background-color: #343a40;
-            border-radius: 10px;
-            display: none;
-            flex-direction: column;
-            padding: 10px;
-        }
-
-        .chatbox-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            color: white;
-            font-size: 20px;
-            margin-bottom: 10px;
-        }
-
-        .chatbox-body {
-            flex: 1;
-            overflow-y: auto;
-            padding: 10px;
-            color: white;
-            background-color: #222;
-        }
-
-        .chatbox-footer {
-            display: flex;
-            align-items: center;
-        }
-
-        .chatbox-footer input {
-            width: 80%;
-            padding: 5px;
-            border: none;
-            border-radius: 5px;
-        }
-
-        .chatbox-footer button {
-            background-color: #17a2b8;
-            color: white;
-            padding: 5px 10px;
-            border: none;
-            border-radius: 5px;
-            margin-left: 10px;
-        }
-
-        .contact-list {
-            display: flex;
-            flex-direction: column;
-            margin-bottom: 10px;
-        }
-
-        .contact-item {
-            background-color: #444;
-            padding: 10px;
-            margin: 5px 0;
-            cursor: pointer;
-            border-radius: 5px;
-            color: white;
-            font-size: 16px;
-            text-align: left;
-            transition: background-color 0.3s;
-        }
-
-        .contact-item:hover {
-            background-color: #17a2b8;
-        }
-
-        #messageInput {
-            display: none;
-        }
-
-        #sendMessageBtn {
-            display: none;
-        }
-
         /* Back button styling */
         .back-btn {
             background-color: transparent;
@@ -185,7 +85,38 @@
             font-size: 20px;
             cursor: pointer;
         }
+
+        /* Styling for the username input */
+        .username-input {
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .username-input input {
+            padding: 10px;
+            font-size: 18px;
+            margin-right: 10px;
+            border-radius: 5px;
+            border: 2px solid #ddd;
+        }
+
+        .username-input button {
+            padding: 10px;
+            font-size: 18px;
+            background-color: #0d40e7;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .username-input button:hover {
+            background-color: #0a32cc;
+        }
     </style>
+    <link rel="stylesheet" href="{% static 'css/chatbox.css' %}">
     <link rel="stylesheet" href="{% static 'css/index.css' %}">
 </head>
 <body>
@@ -202,25 +133,14 @@
     <div class="container">
         <h1 class="mb-4">Invite Players to Tournament</h1>
 
-        <!-- List of available players (can be replaced with dynamic data) -->
-        <div id="playerList">
-            <!-- Example player button -->
-            <div class="player-button">
-                <span>Player 1</span>
-                <button class="btn btn-success btn-sm" onclick="addPlayer('Player 1')">+</button>
-            </div>
-            <div class="player-button">
-                <span>Player 2</span>
-                <button class="btn btn-success btn-sm" onclick="addPlayer('Player 2')">+</button>
-            </div>
-            <div class="player-button">
-                <span>Player 3</span>
-                <button class="btn btn-success btn-sm" onclick="addPlayer('Player 3')">+</button>
-            </div>
-            <div class="player-button">
-                <span>Player 4</span>
-                <button class="btn btn-success btn-sm" onclick="addPlayer('Player 4')">+</button>
-            </div>
+        <!-- Username Input Section -->
+		<div class="tournament-input">
+            <input type="text" id="tournamentInput" placeholder="Enter tournament Name" />
+            <button onclick="addPlayerFromInput()">create Tournament</button>
+        </div>
+        <div class="username-input">
+            <input type="text" id="usernameInput" placeholder="Enter Player Name" />
+            <button onclick="addPlayerFromInput()">Add Player</button>
         </div>
 
         <h3>Players Selected:</h3>
@@ -231,53 +151,85 @@
         <button class="btn btn-primary btn-lg" id="startTournamentBtn" onclick="startTournament()" style="margin-top: 20px;">Start Tournament</button>
     </div>
 
-    <!-- Chatbox -->
-    <div class="chatbox-btn" onclick="toggleChatbox()">💬</div>
-
-    <div class="chatbox" id="chatbox">
-        <!-- Chatbox Header -->
-        <div class="chatbox-header" id="chatboxHeader">
-            <button class="back-btn" onclick="goBackToContacts()">&#8592;</button>
-            <span id="contactName">Chat</span>
-        </div>
-
-        <!-- Contact List -->
-        <div class="contact-list" id="contactList">
-            <div class="contact-item" onclick="selectContact('John')">John</div>
-            <div class="contact-item" onclick="selectContact('Sarah')">Sarah</div>
-            <div class="contact-item" onclick="selectContact('Alex')">Alex</div>
-        </div>
-
     <script>
-        const selectedPlayers = [];
+		const selectedPlayers = [];
+	
+		function addPlayerFromInput() {
+			const username = document.getElementById('usernameInput').value.trim();
+			if (username === '') {
+				alert('Please enter a valid username.');
+				return;
+			}
+	
+			if (!selectedPlayers.includes(username)) {
+				selectedPlayers.push(username);
+				updateSelectedPlayers();
+				document.getElementById('usernameInput').value = '';
+			} else {
+				alert('This player is already added.');
+			}
+		}
+	
+		function updateSelectedPlayers() {
+			const selectedListContainer = document.getElementById('selectedPlayers');
+			selectedListContainer.innerHTML = '';
+	
+			selectedPlayers.forEach(player => {
+				const playerElement = document.createElement('div');
+				playerElement.textContent = player;
+				selectedListContainer.appendChild(playerElement);
+			});
+		}
+	
+		function startTournament() {
+			if (![4, 8, 16].includes(selectedPlayers.length)) {
+				alert('You need to select 4, 8, or 16 players to start a tournament.');
+				return;
+			}
+	
+			fetch('/create_tournament/', {
+				method: 'POST',
+				headers: {
+					'X-CSRFToken': getCookie('csrftoken'),
+					'Content-Type': 'application/json'
+				},
+				body: JSON.stringify({ players: selectedPlayers })
+			})
+			.then(response => response.json())
+			.then(data => {
+				if (data.status === "success") {
+					window.location.href = "{% url 'TournamentPage' 0 %}".replace("0", data.tournament_id);
+				} else {
+					alert(data.message);
+				}
+			})
+			.catch(error => console.error("Error:", error));
+		}
+	
+		function getCookie(name) {
+			let cookieValue = null;
+			if (document.cookie && document.cookie !== '') {
+				const cookies = document.cookie.split(';');
+				for (let i = 0; i < cookies.length; i++) {
+					const cookie = cookies[i].trim();
+					if (cookie.startsWith(name + '=')) {
+						cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+						break;
+					}
+				}
+			}
+			return cookieValue;
+		}
+	</script>
+	
 
-        function addPlayer(player) {
-            // Add the selected player to the invite list
-            if (!selectedPlayers.includes(player)) {
-                selectedPlayers.push(player);
-                updateSelectedPlayers();
-            }
-        }
+    <!-- Chatbox -->
+	{% include 'ChatBox.html' %}
+    <script src="{% static 'js/chatScript.js' %}"></script>
 
-        function updateSelectedPlayers() {
-            const selectedListContainer = document.getElementById('selectedPlayers');
-            selectedListContainer.innerHTML = ''; // Clear previous list
-
-            selectedPlayers.forEach(player => {
-                const playerElement = document.createElement('div');
-                playerElement.textContent = player;
-                selectedListContainer.appendChild(playerElement);
-            });
-        }
-
-        function startTournament() {
-            if (selectedPlayers.length < 2) {
-                alert('You need at least 2 players to start a tournament.');
-            } else {
-                window.location.href = '/TournamentPage'; // Redirect to TournamentPage
-            }
-        }
-    </script>
+    <!-- Bootstrap JS and Popper for Modal functionality -->
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.min.js"></script>
 
 </body>
 </html>

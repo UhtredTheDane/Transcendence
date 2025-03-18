@@ -37,9 +37,9 @@ function loadTemplate() {
                     element.innerHTML = data;
 
                     // Réexécuter les scripts après injection du leaderboard
-                    if (template.elementId === "leaderboard-popup") {
-                        reinitializeLeaderboard();
-                    }
+                    // if (template.elementId === "leaderboard-popup") {
+                    //     reinitializeLeaderboard();
+                    // }
                 } else {
                     console.error(`Element with ID ${template.elementId} not found`);
                 }
@@ -51,18 +51,18 @@ function loadTemplate() {
 }
 
 // Fonction qui récupère les données après le chargement du leaderboard
-function reinitializeLeaderboard() {
-    console.log("Leaderboard loaded dynamically");
+// function reinitializeLeaderboard() {
+//     console.log("Leaderboard loaded dynamically");
 
-    // Récupérer les données après chargement
-    fetch('/leaderboard/')
-        .then(response => response.json())
-        .then(data => {
-            console.log("Leaderboard Data:", data);
-            updateLeaderboard(data);
-        })
-        .catch(error => console.error("Error fetching leaderboard data:", error));
-}
+//     // Récupérer les données après chargement
+//     fetch('/leaderboard/')
+//         .then(response => response.json())
+//         .then(data => {
+//             console.log("Leaderboard Data:", data);
+//             updateLeaderboard(data);
+//         })
+//         .catch(error => console.error("Error fetching leaderboard data:", error));
+// }
 
 // Mettre à jour la pop-up du leaderboard
 function updateLeaderboard(players) {
