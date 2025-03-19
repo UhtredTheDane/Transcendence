@@ -157,9 +157,11 @@
     <script>
       let playersList = "{{ players }}";
       let matchesList = "{{ matches }}";
+	  console.log(matchesList);
       // // playersList = JSON.parse(playersList);
       // let tournamentId = '{{ tournamentId }}';
       console.log(playersList);
+      console.log(playersList[0]);
 
       // Initialize bracket once the DOM is fully loaded
       document.addEventListener("DOMContentLoaded", function () {
@@ -327,6 +329,7 @@
 
         match.appendChild(player1);
         match.appendChild(player2);
+		if (playersList[0] == "Player 1" || playersList[1] == "Player 2") {
         match.appendChild(button);
         return match;
       }
