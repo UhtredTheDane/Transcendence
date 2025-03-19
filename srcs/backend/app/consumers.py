@@ -1,5 +1,7 @@
 import json
 import asyncio
+import requests
+from django.http import JsonResponse
 from channels.generic.websocket import AsyncWebsocketConsumer
 from channels.db import database_sync_to_async
 from asgiref.sync import sync_to_async
@@ -50,6 +52,8 @@ class GameConsumer(AsyncWebsocketConsumer):
 		data = json.loads(text_data)
 		message_type = data.get("type")
 
+		if self.game.is_active == False:
+			self.game.is_active = True
 		if message_type == "move":
 			await self.handle_move(data)
 		elif message_type == "ball":
@@ -129,27 +133,46 @@ class GameConsumer(AsyncWebsocketConsumer):
 		self.game.score_player1 = data.get("score_player1", self.game.score_player1)
 		self.game.score_player2 = data.get("score_player2", self.game.score_player2)
 
-		await sync_to_async(self.game.save)(update_fields=["score_player1", "score_player2", "is_active"])
+		if self.game.mode == "tournament":
+			tournament_id = data.get("tournament_id") # A changer, mettre un autre systeme que request
+			if not tournament_id:
+				print("❌ ERREUR: Aucun ID de tournoi fourni.")
+				return
 
-		await self.channel_layer.group_send(
-				self.game_group_name,
-				{
-					"type": "game_over"
-					}
+			payload = {
+				"tournamentid": tournament_id,
+				"player1": self.game.player1,
+				"player2": self.game.player2,
+				"score1": self.game.score_player1,
+				"score2": self.game.score_player2,
+				"date": str(self.game.created_at)
+			}
+			
+			try:
+				response = requests.post(
+					"http://blockchain-node:3000/add-match", 
+					json=payload,  # Send as JSON
+					headers={"Content-Type": "application/json"}
 				)
+				
+				# return JsonResponse(response.json())
+			except Exception as e:
+				print(f"❌ ERREUR: Impossible d'ajouter le match au tournoi: {e}")
 
-		await asyncio.sleep(5)
+			await sync_to_async(self.game.save)(update_fields=["score_player1", "score_player2", "is_active"])
 
-		await self.channel_layer.group_discard(
+			await self.channel_layer.group_send(
+				self.game_group_name,
+				{ "type": "game_over" }
+			)
+
+			await asyncio.sleep(5)
+			await self.channel_layer.group_discard(
 				self.game_group_name,
 				self.channel_name
-				)
+			)
 
-		try:
 			await self.close()
-		except Exception as e:
-			print(f"Error closing connection: {e}")
-			pass
 
 	async def update_position(self, event):
 		await self.send(text_data=json.dumps(event))
