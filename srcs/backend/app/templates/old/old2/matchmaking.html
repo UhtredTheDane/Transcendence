@@ -10,7 +10,7 @@
 
     <script>
         const matchmakingSocket = new WebSocket(
-            'wss://' + window.location.host + '/wss/matchmaking/'
+            'ws://' + window.location.host + '/wss/matchmaking/'
         );
 
         matchmakingSocket.onopen = function () {

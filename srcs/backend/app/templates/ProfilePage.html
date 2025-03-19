@@ -68,9 +68,9 @@ body {
 		 </script>
 		
 	</head>
-	<body onload="loadTemplate(); fetchPlayerMatches();">
+	<body onload="loadTemplate();  fetchPlayerMatches();">
 		<!-- Navbar -->
-	
+
 		<img class="transcendence-icon position-absolute top-50 start-50 translate-middle" alt="" src="{% static 'images/bg-text.svg' %}" style="z-index: -1;">
 		
 		<div id="header">
@@ -78,7 +78,7 @@ body {
 		</div>
 		<!-- Leaderboard Popup -->
 		<div id="leaderboard-popup"></div>
-	
+
 		<div id="content">
 			<div class="my-profile-box">
 				<div class="profile-box-left">
@@ -142,13 +142,9 @@ body {
 					<div style="text-align: center"><span class="score">{{ losses }}</span><span class="lose">L</span></div>
 				</div>
 			</div>
-	
-			<!-- Display the game history -->
-			<div id="matches-container">
-				<p class="secondary-font">Loading matches...</p>
-			</div>
-		</div>
-	
+
+			<!-- Replace the existing game listing section with this code -->
+
 		<div style="width: 95%;
 		position: relative;
 		display: flex;
@@ -300,7 +296,7 @@ document.addEventListener('DOMContentLoaded', function() {
 					<script>
 						async function fetchPlayerMatches() {
 						const tournamentId = 1;  // Hardcoded tournament ID for now
-						const playerName = "{{ user_data.id }}";  // Username from template
+						const playerName = "{{ user_data.username }}";  // Username from template
 						const matchesContainer = document.getElementById("matches-container");
 			
 						try {
@@ -374,7 +370,6 @@ document.addEventListener('DOMContentLoaded', function() {
 		
 		<script src="{% static 'js/index.js' %}"></script>
 		<script src="{% static 'js/profile.js' %}"></script>
-	
+
 	</body>
 	</html>
-	

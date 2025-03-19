@@ -521,49 +521,79 @@ def create_tournament_request(request):
 #             return JsonResponse({'status': 'error', 'message': str(e)})
 #     return JsonResponse({'status': 'error', 'message': 'Invalid request method'})
 @csrf_exempt
-def add_match(request):
-	if request.method == "POST":
-		try:
-			# Parse JSON data from request body
-			data = json.loads(request.body)
-		except json.JSONDecodeError:
-			return JsonResponse({"status": "error", "message": "Invalid JSON payload"})
-		
-		# Extract values from the parsed JSON data
-		tournament_id = data.get("tournament_id")
-		player1 = data.get("player1")
-		player2 = data.get("player2")
-		score1 = data.get("score1")
-		score2 = data.get("score2")
-		date = data.get("date")  # Extract the date
+def add_match(tournament_id, player1, player2, score1, score2, date):
+    # Check if all required fields are present
+    if not all([tournament_id, player1, player2, score1, score2, date]):
+        return {"status": "error", "message": "Missing required fields"}
 
-		# Check if all required fields are present, including the date
-		if not all([tournament_id, player1, player2, score1, score2, date]):
-			return JsonResponse({"status": "error", "message": "Missing required fields."})
+    # Prepare the payload for Express request
+    payload = {
+        "tournamentid": tournament_id,
+        "player1": player1,
+        "player2": player2,
+        "score1": score1,
+        "score2": score2,
+        "date": date  # Add the date to the payload
+    }
+
+    try:
+        # Send POST request to Express server to add the match
+        response = requests.post(
+            "http://blockchain-node:3000/add-match", 
+            json=payload,  # Send as JSON
+            headers={"Content-Type": "application/json"}
+        )
+
+        # Return the response from the Express server
+        return response.json()
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+
+
+# def add_match(request):
+# 	if request.method == "POST":
+# 		try:
+# 			# Parse JSON data from request body
+# 			data = json.loads(request.body)
+# 		except json.JSONDecodeError:
+# 			return JsonResponse({"status": "error", "message": "Invalid JSON payload"})
 		
-		# Prepare payload for Express request, including the date
-		payload = {
-			"tournamentid": tournament_id,
-			"player1": player1,
-			"player2": player2,
-			"score1": score1,
-			"score2": score2,
-			"date": date  # Add the date to the payload
-		}
+# 		# Extract values from the parsed JSON data
+# 		tournament_id = data.get("tournament_id")
+# 		player1 = data.get("player1")
+# 		player2 = data.get("player2")
+# 		score1 = data.get("score1")
+# 		score2 = data.get("score2")
+# 		date = data.get("date")  # Extract the date
+
+# 		# Check if all required fields are present, including the date
+# 		if not all([tournament_id, player1, player2, score1, score2, date]):
+# 			return JsonResponse({"status": "error", "message": "Missing required fields."})
 		
-		try:
-			# Send POST request to Express server
-			response = requests.post(
-				"http://blockchain-node:3000/add-match", 
-				json=payload,  # Send as JSON
-				headers={"Content-Type": "application/json"}
-			)
+# 		# Prepare payload for Express request, including the date
+# 		payload = {
+# 			"tournamentid": tournament_id,
+# 			"player1": player1,
+# 			"player2": player2,
+# 			"score1": score1,
+# 			"score2": score2,
+# 			"date": date  # Add the date to the payload
+# 		}
+		
+# 		try:
+# 			# Send POST request to Express server
+# 			response = requests.post(
+# 				"http://blockchain-node:3000/add-match", 
+# 				json=payload,  # Send as JSON
+# 				headers={"Content-Type": "application/json"}
+# 			)
 			
-			return JsonResponse(response.json())
-		except Exception as e:
-			return JsonResponse({"status": "error", "message": str(e)})
+# 			return JsonResponse(response.json())
+# 		except Exception as e:
+# 			return JsonResponse({"status": "error", "message": str(e)})
 	
-	return JsonResponse({"status": "error", "message": "Invalid request method"})
+# 	return JsonResponse({"status": "error", "message": "Invalid request method"})
 
 @csrf_exempt
 def check_matches(request, tournament_id):  # Accepter tournament_id ici
@@ -669,7 +699,7 @@ def create_tournament(request):
 			return JsonResponse({ "status": "error", "message": "You must select 4, 8, or 16 players." })
 
 		# Vérifier si tous les utilisateurs existent
-		# existing_users = User.objects.filter(username__in=selected_players)
+		existing_users = User.objects.filter(username__in=selected_players)
 		# if existing_users.count() != len(selected_players):
 		# 	return JsonResponse({
 		# 		"status": "error",
