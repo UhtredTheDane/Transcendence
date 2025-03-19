@@ -265,7 +265,7 @@
         createFinals(bracketContainer);
       }
 
-      function createFinals(bracketContainer) {
+      function createFinals(bracketContainer, playersList) {
         let round4 = document.createElement("div");
         round4.classList.add("round");
         round4.classList.add("primary-font");
@@ -276,9 +276,13 @@
         roundTitle.classList.add("primary-font");
         roundTitle.innerText = "Finals";
         round4.appendChild(roundTitle);
-
+		
+		if (!playersList[0])
+			playersList[0] = "TBD";
+		if (!playersList[1])
+			playersList[1] = "TBD";
         // Create the final match
-        let finalMatch = createMatch(15, ["Player 1", "Player 2"]); // Replace with actual players from the previous rounds
+        let finalMatch = createMatch(15, playersList); // Replace with actual players from the previous rounds
         round4.appendChild(finalMatch);
 
         bracketContainer.appendChild(round4);
@@ -288,6 +292,11 @@
         let match = document.createElement("div");
         match.classList.add("match");
         match.id = `match${matchNumber}`;
+
+		// if (!playersList[0])
+		// 	playersList[0] = "TBD";
+		// if (!playersList[1])
+		// 	playersList[1] = "TBD";
 
         let player1 = document.createElement("div");
         player1.classList.add("player");
@@ -329,8 +338,9 @@
 
         match.appendChild(player1);
         match.appendChild(player2);
-		if (playersList[0] == "Player 1" || playersList[1] == "Player 2") {
-        match.appendChild(button);
+		if (playersList[0] == "INSERER CONDITION PLAYER DE LA PAGE" || playersList[1] == "INSERER CONDITION PLAYER DE LA PAGE") {
+			match.appendChild(button);
+		}
         return match;
       }
 
