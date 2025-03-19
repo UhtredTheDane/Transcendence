@@ -1,246 +1,344 @@
 {% load static %}
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Player Challenges</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Sora:wght@100..800&display=swap" rel="stylesheet">
-    
-    <link rel="icon" type="image/png" href="{% static 'icons/42_logo.png' %}"  />
-    <link rel="stylesheet" href="{% static 'css/chatbox.css' %}">
-    <link rel="stylesheet" href="{% static 'css/index.css' %}">
-    
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Sora:wght@100..800&display=swap"
+      rel="stylesheet"
+    />
+
+    <link rel="icon" type="image/png" href="{% static 'icons/42_logo.png' %}" />
+    <link rel="stylesheet" href="{% static 'css/chatbox.css' %}" />
+    <link rel="stylesheet" href="{% static 'css/index.css' %}" />
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="{% static 'js/index.js' %}"></script>
     <style>
-        body {
-            background-color: black;
-            color: white;
-            text-align: center;
-            position: relative;
-            overflow: hidden;
-        }
+      body {
+        background-color: black;
+        color: white;
+        text-align: center;
+        position: relative;
+        overflow: hidden;
+      }
 
-        .bracket {
-            max-height: 90vh; /* 90% of the viewport height */
-            overflow-y: auto; /* Enable vertical scrolling */
-            display: flex;
-            justify-content: space-around;
-            margin-top: 50px;
-            flex-wrap: wrap;
-        }
+      .bracket {
+        max-height: 90vh; /* 90% of the viewport height */
+        overflow-y: auto; /* Enable vertical scrolling */
+        display: flex;
+        /* justify-content: space-around; */
+        margin-top: 50px;
+        flex-wrap: wrap;
 
-        .round {
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            align-items: center;
-        }
+        display: flex;
+        justify-content: center; /* Center the children horizontally */
+        align-items: center;
+      }
 
-        .match {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            margin-bottom: 20px;
-            background-color: #343a40;
-            padding: 15px;
-            border-radius: 10px;
-        }
+      .round {
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        align-items: center;
+      }
 
-        .match button {
-            background-color: #0d40e7;
-            border: none;
-            color: white;
-            padding: 8px 12px;
-            font-size: 14px;
-            border-radius: 10px;
-            cursor: pointer;
-            width: 100px;
-        }
+      .match {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        margin-bottom: 20px;
+        background-color: #343a40;
+        padding: 15px;
+        border-radius: 10px;
+        width: 300px;
+      }
 
-        .match button:hover {
-            background-color: #0a32cc;
-        }
+      .match button {
+        background-color: #4423ff;
+        border: none;
+        color: white;
+        padding: 8px 12px;
+        font-size: 14px;
+        border-radius: 10px;
+        cursor: pointer;
+        width: 100px;
+      }
 
-        .match .player {
-            margin: 5px;
-            font-size: 18px;
-        }
+      .match button:hover {
+        background-color: #0a32cc;
+      }
 
-        .match .player.ready {
-            color: #28a745;
-        }
+      .match .player {
+        margin: 5px;
+        font-size: 18px;
+      }
 
-        .back-btn {
-            background-color: transparent;
-            color: white;
-            border: none;
-            font-size: 20px;
-            cursor: pointer;
-        }
+      .match .player.ready {
+        color: #28a745;
+      }
 
-        .round-title {
-            font-size: 24px;
-            font-weight: bold;
-            color: #0d40e7;
-            margin-bottom: 20px;
-        }
+      .back-btn {
+        background-color: transparent;
+        color: white;
+        border: none;
+        font-size: 20px;
+        cursor: pointer;
+      }
+
+      .round-title {
+        font-size: 24px;
+        font-weight: bold;
+        color: #4423ff;
+        margin-bottom: 20px;
+      }
+
+      player-info {
+        display: flex;
+        align-items: center;
+        margin: 5px 0;
+      }
+
+      .player-name {
+        margin: 0 10px;
+        font-size: 16px;
+        min-width: 100px;
+        text-align: left;
+      }
+
+      .player-score {
+        background-color: #4423ff;
+        padding: 2px 8px;
+        border-radius: 5px;
+        min-width: 30px;
+      }
+      .round .finals {
+        margin-top: 50px;
+        display: flex;
+        justify-content: center; /* Center the children horizontally */
+        align-items: center;
+      }
     </style>
-</head>
-<body onload="initializeBracket()">
-
+  </head>
+  <body onload="initializeBracket()">
     <!-- Navbar with Link to Home -->
     <nav class="navbar navbar-expand-lg navbar-dark">
-        <div class="container-fluid">
-            <div class="navbar-nav">
-                <a class="nav-link" href="/">Home</a>
-            </div>
+      <div class="container-fluid">
+        <div class="navbar-nav">
+          <a class="nav-link" href="/">Home</a>
         </div>
+      </div>
     </nav>
 
-    <div class="container">
-        <h1 class="mb-4">Tournament: Challenge Players</h1>
+    <div
+      class="position-absolute top-50 start-50 translate-middle"
+      style="z-index: -1"
+    >
+      <img
+        class="transcendence-icon"
+        alt=""
+        src="{% static 'images/bg-text.svg' %}"
+      />
+    </div>
 
-        <!-- Tournament Bracket -->
-        <div class="bracket" id="bracket"></div>
+    <div class="container position-absolute top-50 start-50 translate-middle">
+      <h1 class="mb-4 primary-font">Tournament: Challenge Players</h1>
+
+      <!-- Tournament Bracket -->
+      <div class="bracket row" id="bracket"></div>
     </div>
 
     <script>
-        // Initialize bracket once the DOM is fully loaded
-        document.addEventListener('DOMContentLoaded', function() {
-            initializeBracket();
-        });
-    
-        function initializeBracket() {
-            let bracketContainer = document.getElementById('bracket');
-            if (!bracketContainer) {
-                console.error('Bracket container not found');
-                return;
-            }
-            bracketContainer.innerHTML = '';
-            console.log('initbracket called');
-    
-            let numPlayers = 4;  // SET NUMVBER OF PLAYERS
-            if (numPlayers === 16) {
-                console.log('Setting up Eight Finals for 16 players');
-                createEightFinals(bracketContainer);
-            }
-            else if (numPlayers === 8) {
-                console.log('Setting up Eight Finals for 16 players');
-                createQuarterFinals(bracketContainer);
-            }
-            else if (numPlayers === 4) {
-                console.log('Setting up Eight Finals for 16 players');
-                createSemiFinals(bracketContainer);
-            }
-            // You can add other conditions for 4 or 8 players if needed
+      let playersList = "{{ players }}";
+      let matchesList = "{{ matches }}";
+	  console.log(matchesList);
+      // // playersList = JSON.parse(playersList);
+      // let tournamentId = '{{ tournamentId }}';
+      console.log(playersList);
+      console.log(playersList[0]);
+
+      // Initialize bracket once the DOM is fully loaded
+      document.addEventListener("DOMContentLoaded", function () {
+        initializeBracket();
+      });
+
+      function initializeBracket() {
+        let bracketContainer = document.getElementById("bracket");
+        if (!bracketContainer) {
+          console.error("Bracket container not found");
+          return;
         }
-    
-        function createEightFinals(bracketContainer) {
-            // Create Eight Finals round
-            let round1 = document.createElement('div');
-            round1.classList.add('round');
-            let roundTitle = document.createElement('div');
-            roundTitle.classList.add('round-title');
-            roundTitle.innerText = 'Eight Finals';
-            round1.appendChild(roundTitle);
-    
-            // Create matches for the 8 finals
-            for (let i = 0; i < 8; i++) {
-                let match = createMatch(i + 1, [`Player ${i * 2 + 1}`, `Player ${i * 2 + 2}`]);
-                round1.appendChild(match);
-            }
-    
-            // Add the first round to the container
-            bracketContainer.appendChild(round1);
-    
-            // Create next rounds (Quarter Finals, Semi Finals, Finals)
-            createQuarterFinals(bracketContainer);
+        bracketContainer.innerHTML = "";
+        console.log("initbracket called");
+
+        let numPlayers = 4; // SET NUMVBER OF PLAYERS
+        if (numPlayers === 16) {
+          console.log("Setting up Eight Finals for 16 players");
+          createEightFinals(bracketContainer);
+        } else if (numPlayers === 8) {
+          console.log("Setting up Eight Finals for 16 players");
+          createQuarterFinals(bracketContainer);
+        } else if (numPlayers === 4) {
+          console.log("Setting up Eight Finals for 16 players");
+          createSemiFinals(bracketContainer);
         }
-    
-        function createQuarterFinals(bracketContainer) {
-            let round2 = document.createElement('div');
-            round2.classList.add('round');
-            let roundTitle = document.createElement('div');
-            roundTitle.classList.add('round-title');
-            roundTitle.innerText = 'Quarter Finals';
-            round2.appendChild(roundTitle);
-    
-            // Create placeholder matches for the Quarter Finals
-            for (let i = 0; i < 4; i++) {
-                let match = createMatch(i + 9, [`Player ${i * 2 + 1}`, `Player ${i * 2 + 2}`]); // This should be dynamically linked after each round
-                round2.appendChild(match);
-            }
-    
-            bracketContainer.appendChild(round2);
-    
-            createSemiFinals(bracketContainer);
+        // You can add other conditions for 4 or 8 players if needed
+      }
+
+      function createEightFinals(bracketContainer) {
+        // Create Eight Finals round
+        let round1 = document.createElement("div");
+        round1.classList.add("round");
+        round1.classList.add("col");
+        let roundTitle = document.createElement("div");
+        roundTitle.classList.add("round-title");
+        roundTitle.innerText = "Eight Finals";
+        round1.appendChild(roundTitle);
+
+        // Create matches for the 8 finals
+        for (let i = 0; i < 8; i++) {
+          let match = createMatch(i + 1, [
+            `Player ${i * 2 + 1}`,
+            `Player ${i * 2 + 2}`,
+          ]);
+          round1.appendChild(match);
         }
-    
-        function createSemiFinals(bracketContainer) {
-            let round3 = document.createElement('div');
-            round3.classList.add('round');
-            let roundTitle = document.createElement('div');
-            roundTitle.classList.add('round-title');
-            roundTitle.innerText = 'Semi Finals';
-            round3.appendChild(roundTitle);
-    
-            // Create placeholder matches for the Semi Finals
-            for (let i = 0; i < 2; i++) {
-                let match = createMatch(i + 13, [`Player ${i * 2 + 1}`, `Player ${i * 2 + 2}`]); // This should be dynamically linked after each round
-                round3.appendChild(match);
-            }
-    
-            bracketContainer.appendChild(round3);
-    
-            createFinals(bracketContainer);
+
+        // Add the first round to the container
+        bracketContainer.appendChild(round1);
+
+        // Create next rounds (Quarter Finals, Semi Finals, Finals)
+        createQuarterFinals(bracketContainer);
+      }
+
+      function createQuarterFinals(bracketContainer) {
+        let round2 = document.createElement("div");
+        round2.classList.add("round");
+        round2.classList.add("col");
+        let roundTitle = document.createElement("div");
+        roundTitle.classList.add("round-title");
+        roundTitle.classList.add("primary-font");
+        roundTitle.innerText = "Quarter Finals";
+        round2.appendChild(roundTitle);
+
+        // Create placeholder matches for the Quarter Finals
+        for (let i = 0; i < 4; i++) {
+          let match = createMatch(i + 9, [
+            `Player ${i * 2 + 1}`,
+            `Player ${i * 2 + 2}`,
+          ]); // This should be dynamically linked after each round
+          round2.appendChild(match);
         }
-    
-        function createFinals(bracketContainer) {
-            let round4 = document.createElement('div');
-            round4.classList.add('round');
-            let roundTitle = document.createElement('div');
-            roundTitle.classList.add('round-title');
-            roundTitle.innerText = 'Finals';
-            round4.appendChild(roundTitle);
-    
-            // Create the final match
-            let finalMatch = createMatch(15, ['Player 1', 'Player 2']); // Replace with actual players from the previous rounds
-            round4.appendChild(finalMatch);
-    
-            bracketContainer.appendChild(round4);
+
+        bracketContainer.appendChild(round2);
+
+        createSemiFinals(bracketContainer);
+      }
+
+      function createSemiFinals(bracketContainer) {
+        let round3 = document.createElement("div");
+        round3.classList.add("round");
+        round3.classList.add("col");
+        let roundTitle = document.createElement("div");
+        roundTitle.classList.add("round-title");
+        roundTitle.classList.add("primary-font");
+        roundTitle.innerText = "Semi Finals";
+        round3.appendChild(roundTitle);
+
+        // Create placeholder matches for the Semi Finals
+        for (let i = 0; i < 2; i++) {
+          let match = createMatch(i + 13, [
+            `Player ${i * 2 + 1}`,
+            `Player ${i * 2 + 2}`,
+          ]); // This should be dynamically linked after each round
+          round3.appendChild(match);
         }
-    
-        function createMatch(matchNumber, playersList) {
-            let match = document.createElement('div');
-            match.classList.add('match');
-            match.id = `match${matchNumber}`;
-    
-            let player1 = document.createElement('div');
-            player1.classList.add('player');
-            player1.innerText = playersList[0];
-    
-            let player2 = document.createElement('div');
-            player2.classList.add('player');
-            player2.innerText = playersList[1];
-    
-            let button = document.createElement('button');
-            button.innerText = 'Ready';
-            button.onclick = function() { startMatch(matchNumber, playersList); };
-    
-            match.appendChild(player1);
-            match.appendChild(player2);
-            match.appendChild(button);
-            return match;
-        }
-    
-        function startMatch(matchNumber, playersList) {
-            alert(`Match ${matchNumber} started with ${playersList[0]} and ${playersList[1]}`);
-        }
+
+        bracketContainer.appendChild(round3);
+
+        createFinals(bracketContainer);
+      }
+
+      function createFinals(bracketContainer) {
+        let round4 = document.createElement("div");
+        round4.classList.add("round");
+        round4.classList.add("primary-font");
+        round4.classList.add("col");
+        round4.classList.add("finals");
+        let roundTitle = document.createElement("div");
+        roundTitle.classList.add("round-title");
+        roundTitle.classList.add("primary-font");
+        roundTitle.innerText = "Finals";
+        round4.appendChild(roundTitle);
+
+        // Create the final match
+        let finalMatch = createMatch(15, ["Player 1", "Player 2"]); // Replace with actual players from the previous rounds
+        round4.appendChild(finalMatch);
+
+        bracketContainer.appendChild(round4);
+      }
+
+      function createMatch(matchNumber, playersList) {
+        let match = document.createElement("div");
+        match.classList.add("match");
+        match.id = `match${matchNumber}`;
+
+        let player1 = document.createElement("div");
+        player1.classList.add("player");
+        player1.innerHTML = `
+        <div class="player-info secondary-font">
+            <img src="{% static 'images/default.png' %}" style="
+                width: 50px;
+                height: 50px;
+                border-radius: 50%;
+                margin-right: 10px;">
+            <span class="player-name">${playersList[0]}</span>
+            <span class="player-score">0</span>
+        </div>
+    `;
+
+        let player2 = document.createElement("div");
+        player2.classList.add("player");
+        player2.innerHTML = `
+        <div class="player-info secondary-font">
+            <img src="{% static 'images/default.png' %}" style="
+                width: 50px;
+                height: 50px;
+                border-radius: 50%;
+                margin-right: 10px;">
+            <span class="player-name">${playersList[1]}</span>
+            <span class="player-score">0</span>
+        </div>
+    `;
+
+        let button = document.createElement("a");
+        button.classList.add("btn");
+        button.classList.add("btn-primary");
+        button.classList.add("btn-lg");
+        button.classList.add("first-btn");
+        button.setAttribute("data", "Ready");
+        button.onclick = function () {
+          startMatch(matchNumber, playersList);
+        };
+
+        match.appendChild(player1);
+        match.appendChild(player2);
+		if (playersList[0] == "Player 1" || playersList[1] == "Player 2") {
+        match.appendChild(button);
+        return match;
+      }
+
+      function startMatch(matchNumber, playersList) {
+        alert(
+          `Match ${matchNumber} started with ${playersList[0]} and ${playersList[1]}`
+        );
+      }
     </script>
-    
-    
-</body>
+  </body>
 </html>

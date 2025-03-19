@@ -51,41 +51,12 @@
             background-color: #343a40; /* Default dark background for offline friends */
         }
 
-        .navbar {
-            position: fixed;
-            top: 0;
-            left: 0;
-            z-index: 999;
-            background-color: #343a40;
-            width: 100%;
-            padding: 10px;
-        }
-
-        .navbar a {
-            color: white !important;
-            font-weight: bold;
-            font-size: 16px;
-            padding: 10px 15px;
-            text-decoration: none;
-            transition: all 0.3s ease-in-out;
-        }
-
-        .navbar-nav {
-            display: flex;
-            justify-content: flex-start;
-            width: 100%;
-        }
-
-        .navbar a:hover {
-            color: #0d40e7 !important;
-            background-color: transparent;
-            border-radius: 5px;
-        }
-
+       
         .block-btn {
             font-size: 8px;
         }
     </style>
+	<link rel="stylesheet" href="{% static 'css/index.css' %}">
     <link rel="stylesheet" href="{% static 'css/chatbox.css' %}">
 </head>
 <body>
@@ -99,8 +70,13 @@
         </div>
     </nav>
 
+	<div class=" position-absolute top-50 start-50 translate-middle" style="z-index: -1;">
+        <img class="transcendence-icon" alt="" src="{% static 'images/bg-text.svg' %}">
+    </div>
+
+
     <div class="container">
-        <h1 class="mb-4">Meet your Friends</h1>
+        <h1 class="mb-4 primary-font">Meet your Friends</h1>
 
         <!-- List of friends -->
         <div id="friendsList" class="friend-list">
