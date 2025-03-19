@@ -1,14 +1,19 @@
 let selectedContact = null;
-let user = username ;
+let user = typeof username !== 'undefined' ? username : null;
 let messages = {};
 
-const socket = new WebSocket(`ws://${window.location.host}/ws/chatbox/`);
+if (!user) {
+    console.error('Username not defined');
+}
 
-socket.onopen = function(event) {
+const chatSocket = new WebSocket(`wss://${window.location.host}/wss/chatbox/`);
+
+
+chatSocket.onopen = function(event) {
 	console.log('WebSocket is connected.');
 };
 
-socket.onmessage = function(event) {
+chatSocket.onmessage = function(event) {
 	let data = JSON.parse(event.data);
     if (data.type === 'message') {
         // Store incoming message
@@ -77,7 +82,11 @@ socket.onmessage = function(event) {
         acceptButton.textContent = 'Accept Challenge';
         acceptButton.classList.add('btn', 'btn-primary', 'mt-2');
         acceptButton.onclick = function() {
-            window.location.href = `/RankedMode/${data.sender}`;
+			chatSocket.send(JSON.stringify({
+				type: "challenge_accepted",
+				sender: data.sender,
+				receiver: data.receiver
+			}));
         };
         
         messageContainer.appendChild(senderName);
@@ -95,14 +104,19 @@ socket.onmessage = function(event) {
             content: data.content,
             timestamp: timestamp
         });
+    } else if (data.type === 'challenge_accepted') {
+		alert(data.message);
+	} else if (data.type === 'game_created') {
+        console.log("Game created, redirecting sender to:", data.game_url);
+		window.location.href = data.game_url;
     }
 };
 
-socket.onclose = function(event) {
+chatSocket.onclose = function(event) {
 	console.log('WebSocket is closed.');
 };
 
-socket.onerror = function(error) {
+chatSocket.onerror = function(error) {
 	console.error('WebSocket error:', error);
 };
 
@@ -153,7 +167,7 @@ function toggleChatbox() {
 function addFriend() {
     const friendName = document.getElementById('floatingInput').value.trim();
     if (friendName) {
-        socket.send(JSON.stringify({
+        chatSocket.send(JSON.stringify({
             type: "add_friend",
             sender: user,
             friend_name: friendName
@@ -248,7 +262,7 @@ function sendMessage() {
         displayMessage(user, messageText, 'right');
 
         // Send message
-        socket.send(JSON.stringify({
+        chatSocket.send(JSON.stringify({
             type: "message",
             sender: user,
             receiver: selectedContact,
@@ -274,7 +288,7 @@ function deletePlayer(button) {
 
 function blockContact() {
     if (selectedContact) {
-        socket.send(JSON.stringify({
+        chatSocket.send(JSON.stringify({
             type: "unfriend",
             sender: user,
             contact_name: selectedContact
@@ -305,7 +319,7 @@ function challengeContact() {
         displayMessage(user, challengeMessage, 'right');
 
         // Send challenge through websocket
-        socket.send(JSON.stringify({
+        chatSocket.send(JSON.stringify({
             type: "challenge",
             sender: user,
             receiver: selectedContact,

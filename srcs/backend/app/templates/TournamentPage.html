@@ -1,262 +1,394 @@
 {% load static %}
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Player Challenges</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-	<link href="https://fonts.googleapis.com/css2?family=Sora:wght@100..800&display=swap" rel="stylesheet">
-	
-	<link rel="icon" type="image/png" href="{% static 'icons/42_logo.png' %}"  />
-    <link rel="stylesheet" href="{% static 'css/chatbox.css' %}">
-    <link rel="stylesheet" href="{% static 'css/index.css' %}">
-	
-	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Sora:wght@100..800&display=swap"
+      rel="stylesheet"
+    />
+
+    <link rel="icon" type="image/png" href="{% static 'icons/42_logo.png' %}" />
+    <link rel="stylesheet" href="{% static 'css/chatbox.css' %}" />
+    <link rel="stylesheet" href="{% static 'css/index.css' %}" />
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="{% static 'js/index.js' %}"></script>
-	<style>
-        body {
-            background-color: black;
-            color: white;
-            text-align: center;
-            position: relative;
-            overflow: hidden;
-        }
+    <style>
+      body {
+        background-color: black;
+        color: white;
+        text-align: center;
+        position: relative;
+        overflow: hidden;
+      }
 
-        .player-list {
-            margin-top: 30px;
-            list-style-type: none;
-            padding: 0;
-        }
+      .bracket {
+        max-height: 90vh; /* 90% of the viewport height */
+        overflow-y: auto; /* Enable vertical scrolling */
+        display: flex;
+        /* justify-content: space-around; */
+        margin-top: 50px;
+        flex-wrap: wrap;
 
-        .player-list li {
-            background-color: #343a40;
-            padding: 10px 15px;
-            margin: 10px 0;
-            border-radius: 10px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
+        display: flex;
+        justify-content: center; /* Center the children horizontally */
+        align-items: center;
+      }
 
-        .player-list button {
-            background-color: #0d40e7;
-            border: none;
-            color: white;
-            padding: 8px 12px;
-            font-size: 14px;
-            border-radius: 10px;
-            cursor: pointer;
-        }
+      .round {
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        align-items: center;
+      }
 
-        .player-list button:hover {
-            background-color: #0a32cc;
-        }
+      .match {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        margin-bottom: 20px;
+        background-color: #343a40;
+        padding: 15px;
+        border-radius: 10px;
+        width: 300px;
+      }
 
-        .start-game-btn {
-            background-color: #28a745;
-        }
+      .match button {
+        background-color: #4423ff;
+        border: none;
+        color: white;
+        padding: 8px 12px;
+        font-size: 14px;
+        border-radius: 10px;
+        cursor: pointer;
+        width: 100px;
+      }
 
-        .start-game-btn:hover {
-            background-color: #218838;
-        }
+      .match button:hover {
+        background-color: #0a32cc;
+      }
 
-        /* Back button styling */
-        .back-btn {
-            background-color: transparent;
-            color: white;
-            border: none;
-            font-size: 20px;
-            cursor: pointer;
-        }
+      .match .player {
+        margin: 5px;
+        font-size: 18px;
+      }
+
+      .match .player.ready {
+        color: #28a745;
+      }
+
+      .back-btn {
+        background-color: transparent;
+        color: white;
+        border: none;
+        font-size: 20px;
+        cursor: pointer;
+      }
+
+      .round-title {
+        font-size: 24px;
+        font-weight: bold;
+        color: #4423ff;
+        margin-bottom: 20px;
+      }
+
+      player-info {
+        display: flex;
+        align-items: center;
+        margin: 5px 0;
+      }
+
+      .player-name {
+        margin: 0 10px;
+        font-size: 16px;
+        min-width: 100px;
+        text-align: left;
+      }
+
+      .player-score {
+        background-color: #4423ff;
+        padding: 2px 8px;
+        border-radius: 5px;
+        min-width: 30px;
+      }
+      .round .finals {
+        margin-top: 50px;
+        display: flex;
+        justify-content: center; /* Center the children horizontally */
+        align-items: center;
+      }
     </style>
-</head>
-<body onload="loadTemplate()">
-
-    <!-- Navbar with Link to Leaderboard -->
+  </head>
+  <body onload="initializeBracket()">
+    <!-- Navbar with Link to Home -->
     <nav class="navbar navbar-expand-lg navbar-dark">
-        <div class="container-fluid">
-            <div class="navbar-nav">
-                <a class="nav-link" href="/">Home</a>
-            </div>
+      <div class="container-fluid">
+        <div class="navbar-nav">
+          <a class="nav-link" href="/">Home</a>
         </div>
+      </div>
     </nav>
 
-    <div class="container">
-        <h1 class="mb-4">Tournament: Challenge Players</h1>
-
-        <!-- List of Players -->
-        <ul id="playerList" class="player-list">
-            <!-- Players will be added dynamically here -->
-        </ul>
+    <div
+      class="position-absolute top-50 start-50 translate-middle"
+      style="z-index: -1"
+    >
+      <img
+        class="transcendence-icon"
+        alt=""
+        src="{% static 'images/bg-text.svg' %}"
+      />
     </div>
 
-     <!-- Chatbox -->
-     <div class="chatbox-btn" onclick="toggleChatbox()">💬</div>
+    <div class="container position-absolute top-50 start-50 translate-middle">
+      <h1 class="mb-4 primary-font">Tournament: Challenge Players</h1>
 
-     <div class="chatbox" id="chatbox">
-         <!-- Chatbox Header -->
-         <div class="chatbox-header" id="chatboxHeader">
-             <button class="back-btn" onclick="goBackToContacts()">&#8592;</button>
-             <span id="contactName">Chat</span>
-         </div>
- 
-         <!-- Contact List -->
-         <div class="contact-list" id="contactList">
-             <div class="contact-item" onclick="selectContact('John')">John</div>
-             <div class="contact-item" onclick="selectContact('Sarah')">Sarah</div>
-             <div class="contact-item" onclick="selectContact('Alex')">Alex</div>
-         </div>
- 
-         <!-- Chat Content -->
-         <div class="chatbox-body" id="chatboxBody"></div>
- 
-         <div class="chatbox-footer">
-             <input type="text" id="messageInput" placeholder="Type a message..." disabled>
-             <button id="sendMessageBtn" onclick="sendMessage()" disabled>Send</button>
-         </div>
-     </div>
- 
-     <script>
-         let selectedContact = null;
- 
-         function toggleChatbox() {
-     let chatbox = document.getElementById('chatbox');
-     let contactList = document.getElementById('contactList');
- 
-     if (chatbox.style.display === 'flex') {
-         // Hide chatbox and contact list
-         chatbox.style.display = 'none';
-         contactList.style.display = 'none';
-     } else {
-         // Show chatbox and reset state
-         chatbox.style.display = 'flex';
-         contactList.style.display = 'flex';
-         document.getElementById('chatboxBody').innerHTML = ''; // Clear chat
-         document.getElementById('messageInput').style.display = 'none'; // Hide input field initially
-         document.getElementById('sendMessageBtn').style.display = 'none'; // Hide send button initially
-         document.getElementById('messageInput').disabled = true; // Disable input field
-         document.getElementById('sendMessageBtn').disabled = true; // Disable send button
-         document.getElementById('chatboxHeader').innerHTML = 'Chat'; // Set the title to "Chat"
-     }
- }
- 
- function selectContact(contact) {
-     selectedContact = contact;
-     document.getElementById('chatboxHeader').innerHTML = `<button class="back-btn" onclick="goBackToContacts()">&#8592;</button> ${contact}`;
-     document.getElementById('contactList').style.display = 'none'; // Hide contact list
-     document.getElementById('chatboxBody').innerHTML = ''; // Clear chat
-     document.getElementById('messageInput').style.display = 'block'; // Show input field
-     document.getElementById('sendMessageBtn').style.display = 'block'; // Show send button
-     document.getElementById('messageInput').disabled = false; // Enable input field
-     document.getElementById('sendMessageBtn').disabled = false; // Enable send button
-     document.getElementById('messageInput').focus(); // Auto-focus input when a contact is selected
- }
- 
- function goBackToContacts() {
-     document.getElementById('contactList').style.display = 'flex'; // Show contact list
-     document.getElementById('chatboxBody').innerHTML = ''; // Clear chat
-     document.getElementById('messageInput').style.display = 'none'; // Hide input field
-     document.getElementById('sendMessageBtn').style.display = 'none'; // Hide send button
-     document.getElementById('messageInput').disabled = true; // Disable input field
-     document.getElementById('sendMessageBtn').disabled = true; // Disable send button
-     document.getElementById('chatboxHeader').innerHTML = "Chat"; // Set header back to "Chat"
- }
- 
- function sendMessage() {
-     let messageInput = document.getElementById('messageInput');
-     let messageText = messageInput.value.trim();
-
-    if (messageInput == null) {
-        messageInput = "";
-    }
-
-     if (messageText !== '') {
-         let chatboxBody = document.getElementById('chatboxBody');
-         let messageElement = document.createElement('div');
-         messageElement.classList.add('message'); // Add class for styling
-         messageElement.textContent = messageText;
-         chatboxBody.appendChild(messageElement);
-         
-         messageInput.value = ''; // Clear input field
-         chatboxBody.scrollTop = chatboxBody.scrollHeight; // Auto-scroll to latest message
-     }
- }
- 
-     document.getElementById('messageInput').addEventListener('keydown', function (event) {
-         if (event.key === 'Enter') {
-             sendMessage();
-         }
-     });
- 
-     // Add event listener for Send button click
-     document.getElementById('sendMessageBtn').addEventListener('click', sendMessage);
-     </script>
+      <!-- Tournament Bracket -->
+      <div class="bracket row" id="bracket"></div>
+    </div>
 
     <script>
-        // Example player list
-        const players = ['Player 1', 'Player 2', 'Player 3', 'Player 4'];
-        const challenges = {};
+      let playersList = "{{ players|escapejs }}";
+      let matchesList = JSON.parse("{{ matches|escapejs }}");
+	  let currentUserId = parseInt('{{ request.user.id }}');
+      console.log("------ List matches ------------");
+      console.log(matchesList);
+      console.log("------------------");
 
-        // Dynamically generate the player list
-        function renderPlayerList() {
-            const playerListContainer = document.getElementById('playerList');
-            playerListContainer.innerHTML = '';
+      // Initialize bracket once the DOM is fully loaded
+      document.addEventListener("DOMContentLoaded", function () {
+        initializeBracket();
+      });
 
-            players.forEach(player => {
-                const listItem = document.createElement('li');
-                listItem.innerHTML = `
-                    <span>${player}</span>
-                    <button class="btn btn-primary" onclick="challengePlayer('${player}')">Challenge</button>
-                `;
+      function initializeBracket() {
+        let bracketContainer = document.getElementById("bracket");
+        if (!bracketContainer) {
+          console.error("Bracket container not found");
+          return;
+        }
+        bracketContainer.innerHTML = "";
+        console.log("initbracket called");
 
-                // Disable challenge button for players who have already been challenged
-                if (challenges[player]) {
-                    listItem.querySelector('button').disabled = true;
-                    listItem.querySelector('button').innerText = 'Already Challenged';
-                }
+        let numPlayers = matchesList.length * 2;
+        console.log(`Number of players: ${numPlayers}`);
 
-                // Create start game button for challenged players
-                if (challenges[player] && challenges[player].challenger) {
-                    const startGameBtn = document.createElement('button');
-                    startGameBtn.classList.add('btn', 'start-game-btn');
-                    startGameBtn.innerText = 'Start Game';
-                    startGameBtn.onclick = () => startGame(player);
-                    listItem.appendChild(startGameBtn);
-                }
+        if (numPlayers === 16) {
+          console.log("Setting up Eight Finals for 16 players");
+          createEightFinals(bracketContainer);
+        } else if (numPlayers === 8) {
+          console.log("Setting up Eight Finals for 16 players");
+          createQuarterFinals(bracketContainer);
+        } else if (numPlayers === 4) {
+          console.log("Setting up Eight Finals for 16 players");
+          createSemiFinals(bracketContainer);
+        }
+        // You can add other conditions for 4 or 8 players if needed
+      }
 
-                playerListContainer.appendChild(listItem);
-            });
+      function createEightFinals(bracketContainer) {
+        // Create Eight Finals round
+        let round1 = document.createElement("div");
+        round1.classList.add("round");
+        round1.classList.add("col");
+        let roundTitle = document.createElement("div");
+        roundTitle.classList.add("round-title");
+        roundTitle.innerText = "Eight Finals";
+        round1.appendChild(roundTitle);
+
+        // Create matches for the 8 finals
+        for (let i = 0; i < 8; i++) {
+          let match = createMatch(i + 1, [
+            {
+			  id: matchesList[i].player1_id,
+              name: matchesList[i].player1 || "No name",
+              avatar:
+                matchesList[i].player1_avatar || "/media/default/avatar.png",
+			  score: matchesList[i].player1_score,
+			  type: "player",
+			},
+            {
+			  id: matchesList[i].player2_id,
+			  name: matchesList[i].player2 || "No name",
+              avatar:
+                matchesList[i].player2_avatar || "/media/default/avatar.png",
+			  score: matchesList[i].player2_score,
+			  type: "player",
+            },
+          ], currentUserId);
+          round1.appendChild(match);
         }
 
-        // Function for player to challenge another player
-        function challengePlayer(player) {
-            // Check if the player is already in a challenge
-            const challenger = players.find(p => p !== player && !challenges[p]);
+        // Add the first round to the container
+        bracketContainer.appendChild(round1);
 
-            if (!challenger) {
-                alert('No players available to challenge!');
-                return;
-            }
+        // Create next rounds (Quarter Finals, Semi Finals, Finals)
+        createQuarterFinals(bracketContainer);
+      }
 
-            challenges[challenger] = { challenged: player, challenger: challenger };
-            renderPlayerList();
+      function createQuarterFinals(bracketContainer) {
+        let round2 = document.createElement("div");
+        round2.classList.add("round");
+        round2.classList.add("col");
+        let roundTitle = document.createElement("div");
+        roundTitle.classList.add("round-title");
+        roundTitle.classList.add("primary-font");
+        roundTitle.innerText = "Quarter Finals";
+        round2.appendChild(roundTitle);
+
+        for (let i = 0; i < 4; i++) {
+          let match = createMatch(i + 9, [
+            {
+			  id: matchesList[i].player1_id, 
+              name: matchesList[i].player1 || "No name",
+              avatar:
+                matchesList[i].player1_avatar || "/media/default/avatar.png",
+			  score: matchesList[i].player1_score,
+			  type: "player",
+            },
+            {
+			  id: matchesList[i].player2_id,
+              name: matchesList[i].player2 || "No name",
+              avatar:
+                matchesList[i].player2_avatar || "/media/default/avatar.png",
+			  score: matchesList[i].player2_score,
+			  type: "player",
+            },
+          ], currentUserId);
+          round2.appendChild(match);
         }
 
-        // Function to start the game
-        function startGame(player) {
-            const challenger = challenges[player]?.challenger;
-            if (challenger) {
-                // Redirect to /PongTourny with both player names
-                window.location.href = `/PongTourny?player1=${challenger}&player2=${player}`;
-            } else {
-                alert('No game to start!');
-            }
+        bracketContainer.appendChild(round2);
+
+        createSemiFinals(bracketContainer);
+      }
+
+      function createSemiFinals(bracketContainer) {
+        let round3 = document.createElement("div");
+        round3.classList.add("round");
+        round3.classList.add("col");
+        let roundTitle = document.createElement("div");
+        roundTitle.classList.add("round-title");
+        roundTitle.classList.add("primary-font");
+        roundTitle.innerText = "Semi Finals";
+        round3.appendChild(roundTitle);
+
+        // Create placeholder matches for the Semi Finals
+        for (let i = 0; i < 2; i++) {
+          let match = createMatch(i + 13, [
+            {
+			  id: matchesList[i].player1_id,
+              name: matchesList[i].player1 || "No name",
+              avatar:
+                matchesList[i].player1_avatar || "/media/default/avatar.png",
+			  score: matchesList[i].player1_score,
+			  type: "player",
+			},
+            {
+			  id: matchesList[i].player2_id,
+              name: matchesList[i].player2 || "No name",
+              avatar:
+                matchesList[i].player2_avatar || "/media/default/avatar.png",
+			  score: matchesList[i].player2_score,
+			  type: "player",
+            },
+          ], currentUserId);
+          round3.appendChild(match);
         }
 
-        // Initialize player list on page load
-        window.onload = renderPlayerList;
+        bracketContainer.appendChild(round3);
+
+        createFinals(bracketContainer);
+      }
+
+      function createFinals(bracketContainer, playersList) {
+        let round4 = document.createElement("div");
+        round4.classList.add("round", "primary-font", "col", "finals");
+        let roundTitle = document.createElement("div");
+        roundTitle.classList.add("round-title", "primary-font");
+        roundTitle.innerText = "Finals";
+        round4.appendChild(roundTitle);
+
+        if (!playersList || playersList.length < 2) {
+          playersList = [
+            { id: null, name: "To Be Determined", avatar: "/media/default/avatar.png", score: '0', type: "auto" },
+            { id: null, name: "To Be Determined", avatar: "/media/default/avatar.png", score: '0', type: "auto" },
+          ];
+        }
+
+        let finalMatch = createMatch(15, playersList);
+        round4.appendChild(finalMatch);
+
+        bracketContainer.appendChild(round4);
+      }
+
+      function createMatch(matchNumber, playersList, currentUserId) {
+        let match = document.createElement("div");
+        match.classList.add("match");
+        match.id = `match${matchNumber}`;
+
+        // if (!playersList[0])
+        // 	playersList[0] = "TBD";
+        // if (!playersList[1])
+        // 	playersList[1] = "TBD";
+
+        let player1 = document.createElement("div");
+        player1.classList.add("player");
+        // console.log(`\n\nPlayersList: ${JSON.stringify(playersList)}\n\n`);
+        player1.innerHTML = `
+        <div class="player-info secondary-font">
+            <img src="${playersList[0].avatar}" style="
+                width: 50px;
+                height: 50px;
+                border-radius: 50%;
+                margin-right: 10px;">
+            <span class="player-name">${playersList[0].name}</span>
+			${playersList[0].type !== "auto" ? '<span class="player-score">' + playersList[0].score + '</span>' : ''}
+        </div>
+    `;
+
+        let player2 = document.createElement("div");
+        player2.classList.add("player");
+        player2.innerHTML = `
+        <div class="player-info secondary-font">
+            <img src="${playersList[1].avatar}" style="
+                width: 50px;
+                height: 50px;
+                border-radius: 50%;
+                margin-right: 10px;">
+            <span class="player-name">${playersList[1].name}</span>
+            ${playersList[1].type !== "auto" ? '<span class="player-score">' + playersList[1].score + '</span>' : ''}
+        </div>
+    `;
+
+		console.log(playersList[0].id, currentUserId, "\n", playersList[1].id, currentUserId);
+        if (playersList[0].id === currentUserId || playersList[1].id === currentUserId) {
+			let button = document.createElement("a");
+			button.classList.add("btn", "btn-primary", "btn-lg", "first-btn");
+			button.setAttribute("data", "Ready");
+			button.onclick = function () {
+				startMatch(matchNumber, playersList);
+			};
+			match.appendChild(button);
+		}
+
+		match.appendChild(player1);
+		match.appendChild(player2);
+
+        return match;
+      }
+
+      function startMatch(matchNumber, playersList) {
+        alert(
+          `Match ${matchNumber} started with ${playersList[0]} and ${playersList[1]}`
+        );
+      }
     </script>
-
-</body>
+  </body>
 </html>

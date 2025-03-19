@@ -57,10 +57,23 @@ fclean: clean
 	@docker system prune -f -a --volumes
 	@echo "$(RED)[Containers]$(DEFAULT) Fully deleted !"
 
+resetdb:
+	@echo "$(RED)[Database]$(DEFAULT) Resetting the database..."
+	@docker exec -it db psql -U postgres -c "DROP DATABASE IF EXISTS db;"
+	@docker exec -it db psql -U postgres -c "CREATE DATABASE db;"
+	@docker exec -it db psql -U postgres -c "GRANT ALL PRIVILEGES ON DATABASE db TO postgres;"
+	@echo "$(GREEN)[Database]$(DEFAULT) Database has been reset!"
+
+migrate:
+	@echo "$(BLUE)[Database]$(DEFAULT) Running migrations..."
+	@docker exec -it srcs-site-1 python manage.py makemigrations
+	@docker exec -it srcs-site-1 python manage.py migrate
+	@echo "$(GREEN)[Database]$(DEFAULT) Migrations applied!"
+
 # down, clean and start the containers
 re: down clean all
 
 mre: down all
 
 logs:
-	@$(DOCKERCOMPOSE) logs --tail=50 site
+	@$(DOCKERCOMPOSE) logs site

@@ -1,4 +1,4 @@
-z{% load static %}
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -51,6 +51,21 @@ z{% load static %}
 			height: 80px;
 		}
 	</style>
+
+	<!-- <script> -->
+		<!-- // When starting a game from ChallengeMode.html or similar
+		// const opponentId = "{{ opponent.id }}";
+		// fetch('/create_game/?type=tictactoe&player2_id=${opponentId}', {
+		// 	method: 'GET',
+		// 	headers: {
+		// 		'Content-Type': 'application/json',
+		// 	},
+		// 	params: {
+		// 		mode: 'ranked', // or 'unranked', 'tournament', etc.
+		// 		player2_id: opponentId
+		// 	}
+		// }) -->
+	<!-- </script> -->
 </head>
 <body onload="loadTemplate()">
 
@@ -71,9 +86,15 @@ z{% load static %}
                 <!-- Chatbox -->
 	{% include 'ChatBox.html' %}
     <link rel="stylesheet" href="{% static 'css/index.css' %}">
+	<script>
+		const gameId = '{{ game_id }}';
+		const playerRole = '{{ player_role }}';
+		console.log("Game ID:", '{{ game_id }}');
+    	console.log("Player Role:", '{{ player_role }}');
+		const currentUsername = '{{ username }}';
+	</script>
     <script src="{% static 'js/index.js' %}"></script>
     <script src="{% static 'js/TicTacToe.js' %}"></script>
-
 
 </body>
 </html>

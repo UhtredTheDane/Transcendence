@@ -2,15 +2,14 @@ from django.urls import re_path
 from . import consumers
 
 websocket_urlpatterns = [
-	re_path(r'ws/RankedMode/(?P<game_id>\d+)/$', consumers.GameConsumer.as_asgi()),
- 	re_path(r'ws/UnrankedMode/(?P<game_id>\d+)/$', consumers.GameConsumer.as_asgi()),
-	re_path(r'ws/RushMode/(?P<game_id>\d+)/$', consumers.GameConsumer.as_asgi()),
-	re_path(r'ws/TimerMode/(?P<game_id>\d+)/$', consumers.GameConsumer.as_asgi()),
-	re_path(r'ws/MaxScoreMode/(?P<game_id>\d+)/$', consumers.GameConsumer.as_asgi()),
-	re_path(r'ws/ChallengeMode/(?P<game_id>\d+)/$', consumers.GameConsumer.as_asgi()),
-	re_path(r'ws/TicTacToe/(?P<game_id>\d+)/$', consumers.GameConsumer.as_asgi()),
-	re_path(r'ws/channel/(?P<channel_id>\d+)/$', consumers.ChatConsumer.as_asgi()),
-    ##re_path(r'ws/matchmaking/$', consumers.MatchmakingConsumer.as_asgi()),
-    re_path(r'ws/MatchMaking/$', consumers.MatchmakingConsumer.as_asgi()),
-	re_path(r'ws/chatbox/$', consumers.ChatboxConsumer.as_asgi()),
+	re_path(r'wss/RankedMode/(?P<game_id>\d+)/$', consumers.GameConsumer.as_asgi()),
+ 	re_path(r'wss/UnrankedMode/(?P<game_id>\d+)/$', consumers.GameConsumer.as_asgi()),
+	re_path(r'wss/RushMode/(?P<game_id>\d+)/$', consumers.GameConsumer.as_asgi()),
+	re_path(r'wss/TimerMode/(?P<game_id>\d+)/$', consumers.GameConsumer.as_asgi()),
+	re_path(r'wss/MaxScoreMode/(?P<game_id>\d+)/$', consumers.GameConsumer.as_asgi()),
+	re_path(r'wss/ChallengeMode/(?P<game_id>\d+)/$', consumers.GameConsumer.as_asgi()),
+	re_path(r'wss/TicTacToeMode/(?P<game_id>\d+)/$', consumers.TicTacToeConsumer.as_asgi()),
+    ##re_path(r'wss/matchmaking/$', consumers.MatchmakingConsumer.as_asgi()),
+    re_path(r'wss/MatchMaking/$', consumers.MatchmakingConsumer.as_asgi()),
+	re_path(r'wss/chatbox/$', consumers.ChatboxConsumer.as_asgi()),
 ]
