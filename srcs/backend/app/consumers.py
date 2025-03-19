@@ -1,10 +1,9 @@
+import json
+import asyncio
 from channels.generic.websocket import AsyncWebsocketConsumer
 from channels.db import database_sync_to_async
 from asgiref.sync import sync_to_async
-from .models import Game, User, Channel, ChannelUser, Message, Messages
-from django.utils import timezone
-import json
-import asyncio
+from .models import Game, User, Channel, Messages
 
 
 active_users = {}
@@ -171,6 +170,93 @@ class GameConsumer(AsyncWebsocketConsumer):
 			print(f"Error sending game over message: {e}")
 			pass
 
+class TicTacToeConsumer(AsyncWebsocketConsumer):
+	async def connect(self):
+		self.game_id = self.scope['url_route']['kwargs']['game_id']
+		self.game_group_name = f'game_{self.game_id}'
+
+		self.game = await sync_to_async(Game.objects.select_related('player1', 'player2', 'current_turn').get)(id=self.game_id)
+		
+		if self.scope['user'] not in [self.game.player1, self.game.player2]:
+			await self.close()
+			return
+
+		if not self.game.current_turn:
+			await self.set_first_turn()
+
+		await self.channel_layer.group_add(self.game_group_name, self.channel_name)
+		await self.accept()
+
+		await self.send_game_state()
+
+	@sync_to_async
+	def set_first_turn(self):
+		self.game.current_turn = self.game.player1
+		self.game.save()
+
+	async def receive(self, text_data):
+		self.game = await sync_to_async(Game.objects.select_related('player1', 'player2', 'current_turn').get)(id=self.game_id)
+		
+		data = json.loads(text_data)
+		index = int(data.get("index"))
+		user = self.scope["user"]
+
+		if not await self.is_valid_turn(user):
+			return
+
+		board = list(self.game.board)
+		if board[index] != " ":
+			return
+
+		symbol = await sync_to_async(lambda: 'X' if self.scope['user'] == self.game.player1 else 'O')()
+		board[index] = symbol
+		self.game.board = "".join(board)
+		winner = await sync_to_async(self.check_winner)(board)
+
+		if winner:
+			self.game.winner = winner
+
+		await self.update_turn(user)
+		await sync_to_async(self.game.save)()
+
+		await self.channel_layer.group_send(
+			self.game_group_name,
+			{
+				"type": "game_update",
+				"board": self.game.board,
+				"current_turn": self.game.current_turn.username,
+				"winner": winner.username if winner else None
+			}
+		)
+
+	@sync_to_async
+	def is_valid_turn(self, user):
+		return user == self.game.current_turn
+
+	@sync_to_async
+	def update_turn(self, user):
+		self.game.current_turn = self.game.player2 if user == self.game.player1 else self.game.player1
+
+	async def send_game_state(self):
+		await self.send(text_data=json.dumps({
+			"type": "game_update",
+			"board": self.game.board,
+			"current_turn": self.game.current_turn.username
+		}))
+
+	def check_winner(self, board):
+		winning_combinations = [
+			(0, 1, 2), (3, 4, 5), (6, 7, 8),
+			(0, 3, 6), (1, 4, 7), (2, 5, 8),
+			(0, 4, 8), (2, 4, 6)
+		]
+		for a, b, c in winning_combinations:
+			if board[a] != " " and board[a] == board[b] == board[c]:
+				return self.game.player1 if board[a] == "X" else self.game.player2
+		return None
+
+	async def game_update(self, event):
+		await self.send(text_data=json.dumps(event))
 
 class ChatConsumer(AsyncWebsocketConsumer):
 	async def connect(self):

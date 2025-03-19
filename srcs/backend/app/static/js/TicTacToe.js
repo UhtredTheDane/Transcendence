@@ -1,10 +1,40 @@
 const gameBoard = document.getElementById('gameBoard');
-const player1 = 'X';
-const player2 = 'O';
-let currentPlayer = player1;
-let board = ['', '', '', '', '', '', '', '', ''];
-let gameOver = false;
+const gameSocket = new WebSocket(`ws://${window.location.host}/ws/TicTacToeMode/${gameId}/`);
 
+console.log("Player role:", playerRole);
+console.log("Current username:", currentUsername);
+
+let board = Array(9).fill(' ');
+let currentTurn = null;
+
+// 📡 Connexion WebSocket
+gameSocket.onopen = function() {
+    console.log("✅ WebSocket connected.");
+};
+
+gameSocket.onmessage = function(event) {
+    const data = JSON.parse(event.data);
+    console.log("🚀 Data received:", data);
+
+    if (data.type === "game_update") {
+        board = data.board.split('');
+        currentTurn = data.current_turn;
+        console.log("🔄 New board received:", board);
+        console.log("🎯 Current turn:", currentTurn);
+        updateBoard();
+    }
+
+    if (data.winner) {
+        alert(`${data.winner} wins!`);
+        gameSocket.close();
+    }
+};
+
+gameSocket.onclose = function() {
+    console.log("❌ WebSocket closed.");
+};
+
+// Création de la grille
 for (let i = 0; i < 9; i++) {
     const cell = document.createElement('div');
     cell.classList.add('cell');
@@ -13,83 +43,31 @@ for (let i = 0; i < 9; i++) {
     gameBoard.appendChild(cell);
 }
 
-// function handleCellClick(event) {
-//     const cell = event.target;
-//     const index = cell.dataset.index;
-
-//     // If the cell is already taken or the game is over, do nothing
-//     if (board[index] || gameOver) return;
-
-//     // Mark the cell with the current player's symbol
-//     board[index] = currentPlayer;
-//     cell.textContent = currentPlayer;
-//     cell.classList.add('taken');
-
-//     // Check for a winner
-//     if (checkWinner()) {
-//         alert(`${currentPlayer} wins!`);
-//         gameOver = true;
-//         return;
-//     }
-
-//     // Switch to the next player
-//     currentPlayer = currentPlayer === player1 ? player2 : player1;
-// }
-
+// 🖱 Gestion du clic sur une cellule
 function handleCellClick(event) {
-const cell = event.target;
-const index = cell.dataset.index;
+    const index = parseInt(event.target.dataset.index, 10);
+    console.log(`🖱️ Cell clicked: ${index}, Current turn: ${currentTurn}, Username: ${currentUsername}`);
 
-// If the cell is already taken or the game is over, do nothing
-if (board[index] || gameOver) return;
+    if (currentTurn !== currentUsername || board[index] !== ' ') {
+        console.log(`❌ Action denied: Not your turn (turn of ${currentTurn}) or cell already taken.`);
+        return;
+    }
 
-// Mark the cell with the current player's symbol
-board[index] = currentPlayer;
-const img = document.createElement('img');
-img.src = currentPlayer === player1 ? '{% static "images/cross.svg" %}' : '{% static "images/circle.svg" %}';
-img.classList.add('symbol');
-cell.appendChild(img);
-cell.classList.add('taken');
-
-// Check for a winner
-if (checkWinner()) {
-    alert(`${currentPlayer} wins!`);
-    gameOver = true;
-    return;
+    console.log("📤 Sending move to server...");
+    gameSocket.send(JSON.stringify({
+        type: "move",
+        index: index,
+		currentTurn: currentTurn,
+    }));
 }
 
-// Switch to the next player
-currentPlayer = currentPlayer === player1 ? player2 : player1;
-}
-
-
-function checkWinner() {
-    const winningCombinations = [
-        [0, 1, 2],
-        [3, 4, 5],
-        [6, 7, 8],
-        [0, 3, 6],
-        [1, 4, 7],
-        [2, 5, 8],
-        [0, 4, 8],
-        [2, 4, 6]
-    ];
-
-    return winningCombinations.some(combination => {
-        const [a, b, c] = combination;
-        return board[a] && board[a] === board[b] && board[a] === board[c];
-    });
-}
-
-function restartGame() {
-    board = ['', '', '', '', '', '', '', '', ''];
-    currentPlayer = player1;
-    gameOver = false;
-
-    // Reset game board UI
+// 🔄 Mise à jour visuelle de la grille
+function updateBoard() {
+    console.log("🛠️ Updating board in UI");
     const cells = document.querySelectorAll('.cell');
-    cells.forEach(cell => {
-        cell.textContent = '';
-        cell.classList.remove('taken');
+    cells.forEach((cell, i) => {
+        console.log(`🔢 Cell ${i}: ${board[i]}`);
+        cell.textContent = board[i] === ' ' ? '' : board[i];
+        cell.classList.toggle('taken', board[i] !== ' ');
     });
 }

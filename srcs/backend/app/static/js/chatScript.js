@@ -6,14 +6,14 @@ if (!user) {
     console.error('Username not defined');
 }
 
-const socket = new WebSocket(`ws://${window.location.host}/ws/chatbox/`);
+const chatSocket = new WebSocket(`ws://${window.location.host}/ws/chatbox/`);
 
 
-socket.onopen = function(event) {
+chatSocket.onopen = function(event) {
 	console.log('WebSocket is connected.');
 };
 
-socket.onmessage = function(event) {
+chatSocket.onmessage = function(event) {
 	let data = JSON.parse(event.data);
     if (data.type === 'message') {
         // Store incoming message
@@ -82,7 +82,7 @@ socket.onmessage = function(event) {
         acceptButton.textContent = 'Accept Challenge';
         acceptButton.classList.add('btn', 'btn-primary', 'mt-2');
         acceptButton.onclick = function() {
-			socket.send(JSON.stringify({
+			chatSocket.send(JSON.stringify({
 				type: "challenge_accepted",
 				sender: data.sender,
 				receiver: data.receiver
@@ -112,11 +112,11 @@ socket.onmessage = function(event) {
     }
 };
 
-socket.onclose = function(event) {
+chatSocket.onclose = function(event) {
 	console.log('WebSocket is closed.');
 };
 
-socket.onerror = function(error) {
+chatSocket.onerror = function(error) {
 	console.error('WebSocket error:', error);
 };
 
@@ -167,7 +167,7 @@ function toggleChatbox() {
 function addFriend() {
     const friendName = document.getElementById('floatingInput').value.trim();
     if (friendName) {
-        socket.send(JSON.stringify({
+        chatSocket.send(JSON.stringify({
             type: "add_friend",
             sender: user,
             friend_name: friendName
@@ -262,7 +262,7 @@ function sendMessage() {
         displayMessage(user, messageText, 'right');
 
         // Send message
-        socket.send(JSON.stringify({
+        chatSocket.send(JSON.stringify({
             type: "message",
             sender: user,
             receiver: selectedContact,
@@ -288,7 +288,7 @@ function deletePlayer(button) {
 
 function blockContact() {
     if (selectedContact) {
-        socket.send(JSON.stringify({
+        chatSocket.send(JSON.stringify({
             type: "unfriend",
             sender: user,
             contact_name: selectedContact
@@ -319,7 +319,7 @@ function challengeContact() {
         displayMessage(user, challengeMessage, 'right');
 
         // Send challenge through websocket
-        socket.send(JSON.stringify({
+        chatSocket.send(JSON.stringify({
             type: "challenge",
             sender: user,
             receiver: selectedContact,

@@ -122,6 +122,8 @@ def create_game(request):
 				mode=game_type
 			)
 
+		print(f"🎮 Game créée: ID={game.id}, Mode={game.mode}")
+
 		has_to_redirect = request.GET.get('redirect', 'false')
 		if has_to_redirect == 'true':
 			if game_type == 'ranked':
@@ -144,6 +146,34 @@ def create_game(request):
 	except Exception as e:
 		return JsonResponse({'error': str(e)}, status=500)
 
+@login_required
+def TicTacToeMode(request, game_id):
+	try:
+		game = Game.objects.get(id=game_id)
+		print(f"✅ Game trouvée: {game}")
+	except Game.DoesNotExist:
+		print(f"❌ Game introuvable avec ID: {game_id}")
+		return HttpResponseNotFound("Game not found")
+	
+	# if game.mode != 'tictactoe':
+	#     return HttpResponseForbidden("This game is not a TicTacToe match.")
+
+	game.mode = 'tictactoe'
+	game.save()
+	# Déterminer le rôle du joueur
+	if request.user == game.player1:
+		player_role = 'player1'
+	elif request.user == game.player2:
+		player_role = 'player2'
+	else:
+		return HttpResponseForbidden("You are not part of this game.")
+
+	return render(request, 'TicTacToe.html', {
+		'game_id': game.id,
+		'player_role': player_role,
+		'username': request.user.username
+	})
+
 @login_required # ! POUR REVIEW LES FONCTIONS ET POUVOIRS LES DISPLAY DANS LE PROFIL
 def RankedMode(request, game_id):
 	game = get_object_or_404(Game, id=game_id)
@@ -158,18 +188,18 @@ def RankedMode(request, game_id):
 
 # ! A FAIRE #################################
 
-@login_required # ! POUR REVIEW LES FONCTIONS ET POUVOIRS LES DISPLAY DANS LE PROFIL
-def TicTacToeMode(request, game_id):
-	game = get_object_or_404(Game, id=game_id)
-	game.mode = 'TicTacToe'  # ! Commande a modifier
-	game.save() # ! Commande a ajouter
-	if request.user == game.player1:
-		player_role = 'player1'
-	else:
-		player_role = 'player2'
-	return render(request, 'TicTacToe.html', {'game_id': game_id, 'player_role': player_role})
+# @login_required # ! POUR REVIEW LES FONCTIONS ET POUVOIRS LES DISPLAY DANS LE PROFIL
+# def TicTacToeMode(request, game_id):
+# 	game = get_object_or_404(Game, id=game_id)
+# 	game.mode = 'TicTacToe'  # ! Commande a modifier
+# 	game.save() # ! Commande a ajouter
+# 	if request.user == game.player1:
+# 		player_role = 'player1'
+# 	else:
+# 		player_role = 'player2'
+# 	return render(request, 'TicTacToe.html', {'game_id': game_id, 'player_role': player_role})
 
-# ! A FAIRE #################################
+# # ! A FAIRE #################################
 
 
 @login_required
@@ -644,9 +674,6 @@ def signup(request):
 def	aimode(request):
 	return render(request, 'AIMode.html')
 
-def	tictactoe(request):
-	return render(request, 'TicTacToe.html')
-
 @login_required
 def set_ready_status(request, tournament_id):
 	tournament = get_object_or_404(Tournament, id=tournament_id)
@@ -743,9 +770,6 @@ def	error404(request):
 @login_required
 def	passwordreset(request):
 	return render(request, 'PasswordReset.html')
-
-def	tictactoe(request):
-	return render(request, 'TicTacToe.html')
 
 @login_required
 def	matchmaking(request):
