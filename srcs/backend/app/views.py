@@ -690,6 +690,7 @@ def set_ready_status(request, tournament_id):
 def create_tournament(request):
 	if request.method == "POST":
 		data = json.loads(request.body)
+		tournament_name = data.get("name", "")
 		selected_players = data.get("players", [])
 
 		# Vérification du nombre de joueurs
@@ -714,7 +715,7 @@ def create_tournament(request):
 		print(f"Players in matches:", players_in_matches)
 		print(f"\n\n\n")
 
-		tournament = Tournament.objects.create(creator=request.user, name=f"Tournament by {request.user.username}")
+		tournament = Tournament.objects.create(creator=request.user, name=tournament_name)
 
 		for match_players in players_in_matches:
 			game = Game.objects.create(player1=match_players[0], player2=match_players[1], mode='tournament', is_active=False)
@@ -774,7 +775,12 @@ def tournamentpage(request, tournament_id):
 	if not is_participant:
 		return HttpResponseForbidden("You are not a participant in this tournament.")
 
-	return render(request, 'TournamentPage.html', { 'players': json.dumps(players_data), 'matches': json.dumps(matches_data), 'tournament_id': tournament.id })
+	return render(request, 'TournamentPage.html', {
+		'players': json.dumps(players_data),
+		'matches': json.dumps(matches_data),
+		'tournament_id': tournament.id,
+		'tournament_name': tournament.name
+	})
 
 @login_required
 def	invitetournament(request):

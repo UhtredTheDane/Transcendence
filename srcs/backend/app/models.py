@@ -66,7 +66,7 @@ class Game(models.Model):
 
 class Tournament(models.Model):
 	creator = models.ForeignKey(User, on_delete=models.CASCADE, related_name="tournament_creator")
-	name = models.CharField(max_length=100)
+	name = models.CharField(max_length=100, default=None, blank=True, null=True)
 	created_at = models.DateTimeField(auto_now_add=True)
 
 	def __str__(self):

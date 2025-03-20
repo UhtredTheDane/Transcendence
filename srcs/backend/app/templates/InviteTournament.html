@@ -161,14 +161,16 @@
 				return;
 			} 
 			
-	
+			let tournamentName = document.getElementById('tournamentInput').value.trim();
+			if (!tournamentName || tournamentName === '') tournamentName = null;
+
 			fetch('/create_tournament/', {
 				method: 'POST',
 				headers: {
 					'X-CSRFToken': getCookie('csrftoken'),
 					'Content-Type': 'application/json'
 				},
-				body: JSON.stringify({ players: selectedPlayers })
+				body: JSON.stringify({ players: selectedPlayers, name: tournamentName })
 			})
 			.then(response => response.json())
 			.then(data => {

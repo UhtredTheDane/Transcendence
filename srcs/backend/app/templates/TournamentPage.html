@@ -148,7 +148,11 @@
     </div>
 
     <div class="container position-absolute top-50 start-50 translate-middle">
-      <h1 class="mb-4 primary-font">Tournament: Challenge Players</h1>
+		{% if tournament_name %}
+			<h1 class="mb-4 primary-font">{{ tournament_name }}</h1>
+		{% else %}
+			<h1 class="mb-4 primary-font">Tournament: Challenge Players</h1>
+		{% endif %}
 
       <!-- Tournament Bracket -->
       <div class="bracket row" id="bracket"></div>
