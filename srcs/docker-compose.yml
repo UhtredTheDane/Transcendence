@@ -26,7 +26,7 @@ services:
     # container_name: site
     env_file: .env
     volumes:
-      - site_media:/app/media
+      - site_media:/app/app/media
       - site_static:/app/static
     depends_on:
       - db
@@ -34,7 +34,6 @@ services:
       - mynetwork
     ports:
       - "8000:8000"
-
   db:
     image: postgres:latest
     container_name: db

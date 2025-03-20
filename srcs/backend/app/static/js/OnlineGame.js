@@ -47,6 +47,8 @@ export default class OnlineGame extends Game{
 			} else if (data.type === "update_game_score") {
 				tempoGame.field.player.playerScore = data.score_player1;
 				tempoGame.field.opponent.playerScore = data.score_player2;
+				document.getElementById("score_player1").innerText = data.score_player1;
+        		document.getElementById("score_player2").innerText = data.score_player2;
 			} else if (data.type === "update_pause") {
 				tempoGame.isPaused = data.is_paused;
 				if (tempoGame.isPaused)
