@@ -402,7 +402,6 @@ def profile(request, username=None):
 
 		user_games = Game.objects.filter(Q(player1=user_data) | Q(player2=user_data))
 
-		# Calculate wins and losses
 		wins = user_games.filter(
 			(Q(player1=user_data) & Q(score_player1__gt=F('score_player2'))) |
 			(Q(player2=user_data) & Q(score_player2__gt=F('score_player1')))
@@ -413,7 +412,6 @@ def profile(request, username=None):
 			(Q(player2=user_data) & Q(score_player2__lt=F('score_player1')))
 		).count()
 
-		# Separate games by mode
 		ranked_games = user_games.filter(mode='ranked')
 		unranked_games = user_games.filter(mode='unranked')
 		tournament_games = user_games.filter(mode='tournament')
@@ -444,10 +442,16 @@ def profile(request, username=None):
 			'user_data': user_data,
 			'wins': wins,
 			'losses': losses,
-			'scores': format_game_list(user_games),  # All games
+			'scores': format_game_list(user_games),
 			'ranked_scores': format_game_list(ranked_games),
 			'unranked_scores': format_game_list(unranked_games),
 			'tournament_scores': format_game_list(tournament_games),
+			'tournaments': json.dumps([
+				{
+					'tournament_id': tp.tournament.id,
+				} 
+				for tp in TournamentPlayer.objects.filter(user=user_data)
+			]),
 			'tictactoe_scores': format_game_list(tictactoe_games),
 			'is_own_profile': user_data == request.user,
 			'viewing_username': username
@@ -606,11 +610,9 @@ def add_match(request):
 		score2 = data.get("score2")
 		date = data.get("date")  # Extract the date
 
-		# Check if all required fields are present, including the date
 		if not all([tournament_id, player1, player2, score1, score2, date]):
 			return JsonResponse({"status": "error", "message": "Missing required fields."})
 		
-		# Prepare payload for Express request, including the date
 		payload = {
 			"tournamentid": tournament_id,
 			"player1": player1,
@@ -699,23 +701,20 @@ def create_tournament(request):
 
 		# Vérifier si tous les utilisateurs existent
 		existing_users = User.objects.filter(username__in=selected_players)
-		if existing_users.count() != len(selected_players):
-			return JsonResponse({
-				"status": "error",
-				"message": "One or more players do not exist."
-			})
-
-		print(f"\n\n\n")
-		print(f"Selected players:", selected_players)
-		print(f"Existing users:", existing_users)
+		# if existing_users.count() != len(selected_players):
+		# 	return JsonResponse({
+		# 		"status": "error",
+		# 		"message": "One or more players do not exist."
+		# 	})
 
 		shuffled_players = random.sample(list(existing_users), len(existing_users))
-		print(f"Shuffled players:", shuffled_players)
 		players_in_matches = [shuffled_players[i:i + 2] for i in range(0, len(shuffled_players), 2)]
-		print(f"Players in matches:", players_in_matches)
-		print(f"\n\n\n")
 
 		tournament = Tournament.objects.create(creator=request.user, name=tournament_name)
+
+		tournament_response = create_tournament_request(request)
+		if tournament_response.get('status') == 'error':
+			return JsonResponse({'status': 'error', 'message': tournament_response.get('message')})
 
 		for match_players in players_in_matches:
 			game = Game.objects.create(player1=match_players[0], player2=match_players[1], mode='tournament', is_active=False)
