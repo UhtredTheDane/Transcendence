@@ -148,7 +148,11 @@
     </div>
 
     <div class="container position-absolute top-50 start-50 translate-middle">
-      <h1 class="mb-4 primary-font">Tournament: Challenge Players</h1>
+		{% if tournament_name %}
+			<h1 class="mb-4 primary-font">{{ tournament_name }}</h1>
+		{% else %}
+			<h1 class="mb-4 primary-font">Tournament: Challenge Players</h1>
+		{% endif %}
 
       <!-- Tournament Bracket -->
       <div class="bracket row" id="bracket"></div>
@@ -158,9 +162,21 @@
       let playersList = "{{ players|escapejs }}";
       let matchesList = JSON.parse("{{ matches|escapejs }}");
 	  let currentUserId = parseInt('{{ request.user.id }}');
-      console.log("------ List matches ------------");
-      console.log(matchesList);
-      console.log("------------------");
+	  let tournamentId = parseInt('{{ tournament_id }}');
+	  const tournamentSocket = new WebSocket(`ws://${window.location.host}/ws/tournament/${tournamentId}`);
+    //   console.log("------ List matches ------------");
+    //   console.log(matchesList);
+    //   console.log("------------------");
+
+	  tournamentSocket.onmessage = function (event) {
+        let data = JSON.parse(event.data);
+        if (data.event === "ready_update") {
+          updateReadyButton(data.match_id, data.player_id, data.ready);
+        } else if (data.event === "match_start") {
+          alert("Match started!");
+          window.location.href = `/game/${data.match_id}/`;
+        }
+      };
 
       // Initialize bracket once the DOM is fully loaded
       document.addEventListener("DOMContentLoaded", function () {
@@ -367,13 +383,17 @@
         </div>
     `;
 
-		console.log(playersList[0].id, currentUserId, "\n", playersList[1].id, currentUserId);
+		// console.log(playersList[0].id, currentUserId, "\n", playersList[1].id, currentUserId);
         if (playersList[0].id === currentUserId || playersList[1].id === currentUserId) {
 			let button = document.createElement("a");
 			button.classList.add("btn", "btn-primary", "btn-lg", "first-btn");
 			button.setAttribute("data", "Ready");
 			button.onclick = function () {
-				startMatch(matchNumber, playersList);
+				tournamentSocket.send(JSON.stringify({
+					event: "toggle_ready",
+					match_id: matchNumber,
+					player_id: currentUserId,
+				}));
 			};
 			match.appendChild(button);
 		}
@@ -388,6 +408,17 @@
         alert(
           `Match ${matchNumber} started with ${playersList[0]} and ${playersList[1]}`
         );
+      }
+
+	  function updateReadyButton(matchId, playerId, isReady) {
+        let matchElement = document.getElementById(`match${matchId}`);
+        if (!matchElement) return;
+        let button = matchElement.querySelector("button");
+        if (!button) return;
+
+        if (playerId === currentUserId) {
+          button.textContent = isReady ? "Cancel" : "Ready";
+        }
       }
     </script>
   </body>

@@ -2,13 +2,85 @@ import json
 import asyncio
 import requests
 from django.http import JsonResponse
-from channels.generic.websocket import AsyncWebsocketConsumer
+from django.core.cache import cache
+from channels.generic.websocket import AsyncWebsocketConsumer, JsonWebsocketConsumer
 from channels.db import database_sync_to_async
-from asgiref.sync import sync_to_async
+from asgiref.sync import sync_to_async, async_to_sync
 from .models import Game, User, Channel, Messages
 
 
 active_users = {}
+
+class MatchConsumer(JsonWebsocketConsumer):
+    def connect(self):
+        self.match_id = self.scope['url_route']['kwargs']['match_id']
+        self.group_name = f"match_{self.match_id}"
+        # Rejoindre le groupe du match
+        async_to_sync(self.channel_layer.group_add)(self.group_name, self.channel_name)
+        self.accept()
+
+    def disconnect(self, close_code):
+        # Quitter le groupe du match
+        async_to_sync(self.channel_layer.group_discard)(self.group_name, self.channel_name)
+
+    def receive_json(self, content):
+        # Gérer les messages reçus (ex: toggle du statut Ready)
+        action = content.get("action")
+        player_id = content.get("player_id")
+        if action == "toggle_ready":
+            self.handle_toggle_ready(player_id)
+
+    def handle_toggle_ready(self, player_id):
+        ready_key = f"match_ready_{self.match_id}"
+        # Section critique: on utilise un verrou Redis pour éviter les conflits
+        with cache.lock(f"lock_ready_{self.match_id}"):
+            ready_players = cache.get(ready_key) or set()
+            if player_id in ready_players:
+                # Si déjà prêt, on annule le prêt (remove)
+                ready_players.remove(player_id)
+                player_ready = False
+            else:
+                # Sinon, on ajoute le joueur à la liste des prêts
+                ready_players.add(player_id)
+                player_ready = True
+            cache.set(ready_key, ready_players)
+        # Préparer le message de mise à jour
+        data = {
+            "type": "ready.update",  # type d'événement pour le consumer (méthode correspondante)
+            "player_id": player_id,
+            "ready": player_ready
+        }
+        # Envoyer à tous les clients du match la mise à jour du statut de ce joueur
+        async_to_sync(self.channel_layer.group_send)(self.group_name, data)
+        # Si les deux joueurs sont prêts, lancer le match
+        if len(ready_players) == 2:
+            self.launch_match()
+
+    def launch_match(self):
+        # Mettre à jour le modèle du match dans la base de données (ex: statut "en cours")
+        # ... (logique spécifique à votre application)
+        # Notifier les joueurs que le match commence
+        async_to_sync(self.channel_layer.group_send)(self.group_name, {
+            "type": "match.start", 
+            "message": "both_ready"
+        })
+
+    # Méthodes pour recevoir les événements group_send
+    def ready_update(self, event):
+        # Transmettre l'info du statut prêt/non prêt d'un joueur aux clients WebSocket
+        self.send_json({
+            "event": "ready_update",
+            "player_id": event["player_id"],
+            "ready": event["ready"]
+        })
+
+    def match_start(self, event):
+        # Informer le client que le match démarre
+        self.send_json({
+            "event": "match_start",
+            "message": event.get("message", "")
+        })
+
 
 class GameConsumer(AsyncWebsocketConsumer):
 	async def connect(self):
@@ -445,7 +517,6 @@ class ChatboxConsumer(AsyncWebsocketConsumer):
 			await self.close()
 			return
 			
-		# Add user to their personal group
 		self.group_name = f"user_{self.user.username}"
 		await self.channel_layer.group_add(
 			self.group_name,

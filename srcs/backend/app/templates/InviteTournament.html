@@ -161,8 +161,9 @@
 				return;
 			} 
 			
-			const tournamentName = document.getElementById('tournamentInput').value.trim();
-	
+			let tournamentName = document.getElementById('tournamentInput').value.trim();
+			if (!tournamentName || tournamentName === '') tournamentName = null;
+
 			fetch('/create_tournament/', {
 				method: 'POST',
 				headers: {
