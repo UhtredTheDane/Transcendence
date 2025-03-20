@@ -59,7 +59,19 @@
 	<link rel="stylesheet" href="{% static 'css/chatbox.css' %}">
 	
 	<script src="{% static 'js/index.js' %}"></script>	
-	
+	<script>
+		// When starting a game from ChallengeMode.html or similar
+		fetch('/create_game/', {
+			method: 'GET',
+			headers: {
+				'Content-Type': 'application/json',
+			},
+			params: {
+				type: 'ranked',  // or 'unranked', 'rushmode', etc.
+				player2_id: opponentId
+			}
+		})
+	</script>
 </head>
 <body onload="loadTemplate()">
 	
@@ -71,7 +83,7 @@
 			</div>
 		</div>
 	</nav>
-	 
+	
 	<div class=" position-absolute top-50 start-50 translate-middle" style="z-index: -2;">
 		<img class="transcendence-icon" alt="" src="{% static 'images/bg-text.svg' %}">
 	</div>
@@ -83,10 +95,11 @@
 		<div class="scores secondary-font">
 			<!-- Player's score container (always on the left) -->
 			<div id="player-side" class="score container px-4 text-center">
-				<p>{{ player1_username }}: <span id="score_player1">0</span></p>
+				<p>Player 1: 0</p>
 			</div>
+			<!-- AI's score container (always on the right) -->
 			<div id="ai-side" class="score container px-4 text-center">
-				<p>{{ player2_username }}: <span id="score_player2">0</span></p>
+				<p>Player 2: 0</p>
 			</div>
 		</div> 
 		

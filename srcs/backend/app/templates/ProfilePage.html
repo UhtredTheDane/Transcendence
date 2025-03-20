@@ -297,6 +297,9 @@ document.addEventListener('DOMContentLoaded', function() {
 						async function fetchPlayerMatches() {
 						const tournamentId = 1;  // Hardcoded tournament ID for now
 						const playerName = "{{ user_data.username }}";  // Username from template
+						const tournamentGames = JSON.parse('{{ tournaments|escapejs }}');
+						console.log(tournamentGames);
+						console.log(tournamentGames[0].tournament_id)
 						const matchesContainer = document.getElementById("matches-container");
 			
 						try {

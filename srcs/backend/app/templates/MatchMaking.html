@@ -61,7 +61,7 @@
 		console.log("WebSocket matchmaking connecté en mode", typegame);
 	
 		const matchmakingSocket = new WebSocket(
-			'wss://' + window.location.host + '/wss/MatchMaking/?mode=' + typegame
+			'ws://' + window.location.host + '/ws/MatchMaking/?mode=' + typegame
 		);
 	
 		matchmakingSocket.onopen = function () {
