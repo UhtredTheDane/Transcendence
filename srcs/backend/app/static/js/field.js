@@ -63,8 +63,8 @@ export default class Field {
 	draw() {
 		this._contexte.clearRect(0, 0, this._canevas.width, this._canevas.height);
 		this._contexte.font = "30px Arial";
-		this._contexte.fillText(this._player.playerScore, 50, 70);
-		this._contexte.fillText(this._opponent.playerScore, 720, 70);
+		//this._contexte.fillText(this._player.playerScore, 50, 70);
+		//this._contexte.fillText(this._opponent.playerScore, 720, 70);
 		this._contexte.drawImage(this._player.img, this._player.xPos, this._player.yPos);
 		this._contexte.drawImage(this._opponent.img, this._opponent.xPos, this._opponent.yPos);
 		this._contexte.drawImage(this._ball.img, this._ball.xPos, this._ball.yPos);

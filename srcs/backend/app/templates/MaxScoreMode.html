@@ -102,17 +102,16 @@
     <div class="container">
         <h1 class="mb-3 primary-font grid text-center">PvP - Max Score Mode</h1>
 
-        <!-- Scores -->
-        <div class="scores secondary-font">
-            <!-- Player's score container (always on the left) -->
-            <div id="player-side" class="score container px-4 text-center">
-                <p>Player 1: 0</p>
-            </div>
-            <!-- AI's score container (always on the right) -->
-            <div id="ai-side" class="score container px-4 text-center">
-                <p>Player 2: 0</p>
-            </div>
-        </div>
+       <!-- Scores -->
+		<div class="scores secondary-font">
+			<!-- Player's score container (always on the left) -->
+			<div id="player-side" class="score container px-4 text-center">
+				<p>{{ player1_username }}: <span id="score_player1">0</span></p>
+			</div>
+			<div id="ai-side" class="score container px-4 text-center">
+				<p>{{ player2_username }}: <span id="score_player2">0</span></p>
+			</div>
+		</div>
  
         <!-- Game Window -->
         <div class="game-window ">

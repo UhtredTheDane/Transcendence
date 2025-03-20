@@ -163,20 +163,35 @@
       let matchesList = JSON.parse("{{ matches|escapejs }}");
 	  let currentUserId = parseInt('{{ request.user.id }}');
 	  let tournamentId = parseInt('{{ tournament_id }}');
-	  const tournamentSocket = new WebSocket(`wss://${window.location.host}/wss/tournament/${tournamentId}`);
+	  let userMatch = matchesList.find(match => match.player1_id === currentUserId || match.player2_id === currentUserId);
+	  console.log(userMatch) 
+	  console.log(tournamentId)
+	  const tournamentSocket = new WebSocket(`ws://${window.location.host}/ws/tournament/${tournamentId}/${userMatch.id}`);
     //   console.log("------ List matches ------------");
     //   console.log(matchesList);
     //   console.log("------------------");
 
-	  tournamentSocket.onmessage = function (event) {
-        let data = JSON.parse(event.data);
-        if (data.event === "ready_update") {
-          updateReadyButton(data.match_id, data.player_id, data.ready);
-        } else if (data.event === "match_start") {
-          alert("Match started!");
-          window.location.href = `/game/${data.match_id}/`;
-        }
-      };
+	  tournamentSocket.onmessage = function(event) {
+	    const data = JSON.parse(event.data);
+		console.log(`Received data:\n${JSON.stringify(data)}`);
+	    if (data.type === "ready_update") {
+		  updateReadyButton(data.match_id, data.player_id, data.ready);
+	    } else if (data.type === "match_start") {
+	  	  window.location.href = `/UnrankedMode/${data.match_id}/`;
+	    }
+	  };
+
+	  tournamentSocket.onopen = function () {
+		console.log("WebSocket Tournament connection established");
+	  };
+
+	  tournamentSocket.onclose = function () {
+		console.log("WebSocket Tournament connection closed");
+	  };
+
+	  tournamentSocket.onerror = function (error) {
+		console.error("WebSocket Tournament error:\n" + JSON.stringify(error));
+	  };
 
       // Initialize bracket once the DOM is fully loaded
       document.addEventListener("DOMContentLoaded", function () {
@@ -199,10 +214,10 @@
           console.log("Setting up Eight Finals for 16 players");
           createEightFinals(bracketContainer);
         } else if (numPlayers === 8) {
-          console.log("Setting up Eight Finals for 16 players");
+          console.log("Setting up Quarter Finals for 8 players");
           createQuarterFinals(bracketContainer);
         } else if (numPlayers === 4) {
-          console.log("Setting up Eight Finals for 16 players");
+          console.log("Setting up Semi Finals for 4 players");
           createSemiFinals(bracketContainer);
         }
         // You can add other conditions for 4 or 8 players if needed
@@ -411,15 +426,24 @@
       }
 
 	  function updateReadyButton(matchId, playerId, isReady) {
-        let matchElement = document.getElementById(`match${matchId}`);
-        if (!matchElement) return;
-        let button = matchElement.querySelector("button");
-        if (!button) return;
+		const matchElement = document.getElementById(`match${matchId}`);
+		if (!matchElement) return;
 
-        if (playerId === currentUserId) {
-          button.textContent = isReady ? "Cancel" : "Ready";
-        }
-      }
+		// Mettre à jour le statut visuel
+		const player1Ready = matchElement.querySelector('.player1-ready');
+		const player2Ready = matchElement.querySelector('.player2-ready');
+		
+		if (playerId === currentUserId) {
+			const button = matchElement.querySelector('button');
+			if (button) button.textContent = isReady ? 'Cancel' : 'Ready';
+		}
+		
+		if (playerId === matchElement.dataset.player1Id) {
+			player1Ready.textContent = isReady ? '✓' : '';
+		} else {
+			player2Ready.textContent = isReady ? '✓' : '';
+		}
+	  }
     </script>
   </body>
 </html>

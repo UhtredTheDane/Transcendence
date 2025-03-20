@@ -15,6 +15,7 @@ export default class RushGame extends OnlineGame{
         const submitBtn = document.getElementById("submitBtn");
         const playerNameInput = document.getElementById("customValue");
         
+        let docu = document;
         let tempoGame = this;
         // Gérer l'événement de réception de messages du serveur
         this.socket.onmessage = function (event) {
@@ -33,7 +34,7 @@ export default class RushGame extends OnlineGame{
                         tempoGame.updateScore();
                     }, 16);
                 }
-            }
+            } 
             else if (data.type === "update_position") {
 				if (data.player === "player1") {
 					if (playerRole === "player1") tempoGame.field.player.yPos = data.position;
@@ -48,12 +49,14 @@ export default class RushGame extends OnlineGame{
 			} else if (data.type === "update_game_score") {
 				tempoGame.field.player.playerScore = data.score_player1;
 				tempoGame.field.opponent.playerScore = data.score_player2;
+                docu.getElementById("score_player1").innerText = data.score_player1;
+        		docu.getElementById("score_player2").innerText = data.score_player2;
 			} else if (data.type === "update_pause") {
 				tempoGame.isPaused = data.is_paused;
 				if (tempoGame.isPaused)
-					document.getElementById("pauseButton").innerText = "Play";
+					docu.getElementById("pauseButton").innerText = "Play";
 				else
-					document.getElementById("pauseButton").innerText = "Pause";
+					docu.getElementById("pauseButton").innerText = "Pause";
 			} else if (data.type === "game_state") {
 					tempoGame.field.player.yPos = data.player1_y;
 					tempoGame.field.opponent.yPos = data.player2_y;
@@ -65,7 +68,7 @@ export default class RushGame extends OnlineGame{
 			}
 			    tempoGame.field.draw();
         };
-        
+         
         // Vérifier le rôle du joueur (est-ce que c'est player1 ?)
         if (playerRole === "player1") {
             // Empêcher l'interaction avec le reste de la page jusqu'à ce que player1 valide

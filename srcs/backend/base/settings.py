@@ -183,8 +183,15 @@ SOCIALACCOUNT_QUERY_EMAIL = True
 
 CHANNEL_LAYERS = {
 	'default': {
-		'BACKEND': 'channels.layers.InMemoryChannelLayer',  # Utilise le bon backend
+		'BACKEND': 'channels.layers.InMemoryChannelLayer',
 	},
+}
+
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+        'LOCATION': 'unique-snowflake',
+    }
 }
 
 # Internationalization

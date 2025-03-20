@@ -32,6 +32,7 @@ export default class OnlineGame extends Game{
 
 	initOnMessage() {
 		let tempoGame = this;
+		let docu = document;
 		this.socket.onmessage = function (event) {
 			const data = JSON.parse(event.data);
 			if (data.type === "update_position") {
@@ -48,12 +49,14 @@ export default class OnlineGame extends Game{
 			} else if (data.type === "update_game_score") {
 				tempoGame.field.player.playerScore = data.score_player1;
 				tempoGame.field.opponent.playerScore = data.score_player2;
+				docu.getElementById("score_player1").innerText = data.score_player1;
+        		docu.getElementById("score_player2").innerText = data.score_player2;
 			} else if (data.type === "update_pause") {
 				tempoGame.isPaused = data.is_paused;
 				if (tempoGame.isPaused)
-					document.getElementById("pauseButton").innerText = "Play";
+					docu.getElementById("pauseButton").innerText = "Play";
 				else
-					document.getElementById("pauseButton").innerText = "Pause";
+					docu.getElementById("pauseButton").innerText = "Pause";
 			} else if (data.type === "game_state") {
 					tempoGame.field.player.yPos = data.player1_y;
 					tempoGame.field.opponent.yPos = data.player2_y;

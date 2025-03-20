@@ -37,8 +37,8 @@ class Game(models.Model):
 		('maxscoremode', 'MaxScoreMode')
 	]
 	mode = models.CharField(max_length=20, choices=MODE_CHOICES, default='unranked')
-	player1 = models.ForeignKey(User, on_delete=models.CASCADE, related_name='games_as_player1', db_index=True)
-	player2 = models.ForeignKey(User, on_delete=models.CASCADE, related_name='games_as_player2', null=True, blank=True, db_index=True)
+	player1 = models.ForeignKey(User, on_delete=models.CASCADE, related_name='player1', db_index=True)
+	player2 = models.ForeignKey(User, on_delete=models.CASCADE, related_name='player2', null=True, blank=True, db_index=True)
 	ball_x = models.FloatField(default=400)
 	ball_y = models.FloatField(default=400)
 	player1_y = models.FloatField(default=170)
@@ -86,8 +86,10 @@ class TournamentPlayer(models.Model):
 
 
 class TournamentGame(models.Model):
-	tournament = models.ForeignKey(Tournament, on_delete=models.CASCADE, related_name="tournament_games")
-	game = models.ForeignKey(Game, on_delete=models.CASCADE, related_name="tournament_game")
+	tournament = models.ForeignKey(Tournament, on_delete=models.CASCADE)
+	game = models.ForeignKey(Game, on_delete=models.CASCADE)
+	player1_ready = models.BooleanField(default=False)
+	player2_ready = models.BooleanField(default=False)
 	created_at = models.DateTimeField(auto_now_add=True)
 
 	def __str__(self):
