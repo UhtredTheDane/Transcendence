@@ -1,12 +1,12 @@
-let selectedContact = null;
-let user = typeof username !== 'undefined' ? username : null;
-let messages = {};
+window.user = typeof username !== 'undefined' ? username : null;
+// let user = typeof username !== 'undefined' ? username : null;
+window.messages = {};
 
 if (!user) {
     console.error('Username not defined');
 }
 
-const chatSocket = new WebSocket(`wss://${window.location.host}/wss/chatbox/`);
+window.chatSocket = new WebSocket(`wss://${window.location.host}/wss/chatbox/`);
 
 
 chatSocket.onopen = function(event) {

@@ -5,8 +5,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Invite to Tournament</title>
-    <link rel="icon" type="image/png" href="{% static 'icons/42_logo.png' %}" />
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+      <link rel="icon" href="../icons/favicon.ico"  >
+     
+    <script src="{% static 'js/index.js' %}"></script>
     <style>
         body {
             background-color: black;
@@ -79,7 +81,7 @@
     <link rel="stylesheet" href="{% static 'css/chatbox.css' %}">
     <link rel="stylesheet" href="{% static 'css/index.css' %}">
 </head>
-<body>
+<body onload="loadTemplate()" >
 
     <!-- Navbar with Change Mode button aligned to the left -->
     <nav class="navbar navbar-expand-lg navbar-dark">
@@ -143,17 +145,32 @@
 				alert('This player is already added.');
 			}
 		}
-	
-		function updateSelectedPlayers() {
-			const selectedListContainer = document.getElementById('selectedPlayers');
-			selectedListContainer.innerHTML = '';
-	
-			selectedPlayers.forEach(player => {
-				const playerElement = document.createElement('div');
-				playerElement.textContent = player;
-				selectedListContainer.appendChild(playerElement);
-			});
-		}
+
+        function updateSelectedPlayers() {
+            const selectedListContainer = document.getElementById('selectedPlayers');
+            selectedListContainer.innerHTML = '';
+    
+            selectedPlayers.forEach(player => {
+                const playerElement = document.createElement('div');
+                playerElement.classList.add('player-button');
+                playerElement.textContent = player;
+                const minusButton = document.createElement('button');
+                minusButton.textContent = '-';
+                minusButton.classList.add('btn', 'btn-danger');
+                minusButton.style.marginLeft = '10px';
+                minusButton.onclick = () => removePlayer(player);
+                playerElement.appendChild(minusButton);
+                selectedListContainer.appendChild(playerElement);
+            });
+        }
+    
+        function removePlayer(player) {
+            const playerIndex = selectedPlayers.indexOf(player);
+            if (playerIndex !== -1) {
+                selectedPlayers.splice(playerIndex, 1);
+                updateSelectedPlayers();
+            }
+        }
 	
 		function startTournament() {
 			if (![4, 8, 16].includes(selectedPlayers.length)) {

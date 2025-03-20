@@ -17,9 +17,9 @@ export default class Game {
         document.addEventListener("keydown", function (event) {
         if (tempoGame.isPaused || tempoGame.isGameEnded) return;
         if (event.key === "w" || event.key === "z")
-            tempoGame.sendMove(Math.max(0, tempoGame.field.player.yPos - 20));
+            tempoGame.sendMove(Math.max(0, tempoGame.field.player.yPos - 10));
         if (event.key === "s")
-            tempoGame.sendMove(Math.min(tempoGame.field.canevas.height - tempoGame.field.player.height - 20, tempoGame.field.player.yPos + 20));
+            tempoGame.sendMove(Math.min(tempoGame.field.canevas.height - tempoGame.field.player.height - 10, tempoGame.field.player.yPos + 10));
         });  
     }
 
@@ -43,7 +43,7 @@ export default class Game {
 	get isPaused() {
 		return this._isPaused;
 	}
- 
+  
 	set isPaused(value) {
 		this._isPaused = value;
 	}
@@ -60,6 +60,28 @@ export default class Game {
 		this._isPaused = !this._isPaused;
 		if (this._isGameEnded)
 			return;
+	}
+
+	updateScore() {
+        let playerScore = this.field.player.playerScore;
+        let opponentScore = this.field.opponent.playerScore;
+		document.getElementById("score_player1").innerText = playerScore;
+		document.getElementById("score_player2").innerText = opponentScore;
+        if (playerScore >= this.maxScore || opponentScore >= this.maxScore) {
+        //   console.log("playerScore: ", playerScore);
+        //   console.log("opponentScore: ", opponentScore);
+        //   console.log("MaxScore: ", this.maxScore);
+        //   console.log("game will end now");
+          this.endGame();
+        }
+      }
+
+	  endGame() {
+		if (!this._isGameEnded)
+		{
+			this._isGameEnded = true;
+			window.location.href = "/";
+		}
 	}
 
 	updateBall() {

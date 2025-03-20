@@ -13,11 +13,12 @@
 	<link rel="preconnect" href="https://fonts.googleapis.com">
 	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     
-	<link rel="icon" type="image/png" href="{% static 'icons/42_logo.png' %}"  />
-    <link rel="stylesheet" href="{% static 'css/chatbox.css' %}">
+     <link rel="stylesheet" href="{% static 'css/chatbox.css' %}">
     <link rel="stylesheet" href="{% static 'css/index.css' %}">
 	
 	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+     <link rel="icon" href="../icons/favicon.ico"  >
+     
 
 	<style>
 		.game-board {
@@ -67,7 +68,7 @@
 		// }) -->
 	<!-- </script> -->
 </head>
-<body onload="loadTemplate()">
+<body onload="loadTemplate()"   >
 
     <div id="navbar-container">
         {% include 'navbar.html' %}

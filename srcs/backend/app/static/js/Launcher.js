@@ -33,6 +33,7 @@ export default class Launcher {
                 this._game.updateBall(this._fieldPong, this._game);
                 this._fieldPong.draw();
                 this._ai.moveAI(this._fieldPong, this._ball, this._opponent);
+                this._game.updateScore();
             }, 16);
         }
         else

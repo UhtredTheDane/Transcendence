@@ -3,6 +3,8 @@ from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import path, include
 from app import views
+from django.views.generic import RedirectView
+
 
 urlpatterns = [
 	path('', views.home, name='home'),
@@ -50,7 +52,7 @@ urlpatterns = [
     
 	path('ProfilePage/<str:username>/', views.profile, name='user_profile'),
 	path('ProfilePage/', views.profile, name='profile'),
-	
+	path('favicon.ico', RedirectView.as_view(url='/static/icons/favicon.ico')),
 ]
 
 if settings.DEBUG:

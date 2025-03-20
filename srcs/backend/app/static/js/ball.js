@@ -120,22 +120,14 @@ export default class Ball {
 		this._xPos += this._xSpeed;
 		this._yPos += this._ySpeed;
 
-		//if (playerRole == "player1")
-		//{
-			player = fieldPong.player;
-			opponent = fieldPong.opponent;
-		/*}
-		else
-		{
-			player = fieldPong.opponent;
-			opponent = fieldPong.player;
-		}*/
+		player = fieldPong.player;
+		opponent = fieldPong.opponent;
 		if (this._xPos <= 30 && (this._yPos >= player.yPos - 5 && this._yPos <= player.yPos + player.height + 5 || this._yPos + this._diameter >= player.YPos - 5 && this._yPos + this._diameter <= player.YPos + player.height + 5) || this._xPos + this._diameter >= 770 && (this._yPos >= opponent.yPos - 5 && this._yPos <= opponent.yPos + opponent.height + 5 || this._yPos + this._diameter >= opponent.yPos - 5 && this._yPos + this._diameter <= opponent.yPos + opponent.height + 5))
 		{	
 			this._xSpeed *= -1; // Inverser la direction horizontale de la balle	
 			var newSpeedx = this._xSpeed;
 			var newSpeedy = this._ySpeed;
-			if (this._xPos <= 30 && this._yPos + this._diameter / 2 >= player.yPos - 5 && this._yPos + this._diameter/2 < player.yPos + 40)
+			if (this._xPos <= 30 && this._yPos + this._diameter / 2 >= player.yPos - 5 && this._yPos + this._diameter/2 < player.yPos + 42)
 				{
 					if (this._ySpeed < 0.0)
 					{
@@ -147,9 +139,9 @@ export default class Ball {
 						newSpeedy = this._ySpeed * -1;
 					//hautraquette1
 				}
-				else if (this._xPos <= 30 && this._yPos + this._diameter/2 >= player.yPos + 40 && this._yPos + this._diameter/2 <= player.yPos + 80) {}
+				else if (this._xPos <= 30 && this._yPos + this._diameter/2 >= player.yPos + 42 && this._yPos + this._diameter/2 <= player.yPos + 82) {}
 					//milieuraquette1
-				else if (this._xPos <= 30 && this._yPos + this._diameter/2 > player.yPos + 80 && this._yPos + this._diameter/2 <= player.yPos + 125)
+				else if (this._xPos <= 30 && this._yPos + this._diameter/2 > player.yPos + 82 && this._yPos + this._diameter/2 <= player.yPos + 122)
 				{	
 					//basraquette1
 					if (this._ySpeed >= 0.0)
@@ -190,7 +182,6 @@ export default class Ball {
 				this._ballSpeed = Math.sqrt(Math.pow(newSpeedx, 2) + Math.pow(newSpeedy, 2));
 				this._xSpeed = newSpeedx/this._ballSpeed * this._multSpeed;
 				this._ySpeed = newSpeedy/this._ballSpeed * this._multSpeed;
-				//this.increaseBallSpeed(); // Augmenter la vitesse de la balle
 			if (this._xPos <= 30)
 				this._xPos = 31;
 			else

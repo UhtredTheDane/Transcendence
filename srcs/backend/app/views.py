@@ -169,6 +169,12 @@ def TicTacToeMode(request, game_id):
 	})
 
 @login_required # ! POUR REVIEW LES FONCTIONS ET POUVOIRS LES DISPLAY DANS LE PROFIL
+def aimode(request):
+	player1_username = request.user
+	print(player1_username)
+	return render(request, 'AIMode.html', {'player1_username': player1_username})
+
+@login_required # ! POUR REVIEW LES FONCTIONS ET POUVOIRS LES DISPLAY DANS LE PROFIL
 def RankedMode(request, game_id):
 	game = get_object_or_404(Game, id=game_id)
 	game.mode = 'ranked'  # ! Commande a modifier
@@ -463,9 +469,6 @@ def signup(request):
 				return redirect("/ProfilePage/")
 
 	return render(request, "SignUp.html", { "form": form })
-
-def	aimode(request):
-	return render(request, 'AIMode.html')
 
 def add_match(request):
 	if request.method == "POST":
