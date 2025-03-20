@@ -4,26 +4,26 @@ FROM python:3.10.1-alpine
 RUN apk update && apk add --no-cache \
     nginx \
     openssl
+RUN mkdir -p /etc/nginx/ssl/
+RUN mkdir -p /etc/nginx/conf.d/
 
-# Create a directory for SSL certificates and generate self-signed certificates
-# RUN mkdir -p /etc/nginx/ssl && \
-#     openssl req -x509 -nodes -days 365 -newkey rsa:2048 \
-#         -keyout /etc/nginx/ssl/nginx.key \
-#         -out /etc/nginx/ssl/nginx.crt \
-#         -subj "/CN=transcendence.local/O=Transcendence/C=US"
 
-# Remove the default Nginx configuration file
-RUN rm -f /etc/nginx/http.d/default.conf
+RUN mkdir -p /etc/nginx/ssl && \
+    openssl req -x509 -nodes -days 365 -newkey rsa:2048 \
+        -keyout /etc/nginx/ssl/nginx.key \
+        -out /etc/nginx/ssl/nginx.crt \
+        -subj "/CN=transcendence.local/O=Transcendence/C=FR"
 
 # Copy the updated Nginx configuration file
-COPY conf/nginx.conf /etc/nginx/nginx.conf
-#COPY conf/backend.conf /etc/nginx/http.d/backend.conf
+COPY nginx.conf /etc/nginx/nginx.conf
 
 # Expose port 80 for HTTP traffic
 EXPOSE 80
 
 # Expose port 443 for HTTPS traffic
 EXPOSE 443
+EXPOSE 8443
+
 
 # Run Nginx in the foreground
 CMD [ "nginx", "-g", "daemon off;" ]

@@ -163,7 +163,7 @@
       let matchesList = JSON.parse("{{ matches|escapejs }}");
 	  let currentUserId = parseInt('{{ request.user.id }}');
 	  let tournamentId = parseInt('{{ tournament_id }}');
-	  const tournamentSocket = new WebSocket(`ws://${window.location.host}/ws/tournament/${tournamentId}`);
+	  const tournamentSocket = new WebSocket(`wss://${window.location.host}/ws/tournament/${tournamentId}`);
     //   console.log("------ List matches ------------");
     //   console.log(matchesList);
     //   console.log("------------------");
