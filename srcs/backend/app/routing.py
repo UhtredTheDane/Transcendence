@@ -11,5 +11,6 @@ websocket_urlpatterns = [
 	re_path(r'ws/TicTacToeMode/(?P<game_id>\d+)/$', consumers.TicTacToeConsumer.as_asgi()),
     ##re_path(r'ws/matchmaking/$', consumers.MatchmakingConsumer.as_asgi()),
     re_path(r'ws/MatchMaking/$', consumers.MatchmakingConsumer.as_asgi()),
+	re_path(r'ws/tournament/(?P<tournament_id>\d+)/(?P<match_id>\d+)/?$', consumers.MatchConsumer.as_asgi()),
 	re_path(r'ws/chatbox/$', consumers.ChatboxConsumer.as_asgi()),
 ]
