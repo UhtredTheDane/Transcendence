@@ -32,14 +32,13 @@
 	<link rel="stylesheet" href="{% static 'css/chatbox.css' %}">
 	
 	<script>
-		// When starting a game from ChallengeMode.html or similar
 		fetch('/create_game/', {
 			method: 'GET',
 			headers: {
 				'Content-Type': 'application/json',
 			},
 			params: {
-				type: 'ranked',  // or 'unranked', 'rushmode', etc.
+				type: 'ranked',
 				player2_id: opponentId
 			}
 		})
@@ -70,11 +69,10 @@
 		<div class="scores secondary-font">
 			<!-- Player's score container (always on the left) -->
 			<div id="player-side" class="score container px-4 text-center">
-				<p>Player 1: 0</p>
+				<p>{{ player1_username }}: <span id="score_player1">0</span></p>
 			</div>
-			<!-- AI's score container (always on the right) -->
 			<div id="ai-side" class="score container px-4 text-center">
-				<p>Player 2: 0</p>
+				<p>{{ player2_username }}: <span id="score_player2">0</span></p>
 			</div>
 		</div>
 		

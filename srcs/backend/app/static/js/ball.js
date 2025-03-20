@@ -15,6 +15,7 @@ export default class Ball {
 		this.diameter = 30.0;
 		this.img = new Image();
 		this.img.src = imgSrc;
+		this.resetBall();
 	}
 
 	get multSpeed() {
@@ -248,6 +249,6 @@ export default class Ball {
 			this.resetBall();
 			game.sendUpdateGameScore();
 		}
-				game.sendBallPosition();
+			game.sendBallPosition();
 	}
 }
