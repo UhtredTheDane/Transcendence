@@ -12,6 +12,10 @@
     color: #FF4C4C;
 }
 
+.draw {
+	color: #fcfcfc;
+}
+
 .head-category {
 	width: 95%;
 	position: relative;

@@ -399,9 +399,13 @@
     `;
 
 		// console.log(playersList[0].id, currentUserId, "\n", playersList[1].id, currentUserId);
+
+		match.appendChild(player1);
+		match.appendChild(player2);
+
         if (playersList[0].id === currentUserId || playersList[1].id === currentUserId) {
 			let button = document.createElement("a");
-			button.classList.add("btn", "btn-primary", "btn-lg", "first-btn");
+			button.classList.add("btn", "btn-primary", "btn-lg", "small-first-btn");
 			button.setAttribute("data", "Ready");
 			button.onclick = function () {
 				tournamentSocket.send(JSON.stringify({
@@ -412,9 +416,6 @@
 			};
 			match.appendChild(button);
 		}
-
-		match.appendChild(player1);
-		match.appendChild(player2);
 
         return match;
       }
