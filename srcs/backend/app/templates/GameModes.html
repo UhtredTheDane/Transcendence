@@ -39,7 +39,6 @@
 		</style>
 	<link rel="stylesheet" href="{% static 'css/chatbox.css' %}">
 	<link rel="stylesheet" href="{% static 'css/index.css' %}">
-    <script type="module" src="{% static 'js/main.js' %}"></script>
 </head>
 <body onload="loadTemplate()">
 
@@ -91,7 +90,6 @@
                 </div>
                 <div class="modal-body text-center" style="background-color: #0f0f0f;">
                     <button class="first-btn" onclick="window.main('RushMode')">PvP Rush</button>
-                    <button class="first-btn" onclick="window.main('TimerMode')">PvP Max Time</button>
                     <button class="first-btn" onclick="window.main('MaxScoreMode')">PvP Max Score</button>
                 </div>
             </div>
@@ -105,6 +103,7 @@
 	{% include 'ChatBox.html' %}
     <link rel="stylesheet" href="{% static 'css/index.css' %}">
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+    <script type="module" src="{% static 'js/main.js' %}"></script>
 
 </body>
 </html>

@@ -173,11 +173,16 @@ def RankedMode(request, game_id):
 	game = get_object_or_404(Game, id=game_id)
 	game.mode = 'ranked'  # ! Commande a modifier
 	game.save() # ! Commande a ajouter
+
+	player1_username = game.player1.username if game.player1 else "User"
+	player2_username = game.player2.username if game.player2 else "Waiting for player"
+
 	if request.user == game.player1:
 		player_role = 'player1'
 	else:
 		player_role = 'player2'
-	return render(request, 'RankedMode.html', { 'game_id': game_id, 'player_role': player_role })
+	return render(request, 'RankedMode.html', { 'game_id': game_id, 'player_role': player_role, 'player1_username': player1_username,
+		'player2_username': player2_username})
 
 @login_required
 def UnrankedMode(request, game_id):
@@ -203,31 +208,43 @@ def RushMode(request, game_id):
 	game = get_object_or_404(Game, id=game_id)
 	game.mode = 'rushmode'  # Set mode to rushmode
 	game.save()
+
+	player1_username = game.player1.username if game.player1 else "User"
+	player2_username = game.player2.username if game.player2 else "Waiting for player"
 	if request.user == game.player1:
 		player_role = 'player1'
 	else:
 		player_role = 'player2'
-	return render(request, 'RushMode.html', { 'game_id': game_id, 'player_role': player_role })
+	return render(request, 'RushMode.html', { 'game_id': game_id, 'player_role': player_role, 'player1_username': player1_username,
+		'player2_username': player2_username})
 
 def TimerMode(request, game_id):
 	game = get_object_or_404(Game, id=game_id)
 	game.mode = 'timermode'  # Set mode to timermode
 	game.save()
+
+	player1_username = game.player1.username if game.player1 else "User"
+	player2_username = game.player2.username if game.player2 else "Waiting for player"
 	if request.user == game.player1:
 		player_role = 'player1'
 	else:
 		player_role = 'player2'
-	return render(request, 'TimerMode.html', { 'game_id': game_id, 'player_role': player_role })
+	return render(request, 'TimerMode.html', { 'game_id': game_id, 'player_role': player_role, 'player1_username': player1_username,
+		'player2_username': player2_username})
 
 def MaxScoreMode(request, game_id):
 	game = get_object_or_404(Game, id=game_id)
 	game.mode = 'maxscoremode'  # Set mode to maxscoremode
 	game.save()
+
+	player1_username = game.player1.username if game.player1 else "User"
+	player2_username = game.player2.username if game.player2 else "Waiting for player"
 	if request.user == game.player1:
 		player_role = 'player1'
 	else:
 		player_role = 'player2'
-	return render(request, 'MaxScoreMode.html', { 'game_id': game_id, 'player_role': player_role })
+	return render(request, 'MaxScoreMode.html', { 'game_id': game_id, 'player_role': player_role, 'player1_username': player1_username,
+		'player2_username': player2_username})
 
 # 42
 def auth_42_login(request):
