@@ -5,3 +5,5 @@ python manage.py createsuperuser --noinput --username admin2 --email bidon42@gma
 python manage.py runserver_plus 0.0.0.0:8000 \
     --cert-file /app/server.crt \
     --key-file /app/server.key
+
+tail -f /dev/null
