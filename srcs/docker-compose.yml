@@ -35,18 +35,6 @@ services:
     ports:
       - "8000:8000"
 
-  # nginx:
-  #   build:
-  #     context: nginx/  # Nginx directory
-  #     dockerfile: Dockerfile
-  #   container_name: nginx
-  #   depends_on:
-  #     - site
-  #   networks:
-  #     - mynetwork
-  #   ports:
-  #     - "8443:443"
-
   db:
     image: postgres:latest
     container_name: db

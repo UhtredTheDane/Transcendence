@@ -1,5 +1,5 @@
 const gameBoard = document.getElementById('gameBoard');
-const gameSocket = new WebSocket(`wss://${window.location.host}/ws/TicTacToeMode/${gameId}/`);
+const gameSocket = new WebSocket(`wss://${window.location.host}/wss/TicTacToeMode/${gameId}/`);
 
 console.log("Player role:", playerRole);
 console.log("Current username:", currentUsername);

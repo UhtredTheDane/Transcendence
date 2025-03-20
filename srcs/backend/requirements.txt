@@ -11,5 +11,4 @@ six==1.10.0
 django-extensions
 django-redis
 pyOpenSSL
-uvicorn==0.15.0
 whitenoise

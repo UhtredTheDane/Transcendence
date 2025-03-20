@@ -4,7 +4,7 @@ export default class OnlineGame extends Game{
 
 	constructor(fieldValue, mode) {
 		super(fieldValue);
-		this.socket = new WebSocket("wss://" + window.location.host + "/ws/" + mode + "/" + gameId + "/");
+		this.socket = new WebSocket("wss://" + window.location.host + "/wss/" + mode + "/" + gameId + "/");
 
 		this.isSocketOpen = false;
 		this.isBallMover = false;
