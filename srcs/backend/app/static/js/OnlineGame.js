@@ -4,13 +4,14 @@ export default class OnlineGame extends Game{
 
 	constructor(fieldValue, mode) {
 		super(fieldValue);
-		this.socket = new WebSocket("ws://" + window.location.host + "/ws/" + mode + "/" + gameId + "/");
+		this.socket = new WebSocket("wss://" + window.location.host + "/wss/" + mode + "/" + gameId + "/");
 
 		this.isSocketOpen = false;
 		this.isBallMover = false;
 		this.#initOnOpen();
 		this.#initOnClose();
 		this.initOnMessage();
+		this.initControls();
 	}
 
 	#initOnOpen() {
@@ -69,6 +70,40 @@ export default class OnlineGame extends Game{
 			tempoGame.field.draw();
 		};
 	}
+
+	initControls()
+    {
+        let tempoGame = this;
+        if (playerRole == 'player1')
+            {
+                document.addEventListener("keydown", function (event) {
+                if (tempoGame.isPaused || tempoGame.isGameEnded) return;
+                if (event.key === "w" || event.key === "z")
+                    tempoGame.sendMove(Math.max(0, tempoGame.field.player.yPos - 20), "player1");
+                if (event.key === "s")
+                    tempoGame.sendMove(Math.min(tempoGame.field.canevas.height - tempoGame.field.player.height - 20, tempoGame.field.player.yPos + 20), "player1");
+                if (event.key === "ArrowUp")
+                    tempoGame.sendMove(Math.max(0, tempoGame.field.opponent.yPos - 20), "player2");
+                if (event.key === "ArrowDown")
+                    tempoGame.sendMove(Math.min(tempoGame.field.canevas.height - tempoGame.field.opponent.height - 20, tempoGame.field.opponent.yPos + 20), "player2");
+                });
+            }
+           else if (playerRole == 'player2')
+                {
+                    document.addEventListener("keydown", function (event) {
+                    if (tempoGame.isPaused || tempoGame.isGameEnded) return;
+                    if (event.key === "ArrowUp")
+                        tempoGame.sendMove(Math.max(0, tempoGame.field.player.yPos - 20), "player2");
+                    if (event.key === "ArrowDown")
+                        tempoGame.sendMove(Math.min(tempoGame.field.canevas.height - tempoGame.field.player.height - 20, tempoGame.field.player.yPos + 20), "player2");
+                    if (event.key === "w" || event.key === "z")
+                        tempoGame.sendMove(Math.max(0, tempoGame.field.opponent.yPos - 20), "player1");
+                    if (event.key === "s")
+                        tempoGame.sendMove(Math.min(tempoGame.field.canevas.height - tempoGame.field.opponent.height - 20, tempoGame.field.opponent.yPos + 20), "player1");
+                    });
+                }
+    }
+
 	get socket() {
 		return this._socket;
 	}

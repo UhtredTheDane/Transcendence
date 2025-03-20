@@ -33,7 +33,7 @@ function setGameMode(mode) {
 			window.location.href='MatchMaking/?typegame=ChallengeMode';
 			break;
 		case "TicTacToe":
-			window.location.href='/MatchMaking/?typegame=TicTacToe';
+			window.location.href='/MatchMaking/?typegame=TicTacToeMode';
 			break;
 		default:
 			console.log("Invalid mode: " + mode);

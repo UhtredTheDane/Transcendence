@@ -1,13 +1,86 @@
-from channels.generic.websocket import AsyncWebsocketConsumer
-from channels.db import database_sync_to_async
-from asgiref.sync import sync_to_async
-from .models import Game, User, Channel, ChannelUser, Message, Messages
-from django.utils import timezone
 import json
 import asyncio
+import requests
+from django.http import JsonResponse
+from django.core.cache import cache
+from channels.generic.websocket import AsyncWebsocketConsumer, JsonWebsocketConsumer
+from channels.db import database_sync_to_async
+from asgiref.sync import sync_to_async, async_to_sync
+from .models import Game, User, Channel, Messages
 
 
 active_users = {}
+
+class MatchConsumer(JsonWebsocketConsumer):
+    def connect(self):
+        self.match_id = self.scope['url_route']['kwargs']['match_id']
+        self.group_name = f"match_{self.match_id}"
+        # Rejoindre le groupe du match
+        async_to_sync(self.channel_layer.group_add)(self.group_name, self.channel_name)
+        self.accept()
+
+    def disconnect(self, close_code):
+        # Quitter le groupe du match
+        async_to_sync(self.channel_layer.group_discard)(self.group_name, self.channel_name)
+
+    def receive_json(self, content):
+        # Gérer les messages reçus (ex: toggle du statut Ready)
+        action = content.get("action")
+        player_id = content.get("player_id")
+        if action == "toggle_ready":
+            self.handle_toggle_ready(player_id)
+
+    def handle_toggle_ready(self, player_id):
+        ready_key = f"match_ready_{self.match_id}"
+        # Section critique: on utilise un verrou Redis pour éviter les conflits
+        with cache.lock(f"lock_ready_{self.match_id}"):
+            ready_players = cache.get(ready_key) or set()
+            if player_id in ready_players:
+                # Si déjà prêt, on annule le prêt (remove)
+                ready_players.remove(player_id)
+                player_ready = False
+            else:
+                # Sinon, on ajoute le joueur à la liste des prêts
+                ready_players.add(player_id)
+                player_ready = True
+            cache.set(ready_key, ready_players)
+        # Préparer le message de mise à jour
+        data = {
+                "type": "ready.update",  # type d'événement pour le consumer (méthode correspondante)
+                "player_id": player_id,
+                "ready": player_ready
+                }
+        # Envoyer à tous les clients du match la mise à jour du statut de ce joueur
+        async_to_sync(self.channel_layer.group_send)(self.group_name, data)
+        # Si les deux joueurs sont prêts, lancer le match
+        if len(ready_players) == 2:
+            self.launch_match()
+
+    def launch_match(self):
+        # Mettre à jour le modèle du match dans la base de données (ex: statut "en cours")
+        # ... (logique spécifique à votre application)
+        # Notifier les joueurs que le match commence
+        async_to_sync(self.channel_layer.group_send)(self.group_name, {
+            "type": "match.start", 
+            "message": "both_ready"
+            })
+
+    # Méthodes pour recevoir les événements group_send
+    def ready_update(self, event):
+        # Transmettre l'info du statut prêt/non prêt d'un joueur aux clients WebSocket
+        self.send_json({
+            "event": "ready_update",
+            "player_id": event["player_id"],
+            "ready": event["ready"]
+            })
+
+    def match_start(self, event):
+        # Informer le client que le match démarre
+        self.send_json({
+            "event": "match_start",
+            "message": event.get("message", "")
+            })
+
 
 class GameConsumer(AsyncWebsocketConsumer):
     async def connect(self):
@@ -77,12 +150,12 @@ class GameConsumer(AsyncWebsocketConsumer):
         await sync_to_async(self.game.save)()
         # Diffuser le speed aux deux joueurs
         await self.channel_layer.group_send(
-            self.game_group_name,
-            {
-                "type": "update_maxScore",
-                "maxScore": maxScore_value,
-                }
-            )
+                self.game_group_name,
+                {
+                    "type": "update_maxScore",
+                    "maxScore": maxScore_value,
+                    }
+                )
         print("Lancement de la tâche du maxScore...")
 
     async def set_speed(self, data):
@@ -91,25 +164,25 @@ class GameConsumer(AsyncWebsocketConsumer):
         await sync_to_async(self.game.save)()
         # Diffuser le speed aux deux joueurs
         await self.channel_layer.group_send(
-            self.game_group_name,
-            {
-                "type": "update_speed",
-                "speed": speed_value,
-                }
-            )
+                self.game_group_name,
+                {
+                    "type": "update_speed",
+                    "speed": speed_value,
+                    }
+                )
         print("Lancement de la tâche du speed...")
 
     async def update_speed(self, event):
         await self.send(text_data=json.dumps({
             "type": "update_speed",
             "speed": event['speed'],
-        }))
+            }))
 
     async def update_maxScore(self, event):
         await self.send(text_data=json.dumps({
             "type": "update_maxScore",
             "maxScore": event['maxScore'],
-        }))
+            }))
 
     async def handle_move(self, data):
         new_position = data.get("position")
@@ -173,28 +246,46 @@ class GameConsumer(AsyncWebsocketConsumer):
         self.game.score_player1 = data.get("score_player1", self.game.score_player1)
         self.game.score_player2 = data.get("score_player2", self.game.score_player2)
 
-        await sync_to_async(self.game.save)(update_fields=["score_player1", "score_player2", "is_active"])
+        if self.game.mode == "tournament":
+            tournament_id = data.get("tournament_id") # A changer, mettre un autre systeme que request
+            if not tournament_id:
+                print("❌ ERREUR: Aucun ID de tournoi fourni.")
+                return
 
-        await self.channel_layer.group_send(
-                self.game_group_name,
-                {
-                    "type": "game_over"
-                }
-                )
+            payload = {
+                    "tournamentid": tournament_id,
+                    "player1": self.game.player1,
+                    "player2": self.game.player2,
+                    "score1": self.game.score_player1,
+                    "score2": self.game.score_player2,
+                    "date": str(self.game.created_at)
+                    }
 
-        await asyncio.sleep(5)
+            try:
+                response = requests.post(
+                        "http://blockchain-node:3000/add-match", 
+                        json=payload,  # Send as JSON
+                        headers={"Content-Type": "application/json"}
+                        )
 
-        await self.channel_layer.group_discard(
-                self.game_group_name,
-                self.channel_name
-                )
+                # return JsonResponse(response.json())
+            except Exception as e:
+                print(f"❌ ERREUR: Impossible d'ajouter le match au tournoi: {e}")
 
-        try:
+            await sync_to_async(self.game.save)(update_fields=["score_player1", "score_player2", "is_active"])
+
+            await self.channel_layer.group_send(
+                    self.game_group_name,
+                    { "type": "game_over" }
+                    )
+
+            await asyncio.sleep(5)
+            await self.channel_layer.group_discard(
+                    self.game_group_name,
+                    self.channel_name
+                    )
+
             await self.close()
-            print("sa ferme le socket")
-        except Exception as e:
-            print(f"Error closing connection: {e}")
-            pass
 
     async def update_position(self, event):
         await self.send(text_data=json.dumps(event))
@@ -215,6 +306,93 @@ class GameConsumer(AsyncWebsocketConsumer):
             print(f"Error sending game over message: {e}")
             pass
 
+class TicTacToeConsumer(AsyncWebsocketConsumer):
+    async def connect(self):
+        self.game_id = self.scope['url_route']['kwargs']['game_id']
+        self.game_group_name = f'game_{self.game_id}'
+
+        self.game = await sync_to_async(Game.objects.select_related('player1', 'player2', 'current_turn').get)(id=self.game_id)
+
+        if self.scope['user'] not in [self.game.player1, self.game.player2]:
+            await self.close()
+            return
+
+        if not self.game.current_turn:
+            await self.set_first_turn()
+
+        await self.channel_layer.group_add(self.game_group_name, self.channel_name)
+        await self.accept()
+
+        await self.send_game_state()
+
+    @sync_to_async
+    def set_first_turn(self):
+        self.game.current_turn = self.game.player1
+        self.game.save()
+
+    async def receive(self, text_data):
+        self.game = await sync_to_async(Game.objects.select_related('player1', 'player2', 'current_turn').get)(id=self.game_id)
+
+        data = json.loads(text_data)
+        index = int(data.get("index"))
+        user = self.scope["user"]
+
+        if not await self.is_valid_turn(user):
+            return
+
+        board = list(self.game.board)
+        if board[index] != " ":
+            return
+
+        symbol = await sync_to_async(lambda: 'X' if self.scope['user'] == self.game.player1 else 'O')()
+        board[index] = symbol
+        self.game.board = "".join(board)
+        winner = await sync_to_async(self.check_winner)(board)
+
+        if winner:
+            self.game.winner = winner
+
+        await self.update_turn(user)
+        await sync_to_async(self.game.save)()
+
+        await self.channel_layer.group_send(
+                self.game_group_name,
+                {
+                    "type": "game_update",
+                    "board": self.game.board,
+                    "current_turn": self.game.current_turn.username,
+                    "winner": winner.username if winner else None
+                    }
+                )
+
+    @sync_to_async
+    def is_valid_turn(self, user):
+        return user == self.game.current_turn
+
+    @sync_to_async
+    def update_turn(self, user):
+        self.game.current_turn = self.game.player2 if user == self.game.player1 else self.game.player1
+
+    async def send_game_state(self):
+        await self.send(text_data=json.dumps({
+            "type": "game_update",
+            "board": self.game.board,
+            "current_turn": self.game.current_turn.username
+            }))
+
+    def check_winner(self, board):
+        winning_combinations = [
+                (0, 1, 2), (3, 4, 5), (6, 7, 8),
+                (0, 3, 6), (1, 4, 7), (2, 5, 8),
+                (0, 4, 8), (2, 4, 6)
+                ]
+        for a, b, c in winning_combinations:
+            if board[a] != " " and board[a] == board[b] == board[c]:
+                return self.game.player1 if board[a] == "X" else self.game.player2
+        return None
+
+    async def game_update(self, event):
+        await self.send(text_data=json.dumps(event))
 
 class ChatConsumer(AsyncWebsocketConsumer):
     async def connect(self):
@@ -375,120 +553,161 @@ class MatchmakingConsumer(AsyncWebsocketConsumer):
 class ChatboxConsumer(AsyncWebsocketConsumer):
     async def connect(self):
         self.user = self.scope["user"]
-        
+
         if not self.user.is_authenticated:
             await self.close()
             return
-            
-        # Add user to their personal group
+
         self.group_name = f"user_{self.user.username}"
         await self.channel_layer.group_add(
-            self.group_name,
-            self.channel_name
-        )
-        
+                self.group_name,
+                self.channel_name
+                )
+
         await self.accept()
 
     async def disconnect(self, close_code):
         if hasattr(self, 'group_name'):
             await self.channel_layer.group_discard(
-                self.group_name,
-                self.channel_name
-            )
+                    self.group_name,
+                    self.channel_name
+                    )
 
     async def receive(self, text_data):
         data = json.loads(text_data)
         if data['type'] == 'challenge':
+            sender = await database_sync_to_async(User.objects.get)(username=data['sender'])
+            sender_group = f"user_{data['sender']}"
+            receiver = await database_sync_to_async(User.objects.get)(username=data['receiver'])
             receiver_group = f"user_{data['receiver']}"
-            
+
+
             await self.channel_layer.group_send(
-                receiver_group,
-                {
-                    'type': 'chat_message',
-                    'message_type': 'challenge',
-                    'sender': data['sender'],
-                    'receiver': data['receiver'],
-                    'content': data['content']
-                }
-            )
+                    receiver_group,
+                    {
+                        'type': 'chat_message',
+                        'message_type': 'challenge',
+                        'sender': data['sender'],
+                        'sender_id': sender.id,
+                        'receiver': data['receiver'],
+                        'receiver_id': receiver.id,
+                        'content': data['content']
+                        }
+                    )
+
+        elif data['type'] == 'challenge_accepted':
+            sender = await database_sync_to_async(User.objects.get)(username=data['sender'])
+            receiver = await database_sync_to_async(User.objects.get)(username=data['receiver'])
+
+            # Créer la game UNIQUEMENT maintenant
+            game = await database_sync_to_async(Game.objects.create)(
+                    player1=sender,
+                    player2=receiver,
+                    mode='unranked'
+                    )
+
+            game_url = f"/UnrankedMode/{game.id}/"
+
+            # Envoyer la confirmation aux deux joueurs
+            sender_group = f"user_{data['sender']}"
+            receiver_group = f"user_{data['receiver']}"
+
+            await self.channel_layer.group_send(
+                    sender_group,
+                    {
+                        'type': 'chat_message',
+                        'message_type': 'game_created',
+                        'game_url': game_url
+                        }
+                    )
+
+            await self.channel_layer.group_send(
+                    receiver_group,
+                    {
+                        'type': 'chat_message',
+                        'message_type': 'game_created',
+                        'game_url': game_url
+                        }
+                    )
+
 
         elif data['type'] == 'message':
             sender = await database_sync_to_async(User.objects.get)(username=data['sender'])
             receiver = await database_sync_to_async(User.objects.get)(username=data['receiver'])
-            
+
             # Save message to database
             await database_sync_to_async(Messages.objects.create)(
-                sender=sender,
-                receiver=receiver,
-                content=data['content']
-            )
+                    sender=sender,
+                    receiver=receiver,
+                    content=data['content']
+                    )
 
             # Send to receiver's group
             receiver_group = f"user_{data['receiver']}"
             await self.channel_layer.group_send(
-                receiver_group,
-                {
-                    'type': 'chat_message',
-                    'message_type': 'message',
-                    'sender': data['sender'],
-                    'receiver': data['receiver'],
-                    'content': data['content']
-                }
-            )
+                    receiver_group,
+                    {
+                        'type': 'chat_message',
+                        'message_type': 'message',
+                        'sender': data['sender'],
+                        'receiver': data['receiver'],
+                        'content': data['content']
+                        }
+                    )
 
             # Also send back to sender's group
             sender_group = f"user_{data['sender']}"
             await self.channel_layer.group_send(
-                sender_group,
-                {
-                    'type': 'chat_message',
-                    'message_type': 'message',
-                    'sender': data['sender'],
-                    'receiver': data['receiver'],
-                    'content': data['content']
-                }
-            )
+                    sender_group,
+                    {
+                        'type': 'chat_message',
+                        'message_type': 'message',
+                        'sender': data['sender'],
+                        'receiver': data['receiver'],
+                        'content': data['content']
+                        }
+                    )
         elif data['type'] == 'add_friend':
             try:
                 user = self.scope["user"]
                 friend = await database_sync_to_async(User.objects.get)(username=data['friend_name'])
-                
+
                 await database_sync_to_async(user.friends.add)(friend)
                 await self.send(text_data=json.dumps({
                     'type': 'friend_added',
                     'success': True,
                     'friend_name': friend.username
-                }))
+                    }))
             except Exception as e:
                 await self.send(text_data=json.dumps({
                     'type': 'friend_added',
                     'success': False,
                     'error': str(e)
-                }))
+                    }))
         elif data['type'] == 'unfriend':
             try:
                 user = self.scope["user"]
                 contact = await database_sync_to_async(User.objects.get)(username=data['contact_name'])
-                
+
                 # Remove contact from user's friends
                 await database_sync_to_async(user.friends.remove)(contact)
-                
+
                 await self.send(text_data=json.dumps({
                     'type': 'unfriended',
                     'success': True
-                }))
+                    }))
             except User.DoesNotExist:
                 await self.send(text_data=json.dumps({
                     'type': 'unfriended',
                     'success': False,
                     'error': 'User not found'
-                }))
+                    }))
             except Exception as e:
                 await self.send(text_data=json.dumps({
                     'type': 'unfriended',
                     'success': False,
                     'error': str(e)
-                }))
+                    }))
 
     # async def chat_message(self, event):
     #     await self.send(text_data=json.dumps({
@@ -497,13 +716,21 @@ class ChatboxConsumer(AsyncWebsocketConsumer):
     #         'receiver': event['receiver'],
     #         'content': event['content']
     #     }))
-    
+
     async def chat_message(self, event):
+        print("\n[DEBUG WEBSOCKET] Message reçu dans chat_message:", event)
+
+        if 'sender' not in event:
+            print("❌ ERREUR: 'sender' absent dans event:", event)
+
         await self.send(text_data=json.dumps({
             'type': event.get('message_type', 'message'),
-            'sender': event['sender'],
-            'receiver': event['receiver'],
-            'content': event['content']
-        }))
-    
-    
+            'sender': event.get('sender'),
+            'sender_id': event.get('sender_id'),
+            'receiver': event.get('receiver'),
+            'receiver_id': event.get('receiver_id'),
+            'game_url': event.get('game_url'),
+            'content': event.get('content')
+            }))
+
+

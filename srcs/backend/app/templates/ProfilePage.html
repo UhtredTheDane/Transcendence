@@ -62,10 +62,13 @@ body {
 	</style>
 		<link rel="stylesheet" href="{% static 'css/index.css' %}">
 		<link rel="stylesheet" href="{% static 'css/profilepage.css' %}">
-		
+		<!-- <script src="{% static 'js/tournamentHistory.js'}"></script> -->
+		 <script>
+
+		 </script>
 		
 	</head>
-	<body onload="loadTemplate()">
+	<body onload="loadTemplate();  fetchPlayerMatches();">
 		<!-- Navbar -->
 
 		<img class="transcendence-icon position-absolute top-50 start-50 translate-middle" alt="" src="{% static 'images/bg-text.svg' %}" style="z-index: -1;">
@@ -226,25 +229,6 @@ body {
     {% endfor %}
 </div>
 
-<div id="tournament-games" class="game-category-container" style="display: none;">
-    {% for game in tournament_scores %}
-        <div class="game-display">
-            <div class="primary-font {{ game.result|lower }}">
-                {{ game.result }}
-            </div>
-            <div class="vertical-bar"></div>
-            <div class="secondary-font player-name">
-                {{ game.opponent }}
-            </div>
-            <div class="secondary-font score">
-                {{ game.user_score }} - {{ game.opponent_score }}
-            </div>
-        </div>
-    {% empty %}
-        <p class="secondary-font">No tournament matches found.</p>
-    {% endfor %}
-</div>
-
 <div id="tictactoe-games" class="game-category-container" style="display: none;">
     {% for game in tictactoe_scores %}
         <div class="game-display">
@@ -263,6 +247,16 @@ body {
         <p class="secondary-font">No TicTacToe matches found.</p>
     {% endfor %}
 </div>
+
+<div id="tournament-games" class="game-category-container" style="display: none;">
+	<div id="matches-container">
+		<p class="secondary-font">Loading matches...</p>
+	</div>
+</div>
+
+</div>
+
+
 	
 		<script>
 			const updateAvatarUrl = "{% url 'update_avatar' %}";
@@ -297,6 +291,80 @@ document.addEventListener('DOMContentLoaded', function() {
     changeCategory('Ranked');
 });
 		</script>
+
+					<!-- Fetch player matches and update the scores -->
+					<script>
+						async function fetchPlayerMatches() {
+						const tournamentId = 1;  // Hardcoded tournament ID for now
+						const playerName = "{{ user_data.username }}";  // Username from template
+						const matchesContainer = document.getElementById("matches-container");
+			
+						try {
+							const response = await fetch(`/getPlayerMatches/${tournamentId}/${playerName}`);
+			
+							if (!response.ok) {
+								throw new Error(`Failed to fetch matches: ${response.statusText}`);
+							}
+			
+							const result = await response.json();
+							const matches = result.matches; // Extract the matches from the response
+			
+							// Clear the "Loading matches..." message
+							matchesContainer.innerHTML = "";
+			
+							// Check if we got matches and update the UI
+							if (matches.length === 0) {
+								matchesContainer.innerHTML = "<p class='secondary-font'>No recent matches found.</p>";
+							} else {
+								matches.forEach((match, index) => {
+									const gameDiv = document.createElement("div");
+									gameDiv.className = "";
+			
+									// Determine if current user is player1 or player2
+									let opponent = match.player1 === playerName ? match.player2 : match.player1;
+									let userScore = match.player1 === playerName ? match.score1 : match.score2;
+									let opponentScore = match.player1 === playerName ? match.score2 : match.score1;
+			
+									// Determine match result (Win, Loss, or Draw)
+									let resultText;
+									if (userScore > opponentScore) {
+										resultText = "Victory";
+									} else if (userScore < opponentScore) {
+										resultText = "Defeat";
+									} else {
+										resultText = "Draw";
+									}
+			
+									// Get the match date
+									const matchDate = match.date;
+			
+									// Insert the match result, opponent, scores, and date into the gameDiv
+									gameDiv.innerHTML = `
+									<p class="secondary-font"> ${matchDate} </p>
+									<div class="game-display">
+										<div class="primary-font">
+											${resultText} <!-- Displaying the date here -->
+										</div>
+										<div class="vertical-bar"></div>
+										<div class="secondary-font player-name">
+											${opponent}
+										</div>
+										<div class="secondary-font score">
+											${userScore} - ${opponentScore}
+										</div>
+									</div>
+									`;
+			
+									// Append the match data to the container
+									matchesContainer.appendChild(gameDiv);
+								});
+							}
+						} catch (error) {
+							console.error('Error fetching matches:', error);
+							matchesContainer.innerHTML = "<p class='secondary-font'>Failed to load matches.</p>";
+						}
+						}
+						</script>
 		<!-- Chatbox -->
 		{% include 'ChatBox.html' %}
 		

@@ -46,46 +46,6 @@
             margin-top: 30px;
         }
 
-        .navbar {
-            position: fixed;
-            top: 0;
-            left: 0;
-            z-index: 999;
-            background-color: #343a40;
-            width: 100%;
-            padding: 10px;
-        }
-
-        .navbar a {
-            color: white !important;
-            font-weight: bold;
-            font-size: 16px;
-            padding: 10px 15px;
-            text-decoration: none;
-            transition: all 0.3s ease-in-out;
-        }
-
-        .navbar-nav {
-            display: flex;
-            justify-content: flex-start;
-            width: 100%;
-        }
-
-        .navbar a:hover {
-            color: #0d40e7 !important;
-            background-color: transparent;
-            border-radius: 5px;
-        }
-
-        /* Back button styling */
-        .back-btn {
-            background-color: transparent;
-            color: white;
-            border: none;
-            font-size: 20px;
-            cursor: pointer;
-        }
-
         /* Styling for the username input */
         .username-input {
             margin-bottom: 20px;
@@ -130,6 +90,10 @@
         </div>
     </nav>
 
+	<div class=" position-absolute top-50 start-50 translate-middle" style="z-index: -1;">
+        <img class="transcendence-icon" alt="" src="{% static 'images/bg-text.svg' %}">
+    </div>
+
     <div class="container">
         <h1 class="mb-4">Invite Players to Tournament</h1>
 
@@ -153,7 +117,17 @@
 
     <script>
 		const selectedPlayers = [];
-	
+
+		document.addEventListener('DOMContentLoaded', function() {
+    		const usernameInput = document.getElementById('usernameInput');
+			usernameInput.addEventListener('keypress', function(event) {
+				if (event.key === 'Enter') {
+					event.preventDefault(); // Prevent form submission
+					addPlayerFromInput();
+				}
+			});
+		});
+
 		function addPlayerFromInput() {
 			const username = document.getElementById('usernameInput').value.trim();
 			if (username === '') {
@@ -185,15 +159,18 @@
 			if (![4, 8, 16].includes(selectedPlayers.length)) {
 				alert('You need to select 4, 8, or 16 players to start a tournament.');
 				return;
-			}
-	
+			} 
+			
+			let tournamentName = document.getElementById('tournamentInput').value.trim();
+			if (!tournamentName || tournamentName === '') tournamentName = null;
+
 			fetch('/create_tournament/', {
 				method: 'POST',
 				headers: {
 					'X-CSRFToken': getCookie('csrftoken'),
 					'Content-Type': 'application/json'
 				},
-				body: JSON.stringify({ players: selectedPlayers })
+				body: JSON.stringify({ players: selectedPlayers, name: tournamentName })
 			})
 			.then(response => response.json())
 			.then(data => {

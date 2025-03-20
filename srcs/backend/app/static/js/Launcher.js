@@ -51,40 +51,6 @@ export default class Launcher {
                 }, 16);
             }
         }
-        this.initControls();
-    }
-
-    initControls()
-    {
-        let tempoGame = this._game;
-        if (playerRole == 'player1')
-            {
-                document.addEventListener("keydown", function (event) {
-                if (tempoGame.isPaused || tempoGame.isGameEnded) return;
-                if (event.key === "w" || event.key === "z")
-                    tempoGame.sendMove(Math.max(0, tempoGame.field.player.yPos - 20), "player1");
-                if (event.key === "s")
-                    tempoGame.sendMove(Math.min(tempoGame.field.canevas.height - tempoGame.field.player.height - 20, tempoGame.field.player.yPos + 20), "player1");
-                if (event.key === "ArrowUp")
-                    tempoGame.sendMove(Math.max(0, tempoGame.field.opponent.yPos - 20), "player2");
-                if (event.key === "ArrowDown")
-                    tempoGame.sendMove(Math.min(tempoGame.field.canevas.height - tempoGame.field.opponent.height - 20, tempoGame.field.opponent.yPos + 20), "player2");
-                });
-            }
-           else if (playerRole == 'player2')
-                {
-                    document.addEventListener("keydown", function (event) {
-                    if (tempoGame.isPaused || tempoGame.isGameEnded) return;
-                    if (event.key === "ArrowUp")
-                        tempoGame.sendMove(Math.max(0, tempoGame.field.player.yPos - 20), "player2");
-                    if (event.key === "ArrowDown")
-                        tempoGame.sendMove(Math.min(tempoGame.field.canevas.height - tempoGame.field.player.height - 20, tempoGame.field.player.yPos + 20), "player2");
-                    if (event.key === "w" || event.key === "z")
-                        tempoGame.sendMove(Math.max(0, tempoGame.field.opponent.yPos - 20), "player1");
-                    if (event.key === "s")
-                        tempoGame.sendMove(Math.min(tempoGame.field.canevas.height - tempoGame.field.opponent.height - 20, tempoGame.field.opponent.yPos + 20), "player1");
-                    });
-                }
     }
 
     get mode() {

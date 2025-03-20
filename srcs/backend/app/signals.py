@@ -13,7 +13,7 @@ def save_profile_picture_on_signup(request, user, **kwargs):
         social_account = None
 
     if social_account:
-        picture_url = social_account.get_avatar_url()  # équivaut à extra_data.get('picture')
+        picture_url = social_account.get_avatar_url()
         if picture_url:
             resp = requests.get(picture_url)
             if resp.status_code == 200:

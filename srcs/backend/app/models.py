@@ -1,5 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
+from django.contrib.postgres.fields import JSONField
+from django.core.exceptions import ValidationError
 from django.core.validators import FileExtensionValidator, MaxValueValidator, MinValueValidator
 from django.utils.translation import gettext_lazy as _
 
@@ -35,8 +37,8 @@ class Game(models.Model):
 		('maxscoremode', 'MaxScoreMode')
 	]
 	mode = models.CharField(max_length=20, choices=MODE_CHOICES, default='unranked')
-	player1 = models.ForeignKey(User, on_delete=models.CASCADE, related_name='games_as_player1')
-	player2 = models.ForeignKey(User, on_delete=models.CASCADE, related_name='games_as_player2', null=True, blank=True)
+	player1 = models.ForeignKey(User, on_delete=models.CASCADE, related_name='games_as_player1', db_index=True)
+	player2 = models.ForeignKey(User, on_delete=models.CASCADE, related_name='games_as_player2', null=True, blank=True, db_index=True)
 	ball_x = models.FloatField(default=400)
 	ball_y = models.FloatField(default=400)
 	player1_y = models.FloatField(default=170)
@@ -50,13 +52,21 @@ class Game(models.Model):
 	is_paused = models.BooleanField(default=False)
 	created_at = models.DateTimeField(auto_now_add=True)
 
+	# For TicTacToe
+
+	board = models.CharField(max_length=9, default=" " * 9)
+	current_turn = models.ForeignKey('User', on_delete=models.CASCADE, related_name="current_games", null=True, blank=True)
+
 	def __str__(self):
 		return f"Game {self.id} - {self.player1.username} vs {self.player2.username if self.player2 else 'IA'}"
 
+	def clean(self):
+		if self.player1 == self.player2:
+			raise ValidationError("Un joueur ne peut pas jouer contre lui-même")
 
 class Tournament(models.Model):
 	creator = models.ForeignKey(User, on_delete=models.CASCADE, related_name="tournament_creator")
-	name = models.CharField(max_length=100)
+	name = models.CharField(max_length=100, default=None, blank=True, null=True)
 	created_at = models.DateTimeField(auto_now_add=True)
 
 	def __str__(self):
@@ -78,6 +88,7 @@ class TournamentPlayer(models.Model):
 class TournamentGame(models.Model):
 	tournament = models.ForeignKey(Tournament, on_delete=models.CASCADE, related_name="tournament_games")
 	game = models.ForeignKey(Game, on_delete=models.CASCADE, related_name="tournament_game")
+	created_at = models.DateTimeField(auto_now_add=True)
 
 	def __str__(self):
 		return f"Game {self.id} in Tournament {self.tournament.name} ({self.tournament.id})"
