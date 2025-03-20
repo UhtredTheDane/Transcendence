@@ -59,10 +59,13 @@ export default class OnlineGame extends Game{
 					tempoGame.field.ball.xPos = data.ball_x;
 					tempoGame.field.ball.yPos = data.ball_y;
 					tempoGame.isBallMover = (playerRole === "player1");
-			} else if (data.type === "game_over") {
-				//document.getElementById("pauseButton").display = "none";
+			} else if (data.type === "game_over")
+			{
+				tempoGame.socket.close(1000, "Fermeture normale");
 				window.location.href = "/";
+				return;
 			}
+
 			tempoGame.field.draw();
 		};
 	}
@@ -122,10 +125,10 @@ export default class OnlineGame extends Game{
         let playerScore = this.field.player.playerScore;
         let opponentScore = this.field.opponent.playerScore;
         if (playerScore >= this.maxScore || opponentScore >= this.maxScore) {
-          console.log("playerScore: ", playerScore);
-          console.log("opponentScore: ", opponentScore);
-          console.log("MaxScore: ", this.maxScore);
-          console.log("game will end now");
+        //   console.log("playerScore: ", playerScore);
+        //   console.log("opponentScore: ", opponentScore);
+        //   console.log("MaxScore: ", this.maxScore);
+        //   console.log("game will end now");
           this.endGame();
         }
       }
@@ -134,13 +137,15 @@ export default class OnlineGame extends Game{
 	endGame() {
 		this._isGameEnded = true;
 		if (this._isSocketOpen && this._socket.readyState === WebSocket.OPEN)
+		{
 			this._socket.send(JSON.stringify({ type: "end", score_player1: this._field.player.playerScore, score_player2: this._field.opponent.playerScore }));
-		window.location.href = "/";
+			window.location.href = "/";
+		}
 	}
 
-	sendMove(position) {
+	sendMove(position, targetPlayer) {
 		if (this._isGameEnded || !this._isSocketOpen || this._socket.readyState !== WebSocket.OPEN)
 			return;
-		this._socket.send(JSON.stringify({ type: "move", position: position }));
+		this._socket.send(JSON.stringify({ type: "move", position: position, player: targetPlayer }));
 	}
 }

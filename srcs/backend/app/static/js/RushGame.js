@@ -22,7 +22,9 @@ export default class RushGame extends OnlineGame{
             if (data.type === "update_speed")
             {
                 tempoGame.field.ball.multSpeed = data.speed;
-                console.log(tempoGame.idIntervalle)
+                tempoGame.field.ball.resetBall();
+                if (playerRole == "player2")
+                    tempoGame.disableInteractions(false);
                 if (!tempoGame.idIntervalle)
                 {
                     tempoGame.idIntervalle = setInterval(() => {
@@ -59,7 +61,6 @@ export default class RushGame extends OnlineGame{
 					tempoGame.field.ball.yPos = data.ball_y;
 					tempoGame.isBallMover = (playerRole === "player1");
 			} else if (data.type === "game_over") {
-				//document.getElementById("pauseButton").display = "none";
 				window.location.href = "/";
 			}
 			    tempoGame.field.draw();
@@ -70,8 +71,9 @@ export default class RushGame extends OnlineGame{
             // Empêcher l'interaction avec le reste de la page jusqu'à ce que player1 valide
             showModal();
         } else {
-            // Bloquer l'interaction de player2 tant que player1 n'a pas validé
+            this.disableInteractions(true);
         }
+
         // Fermer la modale si l'utilisateur clique sur le X
         closeBtn.onclick = (event) => {
             const modal = document.getElementById("modal");
@@ -80,10 +82,10 @@ export default class RushGame extends OnlineGame{
             }
         };
         
-        // Fermer la modale si l'utilisateur clique en dehors de la modale
+        // Empeche la Fermeture de la modale si l'utilisateur clique en dehors de la modale
         window.onclick = (event) => {
             if (event.target === modal) {
-                closeModal();
+
             }
         };
         
@@ -116,5 +118,20 @@ export default class RushGame extends OnlineGame{
 
 	set speed(value) {
 		this._speed = value;
+    }
+
+    disableInteractions(disable) {
+        // Désactiver tous les éléments interactifs (boutons, liens, etc.)
+        const elements = document.querySelectorAll('button, a, input, select, textarea');
+        elements.forEach((element) => {
+            element.disabled = disable; // Désactive ou active les éléments
+        });
+
+        // Désactiver tout autre élément qui pourrait être interactif
+        if (disable) {
+            document.body.style.pointerEvents = "none"; // Empêche tout clic sur la page
+        } else {
+            document.body.style.pointerEvents = "auto"; // Réactive les clics
+        }
     }
 }

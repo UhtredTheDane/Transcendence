@@ -124,7 +124,7 @@
     <link rel="stylesheet" href="{% static 'css/index.css' %}">
 </head>
 <body>
-
+ 
     <!-- Navbar with Change Mode button -->
     <nav class="navbar navbar-expand-lg navbar-dark">
         <div class="container-fluid">
@@ -164,16 +164,12 @@
             <div class="modal-content">
                 <span id="closeBtn" class="close">&times;</span>
                 <h2>Bienvenue Player 1 !</h2>
-                <p>Veuillez entrer un timer pour commencer le jeu :</p>
+                <p>Veuillez entrer une vitesse pour la balle et commencer la partie :</p>
                 <input type="number" id="customValue" placeholder="Entrez la vitesse de la balle" min="1">
                 <button id="submitBtn">Envoyer</button>
             </div>
         </div>
 
-        <!-- Message pour Player 2 lorsqu'il est bloqué -->
-    <p id="player2-message" style="display: none; color: red; text-align: center;">
-        En attente de la validation de Player 1...
-    </p>
             <script>
                 const gameId = '{{ game_id }}';
                 const playerRole = '{{player_role }}';
@@ -184,7 +180,7 @@
 
     </div>
 
-    <!-- Styles CSS pour la modale -->
+ <!-- Styles CSS pour la modale -->
 <style>
     /* Modale avec fond bloquant */
     .modal {
@@ -195,54 +191,98 @@
         top: 0;
         width: 100%;
         height: 100%;
-        background-color: rgba(0, 0, 0, 0.5); /* Fond semi-transparent */
+        background-color: rgba(0, 0, 0, 0.7); /* Fond semi-transparent avec opacité plus forte */
         overflow: auto; /* Assure que tout débordement est géré */
+        animation: fadeIn 0.3s ease-in-out; /* Animation de la modale */
+    }
+
+    /* Animation de l'apparition de la modale */
+    @keyframes fadeIn {
+        0% { opacity: 0; }
+        100% { opacity: 1; }
     }
 
     .modal-content {
         background-color: #fff;
-        margin: 15% auto;
-        padding: 20px;
-        border: 1px solid #888;
-        width: 80%;
-        max-width: 400px;
+        margin: 10% auto;
+        padding: 25px;
+        border-radius: 10px; /* Bord arrondi */
+        width: 90%;
+        max-width: 450px;
         text-align: center;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2); /* Ombre portée plus douce */
+        transform: translateY(-30px);
+        animation: slideIn 0.5s ease-out; /* Animation pour la modale */
+    }
+
+    /* Animation pour faire glisser la modale */
+    @keyframes slideIn {
+        0% { transform: translateY(-30px); opacity: 0; }
+        100% { transform: translateY(0); opacity: 1; }
+    }
+
+    h2 {
+        font-size: 24px;
+        margin-bottom: 15px;
+        color: #333; /* Couleur de titre plus douce */
+        font-family: 'Arial', sans-serif;
+    }
+
+    p {
+        font-size: 16px;
+        color: #555;
+        margin-bottom: 20px;
+        font-family: 'Arial', sans-serif;
     }
 
     .close {
-        color: #aaa;
+        color: #888;
         float: right;
-        font-size: 28px;
+        font-size: 32px;
         font-weight: bold;
+        cursor: pointer;
+        transition: color 0.2s ease;
     }
 
     .close:hover,
     .close:focus {
-        color: black;
-        text-decoration: none;
-        cursor: pointer;
+        color: #f44336; /* Rouge vif au survol */
     }
 
     /* Style du champ de texte */
     input[type="number"] {
         width: 80%;
-        padding: 10px;
-        margin: 10px 0;
+        padding: 12px;
+        margin: 12px 0;
         font-size: 16px;
+        border: 2px solid #ddd;
+        border-radius: 8px; /* Bord arrondi */
+        outline: none;
+        transition: border 0.3s ease;
+    }
+
+    input[type="number"]:focus {
+        border: 2px solid #4CAF50; /* Bordure verte au focus */
     }
 
     /* Style du bouton */
     button {
-        padding: 10px 20px;
+        padding: 12px 24px;
         background-color: #4CAF50;
         color: white;
         border: none;
         cursor: pointer;
-        font-size: 16px;
+        font-size: 18px;
+        border-radius: 8px;
+        transition: background-color 0.3s ease;
     }
 
     button:hover {
         background-color: #45a049;
+    }
+
+    button:active {
+        background-color: #388E3C; /* Couleur plus foncée au clic */
     }
 
     /* Style du message pour Player 2 */

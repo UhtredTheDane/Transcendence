@@ -112,24 +112,19 @@ class GameConsumer(AsyncWebsocketConsumer):
         }))
 
     async def handle_move(self, data):
-        player = self.scope['user']
         new_position = data.get("position")
-
-        if player == self.player1:
-            self.game.player1_y = new_position
-        elif player == self.player2:
-            self.game.player2_y = new_position
+        targetPlayer = data.get("player")
 
         await sync_to_async(self.game.save)()
-
         await self.channel_layer.group_send(
                 self.game_group_name,
                 {
                     "type": "update_position",
-                    "player": "player1" if player == self.player1 else "player2",
+                    "player": targetPlayer,
                     "position": new_position,
                     }
                 )
+        print("target player: ", targetPlayer)
 
     async def handle_ball_position(self, data):
         self.game.ball_x = data.get("ball_x")
@@ -160,7 +155,6 @@ class GameConsumer(AsyncWebsocketConsumer):
                     "score_player2": self.game.score_player2
                     }
                 )
-
 
     async def handle_pause(self, data):
         self.game.is_paused = bool(data.get("is_paused", False))
@@ -197,6 +191,7 @@ class GameConsumer(AsyncWebsocketConsumer):
 
         try:
             await self.close()
+            print("sa ferme le socket")
         except Exception as e:
             print(f"Error closing connection: {e}")
             pass

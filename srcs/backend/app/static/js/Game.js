@@ -7,7 +7,7 @@ export default class Game {
 		this.field = fieldValue;
 		this.isPaused = false;
 		this.isGameEnded = false;
-		this.maxScore = 1;
+		this.maxScore = 2;
 	}
 
 	get field() {
