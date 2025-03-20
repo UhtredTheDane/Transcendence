@@ -20,8 +20,8 @@ class TournamentPlayerAdmin(admin.ModelAdmin):
 	list_editable = ['tournament', 'user', 'is_ready', 'position']
 
 class TournamentGameAdmin(admin.ModelAdmin):
-	list_display = ['id', 'tournament', 'game']
-	list_editable = ['tournament', 'game']
+	list_display = ['id', 'tournament', 'game', 'player1_ready', 'player2_ready', 'created_at']
+	list_editable = ['tournament', 'game', 'player1_ready', 'player2_ready']
 
 class ChannelAdmin(admin.ModelAdmin):
 	list_display = ['id', 'name', 'topic', 'created_at']

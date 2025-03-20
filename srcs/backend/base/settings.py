@@ -15,12 +15,6 @@ from datetime import timedelta
 from decouple import config
 import os
 
-
-SECURE_SSL_REDIRECT = True
-SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
-SESSION_COOKIE_SECURE = True
-CSRF_COOKIE_SECURE = True
-
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -54,7 +48,6 @@ SIMPLE_JWT = {
 # Application definition
 
 INSTALLED_APPS = [
-	'django_extensions',
 	'django.contrib.admin',
 	'django.contrib.auth',
 	'django.contrib.contenttypes',
@@ -187,21 +180,18 @@ LOGIN_REDIRECT_URL = "/"
 ACCOUNT_EMAIL_VERIFICATION = "optional"
 SOCIALACCOUNT_QUERY_EMAIL = True
 
-# CHANNEL_LAYERS = {
-# 	'default': {
-# 		'BACKEND': 'channels.layers.InMemoryChannelLayer',  # Utilise le bon backend
-# 	},
-# }
-
 CHANNEL_LAYERS = {
-    'default': {
-        'BACKEND': 'channels_redis.core.RedisChannelLayer',
-        'CONFIG': {
-            'hosts': [('redis', 6379)],
-        },
-    },
+	'default': {
+		'BACKEND': 'channels.layers.InMemoryChannelLayer',
+	},
 }
 
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+        'LOCATION': 'unique-snowflake',
+    }
+}
 
 # Internationalization
 # https://docs.djangoproject.com/en/5.1/topics/i18n/

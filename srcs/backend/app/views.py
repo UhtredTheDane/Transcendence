@@ -10,8 +10,8 @@ from django.contrib.auth import login, get_backends
 from django.contrib.auth.models import AnonymousUser
 from django.contrib.auth.decorators import login_required
 from django.db.models import F, Q
-from .models import User, Channel,  Message, Messages, Game, Tournament, TournamentGame, TournamentPlayer
 from django.views.decorators.csrf import csrf_exempt
+from .models import User, Channel,  Message, Messages, Game, Tournament, TournamentGame, TournamentPlayer
 from allauth.account.forms import LoginForm
 from allauth.account.forms import SignupForm
 from allauth.account.views import login as allauth_login
@@ -254,6 +254,7 @@ def matchmaking2(request):
 
 # 42
 def auth_42_login(request):
+	"""Redirige l'utilisateur vers la page d'authentification de 42."""
 	auth_url = (
 			f"{API_42_AUTH_URL}?client_id={settings.FORTYTWO_CLIENT_ID}"
 			f"&redirect_uri={settings.FORTYTWO_REDIRECT_URI}&response_type=code"
@@ -261,10 +262,12 @@ def auth_42_login(request):
 	return redirect(auth_url)
 
 def auth_42_callback(request):
+	"""Gère le callback OAuth2 après la connexion de l'utilisateur."""
 	code = request.GET.get("code")
 	if not code:
 		return JsonResponse({"error": "No code provided"}, status=400)
 
+	# Échange du code contre un token
 	data = {
 			"grant_type": "authorization_code",
 			"client_id": settings.FORTYTWO_CLIENT_ID,
@@ -279,6 +282,7 @@ def auth_42_callback(request):
 	token_data = response.json()
 	access_token = token_data.get("access_token")
 
+	# Récupération des infos de l'utilisateur
 	headers = {"Authorization": f"Bearer {access_token}"}
 	user_response = requests.get(API_42_USER_URL, headers=headers)
 	if user_response.status_code != 200:
@@ -291,6 +295,7 @@ def auth_42_callback(request):
 	else:
 		avatar_url = "/media/default/avatar.png"
 
+	# Vérification si l'utilisateur existe déjà
 	user, created = User.objects.get_or_create(
 			username=user_api_data["login"],
 			defaults={
@@ -308,9 +313,10 @@ def auth_42_callback(request):
 			user.avatar.save(avatar_filename, ContentFile(response.content))
 			user.save()
 
-	backend = get_backends()[0]
+	backend = get_backends()[0]  # Prend le premier backend configuré
 	user.backend = f"{backend.__module__}.{backend.__class__.__name__}"
 
+	# Connexion de l'utilisateur
 	login(request, user)
 	return redirect("/ProfilePage/")
 
@@ -322,9 +328,11 @@ def update_avatar(request):
 		user = request.user
 		uploaded_file = request.FILES['avatar']
 
+		# Supprimer l'ancien avatar s'il n'est pas l'avatar par défaut
 		if user.avatar and user.avatar.name != 'default/avatar.png':
 			user.avatar.delete(save=False)
 
+		# Sauvegarde du fichier dans MEDIA_ROOT/avatars/
 		user.avatar.save(f"{user.username}_{uploaded_file.name}", uploaded_file)
 
 		return JsonResponse({'status': 'success', 'image_url': user.avatar.url})
@@ -682,7 +690,7 @@ def set_ready_status(request, tournament_id):
 def create_tournament(request):
 	if request.method == "POST":
 		data = json.loads(request.body)
-		tournament_name = data.get("name", "Tournament")
+		tournament_name = data.get("name", "")
 		selected_players = data.get("players", [])
 
 		# Vérification du nombre de joueurs
@@ -707,7 +715,7 @@ def create_tournament(request):
 		print(f"Players in matches:", players_in_matches)
 		print(f"\n\n\n")
 
-		tournament = Tournament.objects.create(creator=request.user, name=request.tournament_name)
+		tournament = Tournament.objects.create(creator=request.user, name=tournament_name)
 
 		for match_players in players_in_matches:
 			game = Game.objects.create(player1=match_players[0], player2=match_players[1], mode='tournament', is_active=False)
@@ -720,7 +728,6 @@ def create_tournament(request):
 		return JsonResponse({ "status": "success", "tournament_id": tournament.id })
 
 	return JsonResponse({ "status": "error", "message": "Invalid request method." })
-
 
 @login_required
 def tournamentpage(request, tournament_id):
@@ -761,13 +768,18 @@ def tournamentpage(request, tournament_id):
 		for game in games
 	]
 
-	print(f"Players avatars:\n{players_data}\n\n")
+	# print(f"Players avatars:\n{players_data}\n\n")
 
 	is_participant = TournamentPlayer.objects.filter(tournament=tournament, user=request.user).exists()
 	if not is_participant:
 		return HttpResponseForbidden("You are not a participant in this tournament.")
 
-	return render(request, 'TournamentPage.html', { 'players': json.dumps(players_data), 'matches': json.dumps(matches_data), 'tournament_id': tournament.id })
+	return render(request, 'TournamentPage.html', {
+		'players': json.dumps(players_data),
+		'matches': json.dumps(matches_data),
+		'tournament_id': tournament.id,
+		'tournament_name': tournament.name
+	})
 
 @login_required
 def	invitetournament(request):
