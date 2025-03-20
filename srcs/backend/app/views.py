@@ -204,6 +204,23 @@ def UnrankedMode(request, game_id):
 		'player2_username': player2_username
 	})
 
+@login_required
+def TournamentMode(request, game_id):
+	game = get_object_or_404(Game, id=game_id)
+	game.mode = 'Tournament'  # ! Commande a modifier
+	game.save() # ! Commande a ajouter
+
+	player1_username = game.player1.username if game.player1 else "User"
+	player2_username = game.player2.username if game.player2 else "Waiting for player"
+
+	if request.user == game.player1:
+		player_role = 'player1'
+	else:
+		player_role = 'player2'
+	return render(request, 'TournamentMode.html', { 'game_id': game_id, 'player_role': player_role, 'player1_username': player1_username,
+		'player2_username': player2_username})
+
+
 def RushMode(request, game_id):
 	game = get_object_or_404(Game, id=game_id)
 	game.mode = 'rushmode'  # Set mode to rushmode

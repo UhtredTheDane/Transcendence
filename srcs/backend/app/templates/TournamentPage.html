@@ -166,7 +166,7 @@
 	  let userMatch = matchesList.find(match => match.player1_id === currentUserId || match.player2_id === currentUserId);
 	  console.log(userMatch) 
 	  console.log(tournamentId)
-	  const tournamentSocket = new WebSocket(`ws://${window.location.host}/ws/tournament/${tournamentId}/${userMatch.id}`);
+	  const tournamentSocket = new WebSocket(`wss://${window.location.host}/wss/tournament/${tournamentId}/${userMatch.id}`);
     //   console.log("------ List matches ------------");
     //   console.log(matchesList);
     //   console.log("------------------");
