@@ -14,6 +14,7 @@ export default class MaxScoreGame extends OnlineGame{
         
         let tempoGame = this;
         let docu = document;
+        
         // Gérer l'événement de réception de messages du serveur
         this.socket.onmessage = function (event) {
             const data = JSON.parse(event.data);
@@ -70,10 +71,11 @@ export default class MaxScoreGame extends OnlineGame{
         if (playerRole === "player1") {
             // Empêcher l'interaction avec le reste de la page jusqu'à ce que player1 valide
             showModal();
-        } 
+        }
         else {
             this.disableInteractions(true);
         }
+
         // Fermer la modale si l'utilisateur clique sur le X
         closeBtn.onclick = (event) => {
             const modal = document.getElementById("modal");
