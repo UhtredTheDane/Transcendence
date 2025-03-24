@@ -43,39 +43,6 @@
             color: #dc3545;
         }
 
-        /* Navbar style */
-        .navbar {
-            position: fixed;
-            top: 0;
-            left: 0;
-            z-index: 999;
-            background-color: #343a40;
-            width: 100%;
-            padding: 10px;
-        }
-
-        .navbar a {
-            color: white !important;
-            font-weight: bold;
-            font-size: 16px;
-            padding: 10px 15px;
-            text-decoration: none;
-            transition: all 0.3s ease-in-out;
-            font-family: 'TF-Spike', sans-serif;
-        }
-
-        .navbar-nav {
-            display: flex;
-            justify-content: flex-start;
-            width: 100%;
-        }
-
-        .navbar a:hover {
-            color: #0d40e7 !important;
-            background-color: transparent;
-            border-radius: 5px;
-        }
-
         /* Back button styling */
         .back-btn {
             background-color: transparent;
@@ -150,9 +117,27 @@
 
     <script>
         // Simulating a list of tournaments (replace with dynamic logic)
-        const openTournaments = []; // Change this to an array of tournaments if any are open
+		const openTournaments = [
+			{
+			id: 1,
+			name: "Hello World",
+			}
+		];
         const tournamentList = document.getElementById('tournamentList');
         const noTournamentMessage = document.getElementById('noTournamentMessage');
+		
+		// Clear existing tournament list
+		tournamentList.innerHTML = '';
+
+		// Create a div for each tournament
+		openTournaments.forEach(tournament => {
+			const tournamentDiv = document.createElement('div');
+			tournamentDiv.className = 'tournament-button ';
+			tournamentDiv.textContent = tournament.name;
+			tournamentDiv.onclick = () => window.location.href = `/JoinTournamentDetails/${tournament.id}`; // ! CHANGER LE LIENS
+			tournamentList.appendChild(tournamentDiv);
+		});
+
 
         if (openTournaments.length === 0) {
             tournamentList.style.display = 'none';
