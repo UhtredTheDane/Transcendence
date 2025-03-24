@@ -49,6 +49,7 @@ class Game(models.Model):
 	score_player1 = models.IntegerField(default=0)
 	score_player2 = models.IntegerField(default=0)
 	is_active = models.BooleanField(default=True)
+	is_ended = models.BooleanField(default=False)
 	is_paused = models.BooleanField(default=False)
 	created_at = models.DateTimeField(auto_now_add=True)
 

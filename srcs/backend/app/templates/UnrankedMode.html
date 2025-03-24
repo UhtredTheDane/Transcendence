@@ -30,20 +30,6 @@
 	<link href="https://fonts.googleapis.com/css2?family=Sora:wght@100..800&display=swap" rel="stylesheet">
 	<link rel="stylesheet" href="{% static 'css/index.css' %}">
 	<link rel="stylesheet" href="{% static 'css/chatbox.css' %}">
-	
-	<script>
-		fetch('/create_game/', {
-			method: 'GET',
-			headers: {
-				'Content-Type': 'application/json',
-			},
-			params: {
-				type: 'ranked',
-				player2_id: opponentId
-			}
-		})
-	</script>
-	
 </head>
 
 <body>

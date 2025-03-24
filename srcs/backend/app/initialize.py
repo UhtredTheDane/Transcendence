@@ -23,3 +23,27 @@ if not User.objects.filter(username='doe').exists():
 
 if not User.objects.filter(username='n').exists():
     User.objects.create_superuser(username='n', email='n@mail.fr', password='toto752631')
+    
+if not User.objects.filter(username='nils').exists():
+    User.objects.create_superuser(username='nils', email='nils@mail.fr', password='toto752631')
+    
+if not User.objects.filter(username='youva').exists():
+    User.objects.create_superuser(username='youva', email='youva@mail.fr', password='toto752631')
+    
+if not User.objects.filter(username='clement').exists():
+    User.objects.create_superuser(username='clement', email='clement@mail.fr', password='toto752631')
+    
+if not User.objects.filter(username='alexis').exists():
+    User.objects.create_superuser(username='alexis', email='alexis@mail.fr', password='toto752631')
+    
+if not User.objects.filter(username='yanis').exists():
+    User.objects.create_superuser(username='yanis', email='yanis@mail.fr', password='toto752631')
+    
+if not User.objects.filter(username='nabil').exists():
+    User.objects.create_superuser(username='nabil', email='nabil@mail.fr', password='toto752631')
+    
+if not User.objects.filter(username='sami').exists():
+    User.objects.create_superuser(username='sami', email='sami@mail.fr', password='toto752631')
+    
+if not User.objects.filter(username='enis').exists():
+    User.objects.create_superuser(username='enis', email='enis@mail.fr', password='toto752631')

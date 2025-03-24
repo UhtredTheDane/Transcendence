@@ -164,16 +164,19 @@
 	  let roundsData = JSON.parse("{{ rounds|escapejs }}");
 	  let currentUserId = parseInt('{{ request.user.id }}');
 	  let tournamentId = parseInt('{{ tournament_id }}');
-	  let userMatch = matchesList.find(match => match.player1.id === currentUserId || match.player2.id === currentUserId);
+	  let userMatch = [...matchesList].reverse().find(
+			match =>
+				(match.player1 && match.player1.id === currentUserId) ||
+				(match.player2 && match.player2.id === currentUserId)
+		);
 	  const tournamentSocket = new WebSocket(`wss://${window.location.host}/wss/tournament/${tournamentId}/${userMatch.id}`);
 
 	  tournamentSocket.onmessage = function(event) {
 	    const data = JSON.parse(event.data);
-		// console.log(Received data:\n${JSON.stringify(data)});
 	    if (data.type === "ready_update") {
 		  updateReadyButton(data.match_id, data.player_id, data.ready);
 	    } else if (data.type === "match_start") {
-	  	  window.location.href = `/UnrankedMode/${data.match_id}/`;
+	  	  window.location.href = `/TournamentMode/${data.match_id}/`;
 	    }
 	  };
 
@@ -189,7 +192,6 @@
 		console.error("WebSocket Tournament error:\n" + JSON.stringify(error));
 	  };
 
-      // Initialize bracket once the DOM is fully loaded
       document.addEventListener("DOMContentLoaded", function () {
         initializeBracket();
       });
@@ -208,11 +210,12 @@
 			roundDiv.appendChild(roundTitle);
 			
 			roundMatches.forEach((match, matchIndex) => {
-				// console.log(match);
 				let matchElement = createMatch(
 					`${roundIndex}-${matchIndex}`,
 					[match.player1, match.player2],
-					currentUserId
+					currentUserId,
+					match.is_ended,
+					match.id
 				);
 				roundDiv.appendChild(matchElement);
 			});
@@ -230,7 +233,7 @@
 		return typeof value === 'number' && isFinite(value);
 	  }
 
-      function createMatch(matchId, players, currentUserId) {
+      function createMatch(matchId, players, currentUserId, isEnded, matchDataId) {
 		let match = document.createElement("div");
 		match.className = "match";
 		match.id = `match-${matchId}`;
@@ -250,11 +253,11 @@
 			match.appendChild(playerDiv);
 		});
 
-		if (players.some(p => p && p.id === currentUserId)) {
+		if (players.some(p => p && p.id === currentUserId) && !isEnded) {
 			let button = document.createElement("button");
 			button.className = "btn btn-primary";
 			button.textContent = "Ready";
-			button.onclick = () => handleReadyClick(matchId);
+			button.onclick = () => handleReadyClick(matchDataId);
 			match.appendChild(button);
 		}
 
@@ -278,7 +281,6 @@
 		const matchElement = document.getElementById(`match-${matchId}`);
 		if (!matchElement) return;
 
-		// Mettre à jour le statut visuel
 		const player1Ready = matchElement.querySelector('.player1-ready');
 		const player2Ready = matchElement.querySelector('.player2-ready');
 		

@@ -8,6 +8,7 @@ websocket_urlpatterns = [
 	re_path(r'wss/TimerMode/(?P<game_id>\d+)/$', consumers.GameConsumer.as_asgi()),
 	re_path(r'wss/MaxScoreMode/(?P<game_id>\d+)/$', consumers.GameConsumer.as_asgi()),
 	re_path(r'wss/ChallengeMode/(?P<game_id>\d+)/$', consumers.GameConsumer.as_asgi()),
+	re_path(r'wss/TournamentMode/(?P<game_id>\d+)/$', consumers.GameConsumer.as_asgi()),
 	re_path(r'wss/TicTacToeMode/(?P<game_id>\d+)/$', consumers.TicTacToeConsumer.as_asgi()),
     re_path(r'wss/MatchMaking/$', consumers.MatchmakingConsumer.as_asgi()),
 	re_path(r'wss/tournament/(?P<tournament_id>\d+)/(?P<match_id>\d+)/?$', consumers.MatchConsumer.as_asgi()),

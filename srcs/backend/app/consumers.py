@@ -12,138 +12,55 @@ from .models import Game, User, Channel, Messages, TournamentGame, Tournament, T
 active_users = {}
 
 async def insert_winner_in_next_match(tournament_id, game, winner):
-	current_tg = await sync_to_async(TournamentGame.objects.get)(tournament_id=tournament_id, game=game)
+	current_tg = await sync_to_async(TournamentGame.objects.get)(
+		tournament_id=tournament_id, game=game
+	)
 	current_round = current_tg.round_number
 
-	# Récupérer tous les matchs du round actuel (ordre stable)
+	# Récupérer tous les matchs du round actuel
 	current_round_games = await sync_to_async(list)(
-		TournamentGame.objects.filter(tournament_id=tournament_id, round_number=current_round).order_by("id")
+		TournamentGame.objects.filter(
+			tournament_id=tournament_id,
+			round_number=current_round
+		).order_by("id")
 	)
 	index_in_round = current_round_games.index(current_tg)
 
-	# Aller chercher les matchs du round suivant
+	# Récupérer les matchs du round suivant
 	next_round_games = await sync_to_async(list)(
-		TournamentGame.objects.filter(tournament_id=tournament_id, round_number=current_round + 1).order_by("id")
+		TournamentGame.objects.filter(
+			tournament_id=tournament_id,
+			round_number=current_round + 1
+		).order_by("id")
 	)
 	if not next_round_games:
 		print("🏆 Tournoi terminé ! Aucun tour suivant.")
 		return
 
 	target_game = next_round_games[index_in_round // 2]
-	game_to_update = target_game.game
+	game_to_update = await sync_to_async(lambda: target_game.game)()
 
-	if not game_to_update.player1:
+	player1 = await sync_to_async(lambda: game_to_update.player1)()
+	player2 = await sync_to_async(lambda: game_to_update.player2)()
+
+	if player1 == winner or player2 == winner:
+		print(f"⚠️ {winner.username} est déjà dans ce match.")
+		return
+
+	if not player1:
 		game_to_update.player1 = winner
-	elif not game_to_update.player2:
+	elif not player2:
 		game_to_update.player2 = winner
 	else:
 		print("⚠️ Le match suivant est déjà rempli.")
 
 	await sync_to_async(game_to_update.save)()
-	print(f"✅ {winner.username} ajouté au tour {current_round + 1} dans le match {game_to_update.id}")
-
-
-class MatchConsumer(AsyncWebsocketConsumer):
-	async def connect(self):
-		self.tournament_id = self.scope['url_route']['kwargs']['tournament_id']
-		self.match_id = self.scope['url_route']['kwargs']['match_id']
-		self.room_group_name = f'tournament_{self.tournament_id}_match_{self.match_id}'
-
-		print(f"🔗 Connexion à {self.room_group_name}")
-		user = self.scope['user']
-		try:
-			# Récupérer le jeu de manière asynchrone
-			game = await sync_to_async(Game.objects.get)(id=self.match_id)
-			# Récupérer les joueurs de manière asynchrone
-			player1 = await sync_to_async(lambda: game.player1)()
-			player2 = await sync_to_async(lambda: game.player2)()
-
-			if user not in [player1, player2]:
-				await self.close()
-				return
-		except ObjectDoesNotExist:
-			await self.close()
-			return
-
-		await self.channel_layer.group_add(
-			self.room_group_name,
-			self.channel_name
-		)
-		await self.accept()
-		print(f"🔗 {user.username} connecté à {self.room_group_name}")
-
-	# consumers.py
-	async def receive(self, text_data):
-		data = json.loads(text_data)
-		print(f"Received data:\n {data}")
-		if data.get('type') == 'toggle_ready':
-			user = self.scope['user']
-			try:
-				tournament_game = await sync_to_async(
-					TournamentGame.objects.select_related('game__player1', 'game__player2').get
-				)(
-					tournament_id=self.tournament_id,
-					game_id=self.match_id
-				)
-				game = tournament_game.game
-				player1 = game.player1
-				player2 = game.player2
-
-				print(f"User: {user.id} -> Player1: {player1.id} - Player2: {player2.id}")
-
-				# Debug : Afficher l'état initial AVANT modification
-				print(f"[INITIAL] Player1 Ready: {tournament_game.player1_ready}")
-				print(f"[INITIAL] Player2 Ready: {tournament_game.player2_ready}")
-
-				if user.id == player1.id:
-					tournament_game.player1_ready = not tournament_game.player1_ready
-					current_ready = tournament_game.player1_ready
-				elif user.id == player2.id:
-					tournament_game.player2_ready = not tournament_game.player2_ready
-					current_ready = tournament_game.player2_ready
-				else:
-					return
-
-				await sync_to_async(tournament_game.save)()
-
-				await self.channel_layer.group_send(
-					self.room_group_name,
-					{
-						'type': 'ready_update',
-						'player_id': user.id,
-						'ready': current_ready
-					}
-				)
-
-				if tournament_game.player1_ready and tournament_game.player2_ready:
-					game.is_active = True
-					await sync_to_async(game.save)()
-					await self.channel_layer.group_send(
-						self.room_group_name,
-						{
-							'type': 'match_start',
-							'match_id': self.match_id
-						}
-					)
-
-				print(f"[DEBUG] Player 1 ready: {tournament_game.player1_ready}")
-				print(f"[DEBUG] Player 2 ready: {tournament_game.player2_ready}")
-
-			except ObjectDoesNotExist:
-				pass
 	
-	async def ready_update(self, event):
-		await self.send(text_data=json.dumps({
-			"type": "ready_update",
-			"player_id": event["player_id"],
-			"ready": event["ready"]
-		}))
-		
-	async def match_start(self, event):
-		await self.send(text_data=json.dumps({
-			"type": "match_start",
-			"match_id": event["match_id"]
-		}))
+	if winner:
+		print(f"\n\nThe winner is: {winner} ({winner.username}) with a score of {game.score_player1} - {game.score_player2})\n\n")
+	else:
+		print(f"\n\n⚠️ Match nul avec un score de {game.score_player1} - {game.score_player2}\n\n")
+
 
 class GameConsumer(AsyncWebsocketConsumer):
 	async def connect(self):
@@ -267,7 +184,7 @@ class GameConsumer(AsyncWebsocketConsumer):
 					"position": new_position,
 					}
 				)
-		print("target player: ", targetPlayer)
+		# print("target player: ", targetPlayer)
 
 	async def handle_ball_position(self, data):
 		self.game.ball_x = data.get("ball_x")
@@ -313,14 +230,19 @@ class GameConsumer(AsyncWebsocketConsumer):
 
 	async def end_game(self, data):
 		self.game.is_active = False
+		self.game.is_ended = True
 		self.game.score_player1 = data.get("score_player1", self.game.score_player1)
 		self.game.score_player2 = data.get("score_player2", self.game.score_player2)
 
 		if self.game.mode == "tournament":
-			tournament_id = data.get("tournament_id")
-			if not tournament_id:
-				print("❌ ERREUR: Aucun ID de tournoi fourni.")
+			try:
+				tournament_game = await sync_to_async(TournamentGame.objects.select_related('tournament').get)(game=self.game)
+				tournament_id = tournament_game.tournament.id
+			except TournamentGame.DoesNotExist:
+				print("❌ ERREUR: Aucun tournoi trouvé pour ce match.")
 				return
+			
+			print(f"🏆 Match {self.game.id} lié au tournoi {tournament_id}")
 
 			if self.game.score_player1 > self.game.score_player2:
 				winner = self.player1
@@ -336,12 +258,18 @@ class GameConsumer(AsyncWebsocketConsumer):
 
 			payload = {
 					"tournamentid": tournament_id,
-					"player1": self.game.player1,
-					"player2": self.game.player2,
+					"player1": {
+						"id": self.game.player1.id,
+						"username": self.game.player1.username
+					} if self.game.player1 else None,
+					"player2": {
+						"id": self.game.player2.id,
+						"username": self.game.player2.username
+					} if self.game.player2 else None,
 					"score1": self.game.score_player1,
 					"score2": self.game.score_player2,
 					"date": str(self.game.created_at)
-					}
+				}
 
 			try:
 				response = requests.post(
@@ -354,20 +282,20 @@ class GameConsumer(AsyncWebsocketConsumer):
 			except Exception as e:
 				print(f"❌ ERREUR: Impossible d'ajouter le match au tournoi: {e}")
 
-			await sync_to_async(self.game.save)(update_fields=["score_player1", "score_player2", "is_active"])
+		await sync_to_async(self.game.save)(update_fields=["score_player1", "score_player2", "is_active", "is_ended"])
 
-			await self.channel_layer.group_send(
-					self.game_group_name,
-					{ "type": "game_over" }
-					)
+		await self.channel_layer.group_send(
+				self.game_group_name,
+				{ "type": "game_over" }
+				)
 
-			await asyncio.sleep(5)
-			await self.channel_layer.group_discard(
-					self.game_group_name,
-					self.channel_name
-					)
+		await asyncio.sleep(5)
+		await self.channel_layer.group_discard(
+				self.game_group_name,
+				self.channel_name
+				)
 
-			await self.close()
+		await self.close()
 
 	async def update_position(self, event):
 		await self.send(text_data=json.dumps(event))
@@ -388,6 +316,119 @@ class GameConsumer(AsyncWebsocketConsumer):
 			print(f"Error sending game over message: {e}")
 			pass
 
+class MatchConsumer(AsyncWebsocketConsumer):
+	async def connect(self):
+		self.tournament_id = self.scope['url_route']['kwargs']['tournament_id']
+		self.match_id = self.scope['url_route']['kwargs']['match_id']
+		self.room_group_name = f'tournament_{self.tournament_id}_match_{self.match_id}'
+
+		user = self.scope['user']
+		try:
+			# Récupérer le jeu de manière asynchrone
+			game = await sync_to_async(Game.objects.get)(id=self.match_id)
+			# Récupérer les joueurs de manière asynchrone
+			player1 = await sync_to_async(lambda: game.player1)()
+			player2 = await sync_to_async(lambda: game.player2)()
+
+			if user not in [player1, player2]:
+				await self.close()
+				return
+		except ObjectDoesNotExist:
+			await self.close()
+			return
+
+		await self.channel_layer.group_add(
+			self.room_group_name,
+			self.channel_name
+		)
+		await self.accept()
+
+	# consumers.py
+	async def receive(self, text_data):
+		data = json.loads(text_data)
+		print(f"Received data:\n {data}")
+		if data.get('type') == 'toggle_ready':
+			user = self.scope['user']
+			try:
+				tournament_game = await sync_to_async(
+					TournamentGame.objects.select_related('game__player1', 'game__player2').get
+				)(
+					tournament_id=self.tournament_id,
+					game_id=self.match_id
+				)
+				game = tournament_game.game
+				player1 = game.player1
+				player2 = game.player2
+
+				print(f"User: {user.id} -> Player1: {player1.id} - Player2: {player2.id}")
+
+				# Debug : Afficher l'état initial AVANT modification
+				print(f"[INITIAL] Player1 Ready: {tournament_game.player1_ready}")
+				print(f"[INITIAL] Player2 Ready: {tournament_game.player2_ready}")
+
+				if user.id == player1.id:
+					tournament_game.player1_ready = not tournament_game.player1_ready
+					current_ready = tournament_game.player1_ready
+				elif user.id == player2.id:
+					tournament_game.player2_ready = not tournament_game.player2_ready
+					current_ready = tournament_game.player2_ready
+				else:
+					return
+
+				await sync_to_async(tournament_game.save)()
+
+				await self.channel_layer.group_send(
+					self.room_group_name,
+					{
+						'type': 'ready_update',
+						'player_id': user.id,
+						'ready': current_ready
+					}
+				)
+
+				if tournament_game.player1_ready and tournament_game.player2_ready:
+					game.is_active = True
+					await sync_to_async(game.save)()
+					await self.channel_layer.group_send(
+						self.room_group_name,
+						{
+							'type': 'match_start',
+							'match_id': self.match_id
+						}
+					)
+
+				print(f"[DEBUG] Player 1 ready: {tournament_game.player1_ready}")
+				print(f"[DEBUG] Player 2 ready: {tournament_game.player2_ready}")
+
+			except ObjectDoesNotExist:
+				pass
+	
+	async def ready_update(self, event):
+		await self.send(text_data=json.dumps({
+			"type": "ready_update",
+			"player_id": event["player_id"],
+			"ready": event["ready"]
+		}))
+		
+	async def match_start(self, event):
+		try:
+			tournament_game = await sync_to_async(
+				TournamentGame.objects.get
+			)(
+				tournament_id=self.tournament_id,
+				game_id=self.match_id
+			)
+			tournament_game.player1_ready = False
+			tournament_game.player2_ready = False
+			await sync_to_async(tournament_game.save)()
+		except ObjectDoesNotExist:
+			pass
+
+		await self.send(text_data=json.dumps({
+			"type": "match_start",
+			"match_id": event["match_id"]
+		}))
+
 class TicTacToeConsumer(AsyncWebsocketConsumer):
 	async def connect(self):
 		self.game_id = self.scope['url_route']['kwargs']['game_id']
@@ -403,7 +444,10 @@ class TicTacToeConsumer(AsyncWebsocketConsumer):
 			await self.set_first_turn()
 
 		await self.channel_layer.group_add(self.game_group_name, self.channel_name)
-		await self.accept()
+		try:
+			await self.accept()
+		except RuntimeError:
+			pass
 
 		await self.send_game_state()
 
@@ -491,7 +535,10 @@ class ChatConsumer(AsyncWebsocketConsumer):
 				self.channel_group_name,
 				self.channel_name
 				)
-		await self.accept()
+		try:
+			await self.accept()
+		except RuntimeError:
+			pass
 
 	async def disconnect(self, close_code):
 		await self.channel_layer.group_discard(
@@ -541,7 +588,10 @@ class MatchmakingConsumer(AsyncWebsocketConsumer):
 					}
 
 			await self.channel_layer.group_add("matchmaking_queue", self.channel_name)
-			await self.accept()
+			try:
+				await self.accept()
+			except RuntimeError:
+				pass
 			print(f"{self.user.username} rejoint le matchmaking en mode {mode}.")
 
 			# Rechercher un adversaire avec le même mode
@@ -635,17 +685,6 @@ class MatchmakingConsumer(AsyncWebsocketConsumer):
 class ChatboxConsumer(AsyncWebsocketConsumer):
 	async def connect(self):
 		self.user = self.scope["user"]
-
-		if not self.user.is_authenticated:
-			return
-
-		self.group_name = f"user_{self.user.username}"
-		await self.channel_layer.group_add(
-				self.group_name,
-				self.channel_name
-				)
-
-		await self.accept()
 
 		if not self.user.is_authenticated:
 			return

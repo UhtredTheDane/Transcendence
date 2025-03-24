@@ -138,6 +138,8 @@ def create_game(request):
 				return redirect(f'/TimerMode/{game.id}/')
 			elif game_type == 'maxscoremode':
 				return redirect(f'/MaxScoreMode/{game.id}/')
+			elif game_type == 'tournament':
+				return redirect(f'/TournamentMode/{game.id}/')
 			else:
 				return redirect(f'/UnrankedMode/{game.id}/')
 		
@@ -207,6 +209,27 @@ def UnrankedMode(request, game_id):
 		'player2_username': player2_username
 	})
 
+@login_required
+def TournamentMode(request, game_id):
+	game = get_object_or_404(Game, id=game_id)
+	game.mode = 'tournament'  # Set mode to tournament
+	game.save()
+
+	player1_username = game.player1.username if game.player1 else "User"
+	player2_username = game.player2.username if game.player2 else "Waiting for player"
+
+	if request.user == game.player1:
+		player_role = 'player1'
+	else:
+		player_role = 'player2'
+	return render(request, 'TournamentMode.html', {
+		'game_id': game_id,
+		'player_role': player_role,
+		'player1_username': player1_username,
+		'player2_username': player2_username
+	})
+
+@login_required
 def RushMode(request, game_id):
 	game = get_object_or_404(Game, id=game_id)
 	game.mode = 'rushmode'  # Set mode to rushmode
@@ -221,6 +244,7 @@ def RushMode(request, game_id):
 	return render(request, 'RushMode.html', { 'game_id': game_id, 'player_role': player_role, 'player1_username': player1_username,
 		'player2_username': player2_username})
 
+@login_required
 def TimerMode(request, game_id):
 	game = get_object_or_404(Game, id=game_id)
 	game.mode = 'timermode'  # Set mode to timermode
@@ -235,6 +259,7 @@ def TimerMode(request, game_id):
 	return render(request, 'TimerMode.html', { 'game_id': game_id, 'player_role': player_role, 'player1_username': player1_username,
 		'player2_username': player2_username})
 
+@login_required
 def MaxScoreMode(request, game_id):
 	game = get_object_or_404(Game, id=game_id)
 	game.mode = 'maxscoremode'  # Set mode to maxscoremode
@@ -248,6 +273,7 @@ def MaxScoreMode(request, game_id):
 		player_role = 'player2'
 	return render(request, 'MaxScoreMode.html', { 'game_id': game_id, 'player_role': player_role, 'player1_username': player1_username,
 		'player2_username': player2_username})
+
 
 # 42
 def auth_42_login(request):
@@ -335,7 +361,7 @@ def profile(request, username=None):
 		else:
 			user_data = User.objects.get(username=username)
 
-		user_games = Game.objects.filter(Q(player1=user_data) | Q(player2=user_data))
+		user_games = Game.objects.filter((Q(player1=user_data) | Q(player2=user_data)) & Q(is_ended=True))
 
 		wins = user_games.filter(
 			(Q(player1=user_data) & Q(score_player1__gt=F('score_player2'))) |
@@ -433,7 +459,6 @@ def create_tournament_request(request):
 
 def leaderboard(request):
 	leaderboard = User.objects.order_by('-elo_rating')[:10]
-	print(leaderboard)
 	return render(request, 'leaderboard.html', { 'leaderboard': leaderboard })
 
 @login_required
@@ -565,26 +590,56 @@ def set_ready_status(request, tournament_id):
 	return JsonResponse({ "status": "success", "is_ready": player.is_ready })
 
 def create_bracket(tournament, players):
-    total_players = len(players)
-    total_rounds = int(math.log2(total_players))
-    games_by_round = [[] for _ in range(total_rounds)]
+	total_players = len(players)
+	total_rounds = int(math.log2(total_players))
 
-    # Shuffle et placer les joueurs dans les matchs initiaux
-    random.shuffle(players)
-    for i in range(0, total_players, 2):
-        game = Game.objects.create(player1=players[i], player2=players[i+1], mode='tournament', is_active=False)
-        tg = TournamentGame.objects.create(tournament=tournament, game=game, round_number=1)
-        games_by_round[0].append(tg)
+	# Shuffle
+	random.shuffle(players)
 
-    # Créer les matchs des tours suivants sans joueurs pour l’instant
-    for round_number in range(2, total_rounds + 1):
-        match_count = 2 ** (total_rounds - round_number)
-        for _ in range(match_count):
-            game = Game.objects.create(player1=None, player2=None, mode='tournament', is_active=False)
-            tg = TournamentGame.objects.create(tournament=tournament, game=game, round_number=round_number)
-            games_by_round[round_number - 1].append(tg)
+	# Liste finale contenant tous les matchs par round
+	games_by_round = [[] for _ in range(total_rounds)]
 
-    return games_by_round
+	# Créer les matchs du premier round
+	first_round = []
+	for i in range(0, total_players, 2):
+		game = Game.objects.create(
+			player1=players[i],
+			player2=players[i + 1],
+			mode='tournament',
+			is_active=False
+		)
+		tg = TournamentGame.objects.create(
+			tournament=tournament,
+			game=game,
+			round_number=1
+		)
+		first_round.append(tg)
+	games_by_round[0] = first_round
+
+	# Créer les matchs suivants en respectant la hiérarchie
+	for round_number in range(2, total_rounds + 1):
+		prev_round = games_by_round[round_number - 2]
+		current_round = []
+
+		for i in range(0, len(prev_round), 2):
+			# Ce match sera alimenté par les gagnants des 2 matchs précédents
+			game = Game.objects.create(
+				player1=None,
+				player2=None,
+				mode='tournament',
+				is_active=False
+			)
+			tg = TournamentGame.objects.create(
+				tournament=tournament,
+				game=game,
+				round_number=round_number
+			)
+			current_round.append(tg)
+
+		games_by_round[round_number - 1] = current_round
+
+	return games_by_round
+
 
 @login_required
 def create_tournament(request):
@@ -677,7 +732,7 @@ def tournamentpage(request, tournament_id):
 		for game in games
 	]
 
-	is_participant = TournamentPlayer.objects.filter(tournament=tournament, user=request.user).exists()
+	is_participant = TournamentPlayer.objects.filter(tournament=tournament, user=request.user).exists() or request.user == tournament.creator
 	if not is_participant:
 		return HttpResponseForbidden("You are not a participant in this tournament.")
 
@@ -701,6 +756,7 @@ def tournamentpage(request, tournament_id):
 				"avatar": tg.game.player2.avatar.url if tg.game.player2 else "/media/default/avatar.png",
 				"score": tg.game.score_player2
 			},
+			"is_ended": tg.game.is_ended,
 			"created_at": tg.game.created_at.isoformat(),
 		}
 		games_by_round[round_num].append(game_data)

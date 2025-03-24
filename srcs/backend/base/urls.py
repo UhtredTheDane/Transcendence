@@ -37,6 +37,7 @@ urlpatterns = [
  	path('UnrankedMode/<int:game_id>/', views.UnrankedMode, name='UnrankedMode'),
   	path('RushMode/<int:game_id>/', views.RushMode, name='RushMode'),
 	path('MaxScoreMode/<int:game_id>/', views.MaxScoreMode, name='MaxScoreMode'),
+	path('TournamentMode/<int:game_id>/', views.TournamentMode, name='TournamentMode'),
 	path('TicTacToeMode/<int:game_id>/', views.TicTacToeMode, name='TicTacToeMode'),
 
     path('checkMatches/<int:tournament_id>', views.check_matches, name='check_matches'),
