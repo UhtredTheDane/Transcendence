@@ -4,6 +4,7 @@ from django.contrib import admin
 from django.urls import path, include
 from app import views
 from django.views.generic import RedirectView
+from django.contrib.staticfiles.storage import staticfiles_storage
 
 
 urlpatterns = [
@@ -52,8 +53,15 @@ urlpatterns = [
     
 	path('ProfilePage/<str:username>/', views.profile, name='user_profile'),
 	path('ProfilePage/', views.profile, name='profile'),
-	path('favicon.ico', RedirectView.as_view(url='/static/icons/favicon.ico')),
+	path('favicon.ico', RedirectView.as_view(
+		url='/static/icons/42_logo.ico', 
+		permanent=True
+	), name='favicon'),
 ]
 
 if settings.DEBUG:
+    # urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+    # Add static files handling
+    urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+    # Add media files handling
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
