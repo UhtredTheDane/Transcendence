@@ -1,6 +1,8 @@
 import json
 import requests
 import random
+import math
+from math import log2
 from django.conf import settings
 from django.shortcuts import get_object_or_404, render, redirect
 from django.http import HttpResponseNotFound, HttpResponseRedirect, HttpResponseForbidden, Http404, JsonResponse
@@ -136,6 +138,8 @@ def create_game(request):
 				return redirect(f'/TimerMode/{game.id}/')
 			elif game_type == 'maxscoremode':
 				return redirect(f'/MaxScoreMode/{game.id}/')
+			elif game_type == 'tournament':
+				return redirect(f'/TournamentMode/{game.id}/')
 			else:
 				return redirect(f'/UnrankedMode/{game.id}/')
 		
@@ -187,7 +191,8 @@ def RankedMode(request, game_id):
 @login_required
 def UnrankedMode(request, game_id):
 	game = get_object_or_404(Game, id=game_id)
-	game.mode = 'unranked'  # Set mode to unranked
+	if (game.mode != "tournament"):
+		game.mode = 'unranked'  # Set mode to unranked
 	game.save()
 
 	player1_username = game.player1.username if game.player1 else "User"
@@ -207,8 +212,8 @@ def UnrankedMode(request, game_id):
 @login_required
 def TournamentMode(request, game_id):
 	game = get_object_or_404(Game, id=game_id)
-	game.mode = 'Tournament'  # ! Commande a modifier
-	game.save() # ! Commande a ajouter
+	game.mode = 'tournament'  # Set mode to tournament
+	game.save()
 
 	player1_username = game.player1.username if game.player1 else "User"
 	player2_username = game.player2.username if game.player2 else "Waiting for player"
@@ -217,10 +222,14 @@ def TournamentMode(request, game_id):
 		player_role = 'player1'
 	else:
 		player_role = 'player2'
-	return render(request, 'TournamentMode.html', { 'game_id': game_id, 'player_role': player_role, 'player1_username': player1_username,
-		'player2_username': player2_username})
+	return render(request, 'TournamentMode.html', {
+		'game_id': game_id,
+		'player_role': player_role,
+		'player1_username': player1_username,
+		'player2_username': player2_username
+	})
 
-
+@login_required
 def RushMode(request, game_id):
 	game = get_object_or_404(Game, id=game_id)
 	game.mode = 'rushmode'  # Set mode to rushmode
@@ -235,6 +244,7 @@ def RushMode(request, game_id):
 	return render(request, 'RushMode.html', { 'game_id': game_id, 'player_role': player_role, 'player1_username': player1_username,
 		'player2_username': player2_username})
 
+@login_required
 def TimerMode(request, game_id):
 	game = get_object_or_404(Game, id=game_id)
 	game.mode = 'timermode'  # Set mode to timermode
@@ -249,6 +259,7 @@ def TimerMode(request, game_id):
 	return render(request, 'TimerMode.html', { 'game_id': game_id, 'player_role': player_role, 'player1_username': player1_username,
 		'player2_username': player2_username})
 
+@login_required
 def MaxScoreMode(request, game_id):
 	game = get_object_or_404(Game, id=game_id)
 	game.mode = 'maxscoremode'  # Set mode to maxscoremode
@@ -349,7 +360,7 @@ def profile(request, username=None):
 		else:
 			user_data = User.objects.get(username=username)
 
-		user_games = Game.objects.filter(Q(player1=user_data) | Q(player2=user_data))
+		user_games = Game.objects.filter((Q(player1=user_data) | Q(player2=user_data)) & Q(is_ended=True))
 
 		wins = user_games.filter(
 			(Q(player1=user_data) & Q(score_player1__gt=F('score_player2'))) |
@@ -395,12 +406,6 @@ def profile(request, username=None):
 			'ranked_scores': format_game_list(ranked_games),
 			'unranked_scores': format_game_list(unranked_games),
 			'tournament_scores': format_game_list(tournament_games),
-			'tournaments': json.dumps([
-				{
-					'tournament_id': tp.tournament.id,
-				} 
-				for tp in TournamentPlayer.objects.filter(user=user_data)
-			]),
 			'tictactoe_scores': format_game_list(tictactoe_games),
 			'is_own_profile': user_data == request.user,
 			'viewing_username': username
@@ -453,7 +458,6 @@ def create_tournament_request(request):
 
 def leaderboard(request):
 	leaderboard = User.objects.order_by('-elo_rating')[:10]
-	print(leaderboard)
 	return render(request, 'leaderboard.html', { 'leaderboard': leaderboard })
 
 @login_required
@@ -506,9 +510,11 @@ def add_match(request):
 		score2 = data.get("score2")
 		date = data.get("date")  # Extract the date
 
+		# Check if all required fields are present, including the date
 		if not all([tournament_id, player1, player2, score1, score2, date]):
 			return JsonResponse({"status": "error", "message": "Missing required fields."})
 		
+		# Prepare payload for Express request, including the date
 		payload = {
 			"tournamentid": tournament_id,
 			"player1": player1,
@@ -582,6 +588,58 @@ def set_ready_status(request, tournament_id):
 
 	return JsonResponse({ "status": "success", "is_ready": player.is_ready })
 
+def create_bracket(tournament, players):
+	total_players = len(players)
+	total_rounds = int(math.log2(total_players))
+
+	# Shuffle
+	random.shuffle(players)
+
+	# Liste finale contenant tous les matchs par round
+	games_by_round = [[] for _ in range(total_rounds)]
+
+	# Créer les matchs du premier round
+	first_round = []
+	for i in range(0, total_players, 2):
+		game = Game.objects.create(
+			player1=players[i],
+			player2=players[i + 1],
+			mode='tournament',
+			is_active=False
+		)
+		tg = TournamentGame.objects.create(
+			tournament=tournament,
+			game=game,
+			round_number=1
+		)
+		first_round.append(tg)
+	games_by_round[0] = first_round
+
+	# Créer les matchs suivants en respectant la hiérarchie
+	for round_number in range(2, total_rounds + 1):
+		prev_round = games_by_round[round_number - 2]
+		current_round = []
+
+		for i in range(0, len(prev_round), 2):
+			# Ce match sera alimenté par les gagnants des 2 matchs précédents
+			game = Game.objects.create(
+				player1=None,
+				player2=None,
+				mode='tournament',
+				is_active=False
+			)
+			tg = TournamentGame.objects.create(
+				tournament=tournament,
+				game=game,
+				round_number=round_number
+			)
+			current_round.append(tg)
+
+		games_by_round[round_number - 1] = current_round
+
+	return games_by_round
+
+
 @login_required
 def create_tournament(request):
 	if request.method == "POST":
@@ -595,25 +653,16 @@ def create_tournament(request):
 
 		# Vérifier si tous les utilisateurs existent
 		existing_users = User.objects.filter(username__in=selected_players)
-		# if existing_users.count() != len(selected_players):
-		# 	return JsonResponse({
-		# 		"status": "error",
-		# 		"message": "One or more players do not exist."
-		# 	})
+		if existing_users.count() != len(selected_players):
+			return JsonResponse({
+				"status": "error",
+				"message": "One or more players do not exist."
+			})
 
 		shuffled_players = random.sample(list(existing_users), len(existing_users))
-		players_in_matches = [shuffled_players[i:i + 2] for i in range(0, len(shuffled_players), 2)]
 
 		tournament = Tournament.objects.create(creator=request.user, name=tournament_name)
-
-		tournament_response = create_tournament_request(request)
-		if tournament_response.get('status') == 'error':
-			return JsonResponse({'status': 'error', 'message': tournament_response.get('message')})
-
-		for match_players in players_in_matches:
-			game = Game.objects.create(player1=match_players[0], player2=match_players[1], mode='tournament', is_active=False)
-			tournament_game = TournamentGame.objects.create(tournament=tournament, game=game)
-			tournament_game.save()
+		bracket = create_bracket(tournament, list(existing_users))
 
 		for idx, user in enumerate(existing_users):
 			TournamentPlayer.objects.create(tournament=tournament, user=user, position=idx + 1)
@@ -621,6 +670,24 @@ def create_tournament(request):
 		return JsonResponse({ "status": "success", "tournament_id": tournament.id })
 
 	return JsonResponse({ "status": "error", "message": "Invalid request method." })
+
+def get_winner(match):
+	if match["player1"]["score"] > match['player2']["score"]:
+		return {
+			'id': match['player1']["id"],
+			'username': match['player1']["username"],
+			'avatar': match['player1']["avatar"],
+			'score': 0 
+		}
+	elif match['player2']["score"] > match["player1"]['score']:
+		return {
+			'id': match['player2']["id"],
+			'username': match['player2']['username'],
+			'avatar': match['player2']['avatar'],
+			'score': 0
+		}
+	else:
+		return None
 
 @login_required
 def tournamentpage(request, tournament_id):
@@ -641,33 +708,79 @@ def tournamentpage(request, tournament_id):
 		for player in players
 	]
 
+	# for game in games:
+	# 	print(f"Game:\n{game.game}\n\nPlayer1: {game.game.player1}\nPlayer2: {game.game.player2}\n\n--------------\n\n")
+
 	matches_data = [
 		{
 			"id": game.game.id,
-			"player1": game.game.player1.username if game.game.player1 else None,
-			"player1_id": game.game.player1.id if game.game.player1 else None,
-			"player1_avatar": game.game.player1.avatar.url if game.game.player1 else None,
-			"player1_score": game.game.score_player1,
-			"player2": game.game.player2.username if game.game.player2 else None,
-			"player2_id": game.game.player2.id if game.game.player2 else None,
-			"player2_avatar": game.game.player2.avatar.url if game.game.player2 else None,
-			"player2_score": game.game.score_player2,
-			"score1": game.game.score_player1,
-			"score2": game.game.score_player2,
+			"player1": {
+				"id": game.game.player1.id if game.game.player1 else None,
+				"username": game.game.player1.username if game.game.player1 else "TBD",
+				"avatar": game.game.player1.avatar.url if game.game.player1 else "/media/default/avatar.png",
+				"score": game.game.score_player1
+			},
+			"player2": {
+				"id": game.game.player2.id if game.game.player2 else None,
+				"username": game.game.player2.username if game.game.player2 else "TBD",
+				"avatar": game.game.player2.avatar.url if game.game.player2 else "/media/default/avatar.png",
+				"score": game.game.score_player2
+			},
 			"created_at": game.game.created_at.isoformat(),
 		}
 		for game in games
 	]
 
-	is_participant = TournamentPlayer.objects.filter(tournament=tournament, user=request.user).exists()
+	is_participant = TournamentPlayer.objects.filter(tournament=tournament, user=request.user).exists() or request.user == tournament.creator
 	if not is_participant:
 		return HttpResponseForbidden("You are not a participant in this tournament.")
+
+	games_by_round = {}
+	for tg in games:
+		round_num = tg.round_number
+		if round_num not in games_by_round:
+			games_by_round[round_num] = []
+
+		game_data = {
+			"id": tg.game.id,
+			"player1": {
+				"id": tg.game.player1.id if tg.game.player1 else None,
+				"username": tg.game.player1.username if tg.game.player1 else "To Be Determined",
+				"avatar": tg.game.player1.avatar.url if tg.game.player1 else "/media/default/avatar.png",
+				"score": tg.game.score_player1
+			},
+			"player2": {
+				"id": tg.game.player2.id if tg.game.player2 else None,
+				"username": tg.game.player2.username if tg.game.player2 else "To Be Determined",
+				"avatar": tg.game.player2.avatar.url if tg.game.player2 else "/media/default/avatar.png",
+				"score": tg.game.score_player2
+			},
+			"is_ended": tg.game.is_ended,
+			"created_at": tg.game.created_at.isoformat(),
+		}
+		games_by_round[round_num].append(game_data)
+
+	rounds = [games_by_round[r] for r in sorted(games_by_round.keys())]
+
+	num_players = len(players)
+	if num_players == 4:
+		round_names = ["Demi-finales", "Finale"]
+	elif num_players == 8:
+		round_names = ["Quarts de finale", "Demi-finales", "Finale"]
+	elif num_players == 16:
+		round_names = ["Huitièmes de finale", "Quarts de finale", "Demi-finales", "Finale"]
+	else:
+		round_names = [f"Round {i+1}" for i in range(len(rounds))]
+
+	# print(rounds)
 
 	return render(request, 'TournamentPage.html', {
 		'players': json.dumps(players_data),
 		'matches': json.dumps(matches_data),
+		'rounds': json.dumps(rounds),
+		'round_names': json.dumps(round_names),
 		'tournament_id': tournament.id,
-		'tournament_name': tournament.name
+		'tournament_name': tournament.name,
 	})
 
 @login_required

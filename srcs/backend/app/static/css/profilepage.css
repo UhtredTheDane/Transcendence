@@ -13,7 +13,11 @@
 }
 
 .draw {
+<<<<<<< HEAD
 	color: #f0f0f0;
+=======
+	color: #fcfcfc;
+>>>>>>> 5e531d6d9cec9d92794d34f4da6936f64de9d986
 }
 
 .head-category {
