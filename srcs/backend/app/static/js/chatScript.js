@@ -6,7 +6,7 @@ if (!user) {
     console.error('Username not defined');
 }
 
-const chatSocket = new WebSocket(`ws://${window.location.host}/ws/chatbox/`);
+const chatSocket = new WebSocket(`wss://${window.location.host}/wss/chatbox/`);
 
 
 chatSocket.onopen = function(event) {

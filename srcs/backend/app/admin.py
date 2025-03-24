@@ -8,8 +8,8 @@ class UserAdmin(admin.ModelAdmin):
 	list_editable = ['first_name', 'last_name', 'email', 'is_waiting', 'elo_rating', 'is_active', 'channel_name', 'avatar', 'is_staff', 'is_superuser']
 
 class GameAdmin(admin.ModelAdmin):
-	list_display = ['id', 'is_active', 'mode', 'player1', 'player2', 'score_player1', 'score_player2', 'created_at']
-	list_editable = ['is_active', 'mode', 'player1', 'player2', 'score_player1', 'score_player2']
+	list_display = ['id', 'is_active', 'mode', 'player1', 'player2', 'score_player1', 'score_player2', 'maxScore', 'timer', 'speed', 'created_at']
+	list_editable = ['is_active', 'mode', 'player1', 'player2', 'score_player1', 'score_player2', 'maxScore', 'timer', 'speed']
 
 class TournamentAdmin(admin.ModelAdmin):
 	list_display = ['id', 'name', 'creator', 'created_at']

@@ -11,3 +11,4 @@ six==1.10.0
 django-extensions
 django-redis
 pyOpenSSL
+whitenoise
