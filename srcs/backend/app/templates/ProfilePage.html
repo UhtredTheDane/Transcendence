@@ -68,8 +68,7 @@ body {
 		 </script>
 		
 	</head>
-	<body onload="loadTemplate(); fetchPlayerMatches();">
-	<!-- <body onload="loadTemplate();"> -->
+	<body onload="loadTemplate();  fetchPlayerMatches();">
 		<!-- Navbar -->
 
 		<img class="transcendence-icon position-absolute top-50 start-50 translate-middle" alt="" src="{% static 'images/bg-text.svg' %}" style="z-index: -1;">
@@ -257,120 +256,121 @@ body {
 
 </div>
 
+	<script>
+		const updateAvatarUrl = "{% url 'update_avatar' %}";
+		// const username = "{{ user_data.username }}"; // Using user_data instead of user
+		console.log('{{ user_data.avatar }}')
 
+		function changeCategory(category) {
+			// Hide all game containers
+			const containers = document.getElementsByClassName('game-category-container');
+			for (let container of containers) {
+				container.style.display = 'none';
+			}
+
+			// Show the selected category's container
+			const selectedContainer = document.getElementById(`${category.toLowerCase()}-games`);
+			if (selectedContainer) {
+				selectedContainer.style.display = 'block';
+			}
+
+			// Update active category styling
+			const categoryElements = document.getElementsByClassName('category');
+			for (let element of categoryElements) {
+				element.classList.remove('active');
+				if (element.textContent.trim() === category) {
+					element.classList.add('active');
+				}
+			}
+		}
+
+		// Initialize with Ranked games shown
+		document.addEventListener('DOMContentLoaded', function() {
+			changeCategory('Ranked');
+		});
+	</script>
+
+	<!-- Fetch player matches and update the scores -->
+	<script>
+		async function fetchPlayerMatches() {
+		const tournamentId = 1;  // Hardcoded tournament ID for now
+		const playerName = "{{ user_data.username }}";  // Username from template
+		const tournamentGames = JSON.parse('{{ tournaments|escapejs }}');
+		console.log(tournamentGames);
+		console.log(tournamentGames[0].tournament_id)
+		const matchesContainer = document.getElementById("matches-container");
+
+		try {
+			const response = await fetch(`/getPlayerMatches/${tournamentId}/${playerName}`);
+
+			if (!response.ok) {
+				throw new Error(`Failed to fetch matches: ${response.statusText}`);
+			}
+
+			const result = await response.json();
+			const matches = result.matches; // Extract the matches from the response
+
+			// Clear the "Loading matches..." message
+			matchesContainer.innerHTML = "";
+
+			// Check if we got matches and update the UI
+			if (matches.length === 0) {
+				matchesContainer.innerHTML = "<p class='secondary-font'>No recent matches found.</p>";
+			} else {
+				matches.forEach((match, index) => {
+					const gameDiv = document.createElement("div");
+					gameDiv.className = "";
+
+					// Determine if current user is player1 or player2
+					let opponent = match.player1 === playerName ? match.player2 : match.player1;
+					let userScore = match.player1 === playerName ? match.score1 : match.score2;
+					let opponentScore = match.player1 === playerName ? match.score2 : match.score1;
+
+					// Determine match result (Win, Loss, or Draw)
+					let resultText;
+					if (userScore > opponentScore) {
+						resultText = "Victory";
+					} else if (userScore < opponentScore) {
+						resultText = "Defeat";
+					} else {
+						resultText = "Draw";
+					}
+
+					// Get the match date
+					const matchDate = match.date;
+
+					// Insert the match result, opponent, scores, and date into the gameDiv
+					gameDiv.innerHTML = `
+					<p class="secondary-font"> ${matchDate} </p>
+					<div class="game-display">
+						<div class="primary-font">
+							${resultText} <!-- Displaying the date here -->
+						</div>
+						<div class="vertical-bar"></div>
+						<div class="secondary-font player-name">
+							${opponent}
+						</div>
+						<div class="secondary-font score">
+							${userScore} - ${opponentScore}
+						</div>
+					</div>
+					`;
+
+					// Append the match data to the container
+					matchesContainer.appendChild(gameDiv);
+				});
+			}
+		} catch (error) {
+			console.error('Error fetching matches:', error);
+			matchesContainer.innerHTML = "<p class='secondary-font'>Failed to load matches.</p>";
+		}
+		}
+	</script>
+	<!-- Chatbox -->
+	{% include 'ChatBox.html' %}
 	
-		<script>
-			const updateAvatarUrl = "{% url 'update_avatar' %}";
-			// const username = "{{ user_data.username }}"; // Using user_data instead of user
-			console.log('{{ user_data.avatar }}')
+	<script src="{% static 'js/index.js' %}"></script>
+	<script src="{% static 'js/profile.js' %}"></script>
 
-			function changeCategory(category) {
-    // Hide all game containers
-    const containers = document.getElementsByClassName('game-category-container');
-    for (let container of containers) {
-        container.style.display = 'none';
-    }
-
-    // Show the selected category's container
-    const selectedContainer = document.getElementById(`${category.toLowerCase()}-games`);
-    if (selectedContainer) {
-        selectedContainer.style.display = 'block';
-    }
-
-    // Update active category styling
-    const categoryElements = document.getElementsByClassName('category');
-    for (let element of categoryElements) {
-        element.classList.remove('active');
-        if (element.textContent.trim() === category) {
-            element.classList.add('active');
-        }
-    }
-}
-
-// Initialize with Ranked games shown
-document.addEventListener('DOMContentLoaded', function() {
-    changeCategory('Ranked');
-});
-		</script>
-
-					<!-- Fetch player matches and update the scores -->
-					<script>
-						async function fetchPlayerMatches() {
-						const tournamentId = 1;  // Hardcoded tournament ID for now
-						const playerName = "{{ user_data.username }}";  // Username from template
-						const matchesContainer = document.getElementById("matches-container");
-			
-						try {
-							const response = await fetch(`/getPlayerMatches/${tournamentId}/${playerName}`);
-			
-							if (!response.ok) {
-								throw new Error(`Failed to fetch matches: ${response.statusText}`);
-							}
-			
-							const result = await response.json();
-							const matches = result.matches; // Extract the matches from the response
-			
-							// Clear the "Loading matches..." message
-							matchesContainer.innerHTML = "";
-			
-							// Check if we got matches and update the UI
-							if (matches.length === 0) {
-								matchesContainer.innerHTML = "<p class='secondary-font'>No recent matches found.</p>";
-							} else {
-								matches.forEach((match, index) => {
-									const gameDiv = document.createElement("div");
-									gameDiv.className = "";
-			
-									// Determine if current user is player1 or player2
-									let opponent = match.player1 === playerName ? match.player2 : match.player1;
-									let userScore = match.player1 === playerName ? match.score1 : match.score2;
-									let opponentScore = match.player1 === playerName ? match.score2 : match.score1;
-			
-									// Determine match result (Win, Loss, or Draw)
-									let resultText;
-									if (userScore > opponentScore) {
-										resultText = "Victory";
-									} else if (userScore < opponentScore) {
-										resultText = "Defeat";
-									} else {
-										resultText = "Draw";
-									}
-			
-									// Get the match date
-									const matchDate = match.date;
-			
-									// Insert the match result, opponent, scores, and date into the gameDiv
-									gameDiv.innerHTML = `
-									<p class="secondary-font"> ${matchDate} </p>
-									<div class="game-display">
-										<div class="primary-font">
-											${resultText} <!-- Displaying the date here -->
-										</div>
-										<div class="vertical-bar"></div>
-										<div class="secondary-font player-name">
-											${opponent}
-										</div>
-										<div class="secondary-font score">
-											${userScore} - ${opponentScore}
-										</div>
-									</div>
-									`;
-			
-									// Append the match data to the container
-									matchesContainer.appendChild(gameDiv);
-								});
-							}
-						} catch (error) {
-							console.error('Error fetching matches:', error);
-							matchesContainer.innerHTML = "<p class='secondary-font'>Failed to load matches.</p>";
-						}
-						}
-						</script>
-		<!-- Chatbox -->
-		{% include 'ChatBox.html' %}
-		
-		<script src="{% static 'js/index.js' %}"></script>
-		<script src="{% static 'js/profile.js' %}"></script>
-
-	</body>
-	</html>
+</body>
+</html>

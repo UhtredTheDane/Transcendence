@@ -399,6 +399,8 @@ def profile(request, username=None):
 				})
 			return formatted_games
 
+		tournaments = Tournament.objects.filter(players__user=user_data).distinct()
+
 		context = {
 			'user_data': user_data,
 			'wins': wins,
@@ -406,8 +408,9 @@ def profile(request, username=None):
 			'scores': format_game_list(user_games),
 			'ranked_scores': format_game_list(ranked_games),
 			'unranked_scores': format_game_list(unranked_games),
-			'tournament_scores': format_game_list(tournament_games),
 			'tictactoe_scores': format_game_list(tictactoe_games),
+			'tournament_scores': format_game_list(tournament_games),
+			'tournaments': json.dumps(tournaments),
 			'is_own_profile': user_data == request.user,
 			'viewing_username': username
 		}
