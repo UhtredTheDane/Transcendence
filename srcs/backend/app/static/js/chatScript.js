@@ -10,7 +10,7 @@ const chatSocket = new WebSocket(`wss://${window.location.host}/wss/chatbox/`);
 
 
 chatSocket.onopen = function(event) {
-	console.log('WebSocket is connected.');
+	console.log('WebSocket (chat) is connected.');
 };
 
 chatSocket.onmessage = function(event) {
@@ -113,11 +113,11 @@ chatSocket.onmessage = function(event) {
 };
 
 chatSocket.onclose = function(event) {
-	console.log('WebSocket is closed.');
+	console.log('WebSocket (chat) is closed.');
 };
 
 chatSocket.onerror = function(error) {
-	console.error('WebSocket error:', error);
+	console.error('WebSocket (chat) error:', error);
 };
 
 function toggleChatbox() {

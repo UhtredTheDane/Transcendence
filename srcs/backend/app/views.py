@@ -791,8 +791,27 @@ def	invitetournament(request):
 	return render(request, 'InviteTournament.html')
 
 @login_required
-def	jointournament(request):
-	return render(request, 'JoinTournament.html')
+def jointournament(request):
+	created_tournaments = Tournament.objects.filter(creator=request.user)
+	joined_tournaments = Tournament.objects.filter(players__user=request.user)
+
+	all_tournaments = (created_tournaments | joined_tournaments).distinct()
+
+	tournaments_data = [
+		{
+			"id": tournament.id,
+			"name": tournament.name or f"Tournament {tournament.id}",
+			"created_at": tournament.created_at.isoformat()
+		}
+		for tournament in all_tournaments
+	]
+
+	print(tournaments_data)
+
+	return render(request, 'JoinTournament.html', {
+		"tournaments": json.dumps(tournaments_data)
+	})
+
 
 @login_required
 def	myfriends(request):

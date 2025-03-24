@@ -84,46 +84,10 @@
             No tournament open at the moment.
         </div>
     </div>
-    <script>
-        const selectedPlayers = [];
-
-        function addPlayer(player) {
-            // Add the selected player to the invite list
-            if (!selectedPlayers.includes(player)) {
-                selectedPlayers.push(player);
-                updateSelectedPlayers();
-            }
-        }
-
-        function updateSelectedPlayers() {
-            const selectedListContainer = document.getElementById('selectedPlayers');
-            selectedListContainer.innerHTML = ''; // Clear previous list
-
-            selectedPlayers.forEach(player => {
-                const playerElement = document.createElement('div');
-                playerElement.textContent = player;
-                selectedListContainer.appendChild(playerElement);
-            });
-        }
-
-        function startTournament() {
-            if (selectedPlayers.length < 2) {
-                alert('You need at least 2 players to start a tournament.');
-            } else {
-                window.location.href = '/TournamentPage'; // Redirect to TournamentPage
-            }
-        }
-    </script>
 
     <script>
-        // Simulating a list of tournaments (replace with dynamic logic)
-		const openTournaments = [
-			{
-			id: 1,
-			name: "Hello World",
-			}
-		];
-        const tournamentList = document.getElementById('tournamentList');
+		const openTournaments = JSON.parse('{{ tournaments|escapejs }}');
+		const tournamentList = document.getElementById('tournamentList');
         const noTournamentMessage = document.getElementById('noTournamentMessage');
 		
 		// Clear existing tournament list
@@ -134,7 +98,7 @@
 			const tournamentDiv = document.createElement('div');
 			tournamentDiv.className = 'tournament-button ';
 			tournamentDiv.textContent = tournament.name;
-			tournamentDiv.onclick = () => window.location.href = `/JoinTournamentDetails/${tournament.id}`; // ! CHANGER LE LIENS
+			tournamentDiv.onclick = () => window.location.href = `/TournamentPage/${tournament.id}`;
 			tournamentList.appendChild(tournamentDiv);
 		});
 

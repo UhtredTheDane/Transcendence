@@ -69,7 +69,10 @@ export default class OnlineGame extends Game {
 			} else if (data.type === "game_over")
 			{
 				tempoGame.socket.close(1000, "Fermeture normale");
-				window.location.href = "/";
+				if (data.mode === "tournament")
+					window.location.href = `/TournamentPage/${tournamentId}/`;
+				else
+					window.location.href = "/";
 				return;
 			}
 
