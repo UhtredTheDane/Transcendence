@@ -8,6 +8,9 @@ from channels.generic.websocket import AsyncWebsocketConsumer, JsonWebsocketCons
 from channels.db import database_sync_to_async
 from asgiref.sync import sync_to_async, async_to_sync
 from .models import Game, User, Channel, Messages, TournamentGame, Tournament, TournamentPlayer
+from channels.db import database_sync_to_async
+from channels.generic.websocket import AsyncJsonWebsocketConsumer
+
 
 active_users = {}
 
@@ -774,4 +777,39 @@ class ChatboxConsumer(AsyncWebsocketConsumer):
             'content': event.get('content')
             }))
 
+class ProfileConsumer(AsyncJsonWebsocketConsumer):
+    async def connect(self):
+        if self.scope["user"].is_authenticated:
+            await self.accept()
+        else:
+            await self.close()
 
+    @database_sync_to_async
+    def update_user_profile(self, data):
+        user = self.scope["user"]
+        try:
+            return user.update_profile(
+                username=data.get('username'),
+                email=data.get('email'),
+                password=data.get('password')
+            )
+        except ValueError as e:
+            return {"error": str(e)}
+
+    async def receive_json(self, content):
+        if content.get("type") == "profile.update":
+            result = await self.update_user_profile(content.get("data", {}))
+            
+            if isinstance(result, dict) and "error" in result:
+                await self.send_json({
+                    "type": "profile.error",
+                    "data": result["error"]
+                })
+            else:
+                await self.send_json({
+                    "type": "profile.updated",
+                    "data": {
+                        "username": result.username,
+                        "email": result.email
+                    }
+                })

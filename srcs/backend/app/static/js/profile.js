@@ -1,3 +1,5 @@
+const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+
 function triggerUpload() {
 	document.getElementById('profile-pic-input').click(); // Simule un clic sur l'input
 }
@@ -43,7 +45,8 @@ function uploadProfilePicture(input) {
 }
 
 function enableEditing(field){
-    const   textElement = field.previousElementSibling;
+	document.getElementById('saveButton').style.display = 'inline-block';
+	const   textElement = field.previousElementSibling;
     const   inputElement = document.createElement('input');
     inputElement.value = textElement.innerText || textElement.innerHTML;
     textElement.style.display = 'none';
@@ -58,28 +61,44 @@ function enableEditing(field){
     }
 }
 
-function    saveEdits() {
-    const username = document.getElementById("username").innerText;
-    const email = document.getElementById("email").innerText;
-    const password = document.getElementById("password").innerText;
+function getCSRFToken() {
+    return document.cookie.split('; ')
+        .find(row => row.startsWith('csrftoken='))
+        ?.split('=')[1];
+}
 
-    fetch("/saveProfile", {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-            username: username,
-            email: email,
-            password: password
-        })
-    })
-    .then(response => response.json())
-    .then(data => {
-        alert('Profile saved!');
-    })
-    .catch(error => {
-        console.error("Error did not save profile: ", error);
-        alert("Profile not saved...");
-    });
+function saveEdits() {
+    const username = document.getElementById("username").innerText.trim();
+    const email = document.getElementById("email").innerText.trim();
+	const password = document.getElementById("password")?.innerText.trim() || '********';
+    const csrftoken = getCSRFToken();
+
+    // Validate data before sending
+    if (!username || !email) {
+        alert('Username and email are required');
+        return;
+    }
+
+    const data = {
+        username: username,
+        email: email,
+        password: password === '********' ? null : password
+    };
+
+    // Log data being sent
+    console.log('Sending data:', data);
+
+    fetch('/save_profile/', {
+		method: "POST",
+		headers: {
+			"Content-Type": "application/json",
+			"Accept": "application/json",
+			"X-CSRFToken": csrftoken
+		},
+		credentials: 'same-origin',
+		body: JSON.stringify(data)
+	})
+	console.log("Data sent")
+	document.getElementById('saveButton').style.display = 'none';
+
 }

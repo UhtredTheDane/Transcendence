@@ -12,4 +12,6 @@ websocket_urlpatterns = [
     re_path(r'wss/MatchMaking/$', consumers.MatchmakingConsumer.as_asgi()),
 	re_path(r'wss/tournament/match/(?P<match_id>\d+)/$', consumers.MatchConsumer.as_asgi()),
 	re_path(r'wss/chatbox/$', consumers.ChatboxConsumer.as_asgi()),
+     re_path(r'wss/profile/$', consumers.ProfileConsumer.as_asgi()),
+
 ]

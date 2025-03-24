@@ -16,6 +16,10 @@ from allauth.account.forms import LoginForm
 from allauth.account.forms import SignupForm
 from allauth.account.views import login as allauth_login
 from allauth.account.views import signup as allauth_signup
+from django.views.decorators.http import require_http_methods
+from django.views.decorators.csrf import ensure_csrf_cookie
+import logging
+
 
 API_42_AUTH_URL = "https://api.intra.42.fr/oauth/authorize"
 API_42_TOKEN_URL = "https://api.intra.42.fr/oauth/token"
@@ -292,15 +296,26 @@ def auth_42_callback(request):
 	else:
 		avatar_url = "/media/default/avatar.png"
 
-	user, created = User.objects.get_or_create(
+	# Get email from API response
+	email = user_api_data.get("email", "")
+
+	created = False
+	# Check if user exists with this email
+	existing_user = User.objects.filter(email=email).first()
+
+	if existing_user:
+		# User exists, use their current username
+		user = existing_user
+	else:
+		# New user, create with 42 login as username
+		user = User.objects.create(
 			username=user_api_data["login"],
-			defaults={
-				"email": user_api_data.get("email", ""),
-				"first_name": user_api_data.get("first_name", ""),
-				"last_name": user_api_data.get("last_name", ""),
-				"avatar": avatar_url
-				},
-			)
+			email=email,
+			first_name=user_api_data.get("first_name", ""),
+			last_name=user_api_data.get("last_name", ""),
+			avatar=avatar_url
+		)
+		created = True
 
 	if created and avatar_url != "/media/default/avatar.png":
 		response = requests.get(avatar_url)
@@ -683,3 +698,44 @@ def profile_view(request):
 		'tictactoe_scores': Game.objects.filter(game_type='tictactoe'),
 	}
 	return render(request, 'ProfilePage.html', context)
+
+logger = logging.getLogger(__name__)
+
+@ensure_csrf_cookie
+@require_http_methods(["POST"])
+def save_profile(request):
+    try:
+        data = json.loads(request.body)
+        user = request.user
+        
+        # Use the new update_profile method
+        updated_user = user.update_profile(
+            username=data.get('username'),
+            email=data.get('email'),
+            password=data.get('password') if data.get('password') != '*********' else None
+        )
+        
+        return JsonResponse({
+            'status': 'success',
+            'message': 'Profile updated successfully',
+            'user': {
+                'username': updated_user.username,
+                'email': updated_user.email
+            }
+        })
+        
+    except ValueError as e:
+        return JsonResponse({
+            'status': 'error',
+            'message': str(e)
+        }, status=400)
+        
+    except Exception as e:
+        logger.error(f"Profile update error: {str(e)}")
+        return JsonResponse({
+            'status': 'error',
+            'message': 'An unexpected error occurred'
+        }, status=500)
+    
+def error404(request):
+    return render(request, 'Error404.html')

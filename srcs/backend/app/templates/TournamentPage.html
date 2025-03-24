@@ -14,13 +14,13 @@
       rel="stylesheet"
     />
 
-     <link rel="stylesheet" href="{% static 'css/chatbox.css' %}" />
-    <link rel="stylesheet" href="{% static 'css/index.css' %}" />
+    <link rel="stylesheet" href="{% static 'css/chatbox.css' %}" />
+
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="{% static 'js/index.js' %}"></script>
-     <link rel="icon" href="{% static 'icons/42_logo.ico' %}"  >
-     
+    <link rel="icon" href="{% static 'icons/42_logo.ico' %}" />
+
     <style>
       body {
         background-color: black;
@@ -126,8 +126,9 @@
         align-items: center;
       }
     </style>
+	<link rel="stylesheet" href="{% static 'css/index.css' %}" />
   </head>
-  <body onload="loadTemplate()"  onload="initializeBracket()">
+  <body onload="loadTemplate()" onload="initializeBracket()">
     <!-- Navbar with Link to Home -->
     <nav class="navbar navbar-expand-lg navbar-dark">
       <div class="container-fluid">
@@ -149,11 +150,11 @@
     </div>
 
     <div class="container position-absolute top-50 start-50 translate-middle">
-		{% if tournament_name %}
-			<h1 class="mb-4 primary-font">{{ tournament_name }}</h1>
-		{% else %}
-			<h1 class="mb-4 primary-font">Tournament: Challenge Players</h1>
-		{% endif %}
+      {% if tournament_name %}
+      <h1 class="mb-4 primary-font">{{ tournament_name }}</h1>
+      {% else %}
+      <h1 class="mb-4 primary-font">Tournament: Challenge Players</h1>
+      {% endif %}
 
       <!-- Tournament Bracket -->
       <div class="bracket row" id="bracket"></div>
@@ -162,37 +163,43 @@
     <script>
       let playersList = "{{ players|escapejs }}";
       let matchesList = JSON.parse("{{ matches|escapejs }}");
-	  let currentUserId = parseInt('{{ request.user.id }}');
-	  let tournamentId = parseInt('{{ tournament_id }}');
-	  let userMatch = matchesList.find(match => match.player1_id === currentUserId || match.player2_id === currentUserId);
-	  console.log(userMatch) 
-	  console.log(tournamentId)
-	  const tournamentSocket = new WebSocket(`ws://${window.location.host}/ws/tournament/${tournamentId}/${userMatch.id}`);
-    //   console.log("------ List matches ------------");
-    //   console.log(matchesList);
-    //   console.log("------------------");
+      let currentUserId = parseInt("{{ request.user.id }}");
+      let tournamentId = parseInt("{{ tournament_id }}");
+      let userMatch = matchesList.find(
+        (match) =>
+          match.player1_id === currentUserId ||
+          match.player2_id === currentUserId
+      );
+      console.log(userMatch);
+      console.log(tournamentId);
+      const tournamentSocket = new WebSocket(
+        `ws://${window.location.host}/ws/tournament/${tournamentId}/${userMatch.id}`
+      );
+      //   console.log("------ List matches ------------");
+      //   console.log(matchesList);
+      //   console.log("------------------");
 
-	  tournamentSocket.onmessage = function(event) {
-	    const data = JSON.parse(event.data);
-		console.log(`Received data:\n${JSON.stringify(data)}`);
-	    if (data.type === "ready_update") {
-		  updateReadyButton(data.match_id, data.player_id, data.ready);
-	    } else if (data.type === "match_start") {
-	  	  window.location.href = `/UnrankedMode/${data.match_id}/`;
-	    }
-	  };
+      tournamentSocket.onmessage = function (event) {
+        const data = JSON.parse(event.data);
+        console.log(`Received data:\n${JSON.stringify(data)}`);
+        if (data.type === "ready_update") {
+          updateReadyButton(data.match_id, data.player_id, data.ready);
+        } else if (data.type === "match_start") {
+          window.location.href = `/UnrankedMode/${data.match_id}/`;
+        }
+      };
 
-	  tournamentSocket.onopen = function () {
-		console.log("WebSocket Tournament connection established");
-	  };
+      tournamentSocket.onopen = function () {
+        console.log("WebSocket Tournament connection established");
+      };
 
-	  tournamentSocket.onclose = function () {
-		console.log("WebSocket Tournament connection closed");
-	  };
+      tournamentSocket.onclose = function () {
+        console.log("WebSocket Tournament connection closed");
+      };
 
-	  tournamentSocket.onerror = function (error) {
-		console.error("WebSocket Tournament error:\n" + JSON.stringify(error));
-	  };
+      tournamentSocket.onerror = function (error) {
+        console.error("WebSocket Tournament error:\n" + JSON.stringify(error));
+      };
 
       // Initialize bracket once the DOM is fully loaded
       document.addEventListener("DOMContentLoaded", function () {
@@ -236,24 +243,28 @@
 
         // Create matches for the 8 finals
         for (let i = 0; i < 8; i++) {
-          let match = createMatch(i + 1, [
-            {
-			  id: matchesList[i].player1_id,
-              name: matchesList[i].player1 || "No name",
-              avatar:
-                matchesList[i].player1_avatar || "/media/default/avatar.png",
-			  score: matchesList[i].player1_score,
-			  type: "player",
-			},
-            {
-			  id: matchesList[i].player2_id,
-			  name: matchesList[i].player2 || "No name",
-              avatar:
-                matchesList[i].player2_avatar || "/media/default/avatar.png",
-			  score: matchesList[i].player2_score,
-			  type: "player",
-            },
-          ], currentUserId);
+          let match = createMatch(
+            i + 1,
+            [
+              {
+                id: matchesList[i].player1_id,
+                name: matchesList[i].player1 || "No name",
+                avatar:
+                  matchesList[i].player1_avatar || "/media/default/avatar.png",
+                score: matchesList[i].player1_score,
+                type: "player",
+              },
+              {
+                id: matchesList[i].player2_id,
+                name: matchesList[i].player2 || "No name",
+                avatar:
+                  matchesList[i].player2_avatar || "/media/default/avatar.png",
+                score: matchesList[i].player2_score,
+                type: "player",
+              },
+            ],
+            currentUserId
+          );
           round1.appendChild(match);
         }
 
@@ -275,24 +286,28 @@
         round2.appendChild(roundTitle);
 
         for (let i = 0; i < 4; i++) {
-          let match = createMatch(i + 9, [
-            {
-			  id: matchesList[i].player1_id, 
-              name: matchesList[i].player1 || "No name",
-              avatar:
-                matchesList[i].player1_avatar || "/media/default/avatar.png",
-			  score: matchesList[i].player1_score,
-			  type: "player",
-            },
-            {
-			  id: matchesList[i].player2_id,
-              name: matchesList[i].player2 || "No name",
-              avatar:
-                matchesList[i].player2_avatar || "/media/default/avatar.png",
-			  score: matchesList[i].player2_score,
-			  type: "player",
-            },
-          ], currentUserId);
+          let match = createMatch(
+            i + 9,
+            [
+              {
+                id: matchesList[i].player1_id,
+                name: matchesList[i].player1 || "No name",
+                avatar:
+                  matchesList[i].player1_avatar || "/media/default/avatar.png",
+                score: matchesList[i].player1_score,
+                type: "player",
+              },
+              {
+                id: matchesList[i].player2_id,
+                name: matchesList[i].player2 || "No name",
+                avatar:
+                  matchesList[i].player2_avatar || "/media/default/avatar.png",
+                score: matchesList[i].player2_score,
+                type: "player",
+              },
+            ],
+            currentUserId
+          );
           round2.appendChild(match);
         }
 
@@ -313,24 +328,28 @@
 
         // Create placeholder matches for the Semi Finals
         for (let i = 0; i < 2; i++) {
-          let match = createMatch(i + 13, [
-            {
-			  id: matchesList[i].player1_id,
-              name: matchesList[i].player1 || "No name",
-              avatar:
-                matchesList[i].player1_avatar || "/media/default/avatar.png",
-			  score: matchesList[i].player1_score,
-			  type: "player",
-			},
-            {
-			  id: matchesList[i].player2_id,
-              name: matchesList[i].player2 || "No name",
-              avatar:
-                matchesList[i].player2_avatar || "/media/default/avatar.png",
-			  score: matchesList[i].player2_score,
-			  type: "player",
-            },
-          ], currentUserId);
+          let match = createMatch(
+            i + 13,
+            [
+              {
+                id: matchesList[i].player1_id,
+                name: matchesList[i].player1 || "No name",
+                avatar:
+                  matchesList[i].player1_avatar || "/media/default/avatar.png",
+                score: matchesList[i].player1_score,
+                type: "player",
+              },
+              {
+                id: matchesList[i].player2_id,
+                name: matchesList[i].player2 || "No name",
+                avatar:
+                  matchesList[i].player2_avatar || "/media/default/avatar.png",
+                score: matchesList[i].player2_score,
+                type: "player",
+              },
+            ],
+            currentUserId
+          );
           round3.appendChild(match);
         }
 
@@ -349,8 +368,20 @@
 
         if (!playersList || playersList.length < 2) {
           playersList = [
-            { id: null, name: "To Be Determined", avatar: "/media/default/avatar.png", score: '0', type: "auto" },
-            { id: null, name: "To Be Determined", avatar: "/media/default/avatar.png", score: '0', type: "auto" },
+            {
+              id: null,
+              name: "To Be Determined",
+              avatar: "/media/default/avatar.png",
+              score: "0",
+              type: "auto",
+            },
+            {
+              id: null,
+              name: "To Be Determined",
+              avatar: "/media/default/avatar.png",
+              score: "0",
+              type: "auto",
+            },
           ];
         }
 
@@ -381,7 +412,11 @@
                 border-radius: 50%;
                 margin-right: 10px;">
             <span class="player-name">${playersList[0].name}</span>
-			${playersList[0].type !== "auto" ? '<span class="player-score">' + playersList[0].score + '</span>' : ''}
+			${
+        playersList[0].type !== "auto"
+          ? '<span class="player-score">' + playersList[0].score + "</span>"
+          : ""
+      }
         </div>
     `;
 
@@ -395,28 +430,44 @@
                 border-radius: 50%;
                 margin-right: 10px;">
             <span class="player-name">${playersList[1].name}</span>
-            ${playersList[1].type !== "auto" ? '<span class="player-score">' + playersList[1].score + '</span>' : ''}
+            ${
+              playersList[1].type !== "auto"
+                ? '<span class="player-score">' +
+                  playersList[1].score +
+                  "</span>"
+                : ""
+            }
         </div>
     `;
 
-		// console.log(playersList[0].id, currentUserId, "\n", playersList[1].id, currentUserId);
+        // console.log(playersList[0].id, currentUserId, "\n", playersList[1].id, currentUserId);
 
-		match.appendChild(player1);
-		match.appendChild(player2);
+        match.appendChild(player1);
+        match.appendChild(player2);
 
-        if (playersList[0].id === currentUserId || playersList[1].id === currentUserId) {
-			let button = document.createElement("a");
-			button.classList.add("btn", "btn-primary", "btn-lg", "small-first-btn");
-			button.setAttribute("data", "Ready");
-			button.onclick = function () {
-				tournamentSocket.send(JSON.stringify({
-					event: "toggle_ready",
-					match_id: matchNumber,
-					player_id: currentUserId,
-				}));
-			};
-			match.appendChild(button);
-		}
+        if (
+          playersList[0].id === currentUserId ||
+          playersList[1].id === currentUserId
+        ) {
+          let button = document.createElement("a");
+          button.classList.add(
+            "btn",
+            "btn-primary",
+            "btn-lg",
+            "small-first-btn"
+          );
+          button.setAttribute("data", "Ready");
+          button.onclick = function () {
+            tournamentSocket.send(
+              JSON.stringify({
+                event: "toggle_ready",
+                match_id: matchNumber,
+                player_id: currentUserId,
+              })
+            );
+          };
+          match.appendChild(button);
+        }
 
         return match;
       }
@@ -427,25 +478,25 @@
         );
       }
 
-	  function updateReadyButton(matchId, playerId, isReady) {
-		const matchElement = document.getElementById(`match${matchId}`);
-		if (!matchElement) return;
+      function updateReadyButton(matchId, playerId, isReady) {
+        const matchElement = document.getElementById(`match${matchId}`);
+        if (!matchElement) return;
 
-		// Mettre à jour le statut visuel
-		const player1Ready = matchElement.querySelector('.player1-ready');
-		const player2Ready = matchElement.querySelector('.player2-ready');
-		
-		if (playerId === currentUserId) {
-			const button = matchElement.querySelector('button');
-			if (button) button.textContent = isReady ? 'Cancel' : 'Ready';
-		}
-		
-		if (playerId === matchElement.dataset.player1Id) {
-			player1Ready.textContent = isReady ? '✓' : '';
-		} else {
-			player2Ready.textContent = isReady ? '✓' : '';
-		}
-	  }
+        // Mettre à jour le statut visuel
+        const player1Ready = matchElement.querySelector(".player1-ready");
+        const player2Ready = matchElement.querySelector(".player2-ready");
+
+        if (playerId === currentUserId) {
+          const button = matchElement.querySelector("button");
+          if (button) button.textContent = isReady ? "Cancel" : "Ready";
+        }
+
+        if (playerId === matchElement.dataset.player1Id) {
+          player1Ready.textContent = isReady ? "✓" : "";
+        } else {
+          player2Ready.textContent = isReady ? "✓" : "";
+        }
+      }
     </script>
   </body>
 </html>

@@ -5,6 +5,7 @@ from django.urls import path, include
 from app import views
 from django.views.generic import RedirectView
 from django.contrib.staticfiles.storage import staticfiles_storage
+from django.views.decorators.csrf import csrf_exempt
 
 
 urlpatterns = [
@@ -36,6 +37,15 @@ urlpatterns = [
 	path('channel/<int:channel_id>/', views.channel_page, name='channel_page'),
 	path('send_message/<int:channel_id>/', views.send_message, name='send_message'),
 	path('create-game/', views.create_game, name='create_game'),
+ 
+ 
+ 
+ 
+	path('save_profile/', views.save_profile, name='save_profile'),
+ 
+ 
+ 
+ 
 	path('RankedMode/<int:game_id>/', views.RankedMode, name='RankedMode'),
  	path('UnrankedMode/<int:game_id>/', views.UnrankedMode, name='UnrankedMode'),
   	path('RushMode/<int:game_id>/', views.RushMode, name='RushMode'),
@@ -57,6 +67,8 @@ urlpatterns = [
 		url='/static/icons/42_logo.ico', 
 		permanent=True
 	), name='favicon'),
+    #  path('ProfilePage/save/', csrf_exempt(views.save_profile), name='save_profile'),
+
 ]
 
 if settings.DEBUG:

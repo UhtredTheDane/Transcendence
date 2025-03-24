@@ -25,6 +25,20 @@ class User(AbstractUser):
 	def __str__(self):
 		return f"{self.username} ({self.id})"
 
+	def update_profile(self, username, email, password=None):
+			"""Update user profile with validation"""
+			if User.objects.exclude(id=self.id).filter(username=username).exists():
+				raise ValueError("Username already taken")
+			if User.objects.exclude(id=self.id).filter(email=email).exists():
+				raise ValueError("Email already taken")
+			self.username = username
+			self.email = email
+			if password:
+				self.set_password(password)
+				
+			self.save()
+			return self
+
 class Game(models.Model):
 	MODE_CHOICES = [
 		('ranked', 'Ranked'),
