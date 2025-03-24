@@ -8,6 +8,8 @@ from channels.generic.websocket import AsyncWebsocketConsumer, JsonWebsocketCons
 from channels.db import database_sync_to_async
 from asgiref.sync import sync_to_async, async_to_sync
 from .models import Game, User, Channel, Messages, TournamentGame, Tournament, TournamentPlayer
+from .views import add_match, convert_date_to_unix
+
 
 active_users = {}
 
@@ -205,25 +207,7 @@ class GameConsumer(AsyncWebsocketConsumer):
 		self.game.score_player1 = data.get("score_player1", self.game.score_player1)
 		self.game.score_player2 = data.get("score_player2", self.game.score_player2)
 
-        if self.scope['user'].is_anonymous or self.scope['user'] not in [self.player1, self.player2]:
-            await self.close()
-        else:
-            await self.channel_layer.group_add(
-                    self.game_group_name,
-                    self.channel_name
-                    )
-            await self.accept()
-            await self.send(text_data=json.dumps({
-                "type": "game_state",
-                "player1_y": self.game.player1_y,
-                "player2_y": self.game.player2_y,
-                "ball_x": self.game.ball_x,
-                "ball_y": self.game.ball_y,
-                "score_player1": self.game.score_player1,
-                "score_player2": self.game.score_player2,
-                "speed": self.game.speed,
-                "maxScore": self.game.maxScore,
-                }))
+		await sync_to_async(self.game.save)(update_fields=["score_player1", "score_player2"])
 
 		await self.channel_layer.group_send(
 				self.game_group_name,
@@ -234,9 +218,9 @@ class GameConsumer(AsyncWebsocketConsumer):
 					}
 				)
 
-    async def receive(self, text_data):
-        data = json.loads(text_data)
-        message_type = data.get("type")
+	async def handle_pause(self, data):
+		self.game.is_paused = bool(data.get("is_paused", False))
+		await sync_to_async(self.game.save)()
 
 		await self.channel_layer.group_send(
 				self.game_group_name,
@@ -259,7 +243,6 @@ class GameConsumer(AsyncWebsocketConsumer):
 			except TournamentGame.DoesNotExist:
 				print("❌ ERREUR: Aucun tournoi trouvé pour ce match.")
 				return
-			
 			print(f"🏆 Match {self.game.id} lié au tournoi {tournament_id}")
 
 			if self.game.score_player1 > self.game.score_player2:
@@ -274,32 +257,27 @@ class GameConsumer(AsyncWebsocketConsumer):
 			if winner:
 				await insert_winner_in_next_match(tournament_id, self.game, winner)
 
-			payload = {
-					"tournamentid": tournament_id,
-					"player1": {
-						"id": self.game.player1.id,
-						"username": self.game.player1.username
-					} if self.game.player1 else None,
-					"player2": {
-						"id": self.game.player2.id,
-						"username": self.game.player2.username
-					} if self.game.player2 else None,
-					"score1": self.game.score_player1,
-					"score2": self.game.score_player2,
-					"date": str(self.game.created_at)
-				}
+			# payload = {
+			# 		"tournamentid": tournament_id,
+			# 		"player1": {
+			# 			"id": self.game.player1.id,
+			# 			"username": self.game.player1.username
+			# 		} if self.game.player1 else None,
+			# 		"player2": {
+			# 			"id": self.game.player2.id,
+			# 			"username": self.game.player2.username
+			# 		} if self.game.player2 else None,
+			# 		"score1": self.game.score_player1,
+			# 		"score2": self.game.score_player2,
+			# 		"date": str(self.game.created_at)
+			# 	}
+			
+			add_match(tournament_id, self.game.player1.id, self.game.player2.id, self.game.score_player1, self.game.score_player2,
+				convert_date_to_unix(str(self.game.created_at)))
+			print(f"\request sent is:\n")
 
-			try:
-				response = requests.post(
-						"http://blockchain-node:3000/add-match", 
-						json=payload,  # Send as JSON
-						headers={"Content-Type": "application/json"}
-						)
-
-				# return JsonResponse(response.json())
-			except Exception as e:
-				print(f"❌ ERREUR: Impossible d'ajouter le match au tournoi: {e}")
-
+			# if add_response.get('status') == 'error':
+			# 	return JsonResponse({'status': 'error', 'message': add_response.get('message')})
 		await sync_to_async(self.game.save)(update_fields=["score_player1", "score_player2", "is_active", "is_ended"])
 
 		await self.channel_layer.group_send(
@@ -324,20 +302,15 @@ class GameConsumer(AsyncWebsocketConsumer):
 	async def update_game_score(self, event):
 		await self.send(text_data=json.dumps(event))
 
-    async def handle_move(self, data):
-        new_position = data.get("position")
-        targetPlayer = data.get("player")
+	async def update_pause(self, event):
+		await self.send(text_data=json.dumps(event))
 
-        await sync_to_async(self.game.save)()
-        await self.channel_layer.group_send(
-                self.game_group_name,
-                {
-                    "type": "update_position",
-                    "player": targetPlayer,
-                    "position": new_position,
-                    }
-                )
-        print("target player: ", targetPlayer)
+	async def game_over(self, event):
+		try:
+			await self.send(text_data=json.dumps(event))
+		except Exception as e:
+			print(f"Error sending game over message: {e}")
+			pass
 
 class MatchConsumer(AsyncWebsocketConsumer):
 	async def connect(self):
@@ -544,15 +517,15 @@ class TicTacToeConsumer(AsyncWebsocketConsumer):
 		await self.send(text_data=json.dumps(event))
 
 class ChatConsumer(AsyncWebsocketConsumer):
-    async def connect(self):
-        self.channel_id = self.scope['url_route']['kwargs']['channel_id']
-        self.channel_group_name = f'channel_{self.channel_id}'
+	async def connect(self):
+		self.channel_id = self.scope['url_route']['kwargs']['channel_id']
+		self.channel_group_name = f'channel_{self.channel_id}'
 
-        channel = await sync_to_async(Channel.objects.get)(id=self.channel_id)
-        participants = await sync_to_async(list)(channel.participants.all())
-        print(participants)
-        if self.scope['user'] not in participants:
-            await self.close()
+		channel = await sync_to_async(Channel.objects.get)(id=self.channel_id)
+		participants = await sync_to_async(list)(channel.participants.all())
+		print(participants)
+		if self.scope['user'] not in participants:
+			await self.close()
 
 		await self.channel_layer.group_add(
 				self.channel_group_name,
@@ -569,10 +542,10 @@ class ChatConsumer(AsyncWebsocketConsumer):
 				self.channel_name
 				)
 
-    async def receive(self, text_data):
-        text_data_json = json.loads(text_data)
-        message_content = text_data_json['message']
-        user = self.scope['user']
+	async def receive(self, text_data):
+		text_data_json = json.loads(text_data)
+		message_content = text_data_json['message']
+		user = self.scope['user']
 
 		await sync_to_async(Messages.objects.create)(channel_id=self.channel_id, user=user, content=message_content)
 
@@ -585,9 +558,9 @@ class ChatConsumer(AsyncWebsocketConsumer):
 					}
 				)
 
-    async def chat_message(self, event):
-        message = event['message']
-        user = event['user']
+	async def chat_message(self, event):
+		message = event['message']
+		user = event['user']
 
 		await self.send(text_data=json.dumps({
 			'message': message,
@@ -596,14 +569,14 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
 
 class MatchmakingConsumer(AsyncWebsocketConsumer):
-    async def connect(self):
-        self.user = self.scope["user"]
+	async def connect(self):
+		self.user = self.scope["user"]
 
-        if self.user.is_authenticated:
-            query_string = self.scope["query_string"].decode()
-            mode = "unranked"
-            if "mode=" in query_string:
-                mode = query_string.split("mode=")[-1]
+		if self.user.is_authenticated:
+			query_string = self.scope["query_string"].decode()
+			mode = "unranked"
+			if "mode=" in query_string:
+				mode = query_string.split("mode=")[-1]
 
 			active_users[self.user.username] = {
 					"channel_name": self.channel_name,
@@ -622,10 +595,10 @@ class MatchmakingConsumer(AsyncWebsocketConsumer):
 		else:
 			await self.close()
 
-            # Rechercher un adversaire avec le même mode
-            await self.search_match(mode)
-        else:
-            await self.close()
+	async def disconnect(self, close_code):
+		await self.channel_layer.group_discard("matchmaking_queue", self.channel_name)
+		active_users.pop(self.user.username, None)
+		print(f"{self.user.username} quitte le matchmaking.")
 
 	async def search_match(self):
 		for username, channel in active_users.items():
@@ -653,22 +626,22 @@ class MatchmakingConsumer(AsyncWebsocketConsumer):
 
 		player2_data = active_users.get(player2_name)
 
-    async def search_match(self, mode):
-        for username, data in active_users.items():
-            if username != self.user.username and data["mode"] == mode:
-                await self.find_opponent({ "user": username })
-                return
+		if not player2_data:
+			print(f"❌ ERREUR: {player2_name} n'a pas de channel actif.")
+			return
 
-        print(f"Aucun adversaire trouvé en mode {mode}, en attente...")
+		player2_channel = player2_data["channel_name"]
+		mode = player2_data["mode"]  # Récupère le mode de jeu
 
-    async def find_opponent(self, event):
-        player1 = self.user
-        player2_name = event["user"]
-        player2_channel = active_users.get(player2_name)
+		if player1.username == player2_name:
+			print("❌ ERREUR: Vous ne pouvez pas jouer contre vous-même.")
+			return
 
-        if not player2_channel:
-            print(f"❌ ERREUR: {player2_name} n'a pas de channel actif. Active users: {active_users}")
-            return
+		try:
+			player2 = await sync_to_async(User.objects.get)(username=player2_name)
+		except User.DoesNotExist:
+			print(f"❌ ERREUR: {player2_name} n'existe pas.")
+			return
 
 		# game = await sync_to_async(Game.objects.create)(player1=player1, player2=player2)
 		# print(f"🎮 Match trouvé : {player1.username} vs {player2.username} (Game ID: {game.id})")
@@ -679,12 +652,11 @@ class MatchmakingConsumer(AsyncWebsocketConsumer):
 				)
 		print(f"🎮 Match trouvé ({mode}) : {player1.username} vs {player2.username} (Game ID: {game.id})")
 
-        if not player2_data:
-            print(f"❌ ERREUR: {player2_name} n'a pas de channel actif.")
-            return
+		await self.channel_layer.group_discard("matchmaking_queue", self.channel_name)
+		await self.channel_layer.group_discard("matchmaking_queue", player2_channel)
 
-        player2_channel = player2_data["channel_name"]
-        mode = player2_data["mode"]  # Récupère le mode de jeu
+		active_users.pop(self.user.username, None)
+		active_users.pop(player2_name, None)
 
 		await self.channel_layer.send(self.channel_name, {
 			"type": "match_found",
@@ -702,235 +674,8 @@ class MatchmakingConsumer(AsyncWebsocketConsumer):
 			"mode": mode
 			})
 
-        # game = await sync_to_async(Game.objects.create)(player1=player1, player2=player2)
-        # print(f"🎮 Match trouvé : {player1.username} vs {player2.username} (Game ID: {game.id})")
-        game = await sync_to_async(Game.objects.create)(
-                player1=player1,
-                player2=player2,
-                mode=mode  # On stocke le mode de jeu dans le modèle Game
-                )
-        print(f"🎮 Match trouvé ({mode}) : {player1.username} vs {player2.username} (Game ID: {game.id})")
-
-        await self.channel_layer.group_discard("matchmaking_queue", self.channel_name)
-        await self.channel_layer.group_discard("matchmaking_queue", player2_channel)
-
-        active_users.pop(self.user.username, None)
-        active_users.pop(player2_name, None)
-
-        await self.channel_layer.send(self.channel_name, {
-            "type": "match_found",
-            "game_id": game.id,
-            "player1": player1.username,
-            "player2": player2.username,
-            "mode": mode
-            })
-
-        await self.channel_layer.send(player2_channel, {
-            "type": "match_found",
-            "game_id": game.id,
-            "player1": player1.username,
-            "player2": player2.username,
-            "mode": mode
-            })
-
-    async def match_found(self, event):
-        await self.send(text_data=json.dumps(event))
-
-
-class ChatboxConsumer(AsyncWebsocketConsumer):
-    async def connect(self):
-        self.user = self.scope["user"]
-
-        if not self.user.is_authenticated:
-            await self.close()
-            return
-
-        self.group_name = f"user_{self.user.username}"
-        await self.channel_layer.group_add(
-                self.group_name,
-                self.channel_name
-                )
-
-        await self.accept()
-
-        if not self.user.is_authenticated:
-            await self.close()
-            return
-
-        self.group_name = f"user_{self.user.username}"
-        await self.channel_layer.group_add(
-                self.group_name,
-                self.channel_name
-                )
-
-        await self.accept()
-
-    async def disconnect(self, close_code):
-        if hasattr(self, 'group_name'):
-            await self.channel_layer.group_discard(
-                    self.group_name,
-                    self.channel_name
-                    )
-
-    async def receive(self, text_data):
-        data = json.loads(text_data)
-        if data['type'] == 'challenge':
-            sender = await database_sync_to_async(User.objects.get)(username=data['sender'])
-            sender_group = f"user_{data['sender']}"
-            receiver = await database_sync_to_async(User.objects.get)(username=data['receiver'])
-            receiver_group = f"user_{data['receiver']}"
-
-
-            await self.channel_layer.group_send(
-                    receiver_group,
-                    {
-                        'type': 'chat_message',
-                        'message_type': 'challenge',
-                        'sender': data['sender'],
-                        'sender_id': sender.id,
-                        'receiver': data['receiver'],
-                        'receiver_id': receiver.id,
-                        'content': data['content']
-                        }
-                    )
-
-        elif data['type'] == 'challenge_accepted':
-            sender = await database_sync_to_async(User.objects.get)(username=data['sender'])
-            receiver = await database_sync_to_async(User.objects.get)(username=data['receiver'])
-
-            # Créer la game UNIQUEMENT maintenant
-            game = await database_sync_to_async(Game.objects.create)(
-                    player1=sender,
-                    player2=receiver,
-                    mode='unranked'
-                    )
-
-            game_url = f"/UnrankedMode/{game.id}/"
-
-            # Envoyer la confirmation aux deux joueurs
-            sender_group = f"user_{data['sender']}"
-            receiver_group = f"user_{data['receiver']}"
-
-            await self.channel_layer.group_send(
-                    sender_group,
-                    {
-                        'type': 'chat_message',
-                        'message_type': 'game_created',
-                        'game_url': game_url
-                        }
-                    )
-
-            await self.channel_layer.group_send(
-                    receiver_group,
-                    {
-                        'type': 'chat_message',
-                        'message_type': 'game_created',
-                        'game_url': game_url
-                        }
-                    )
-
-
-        elif data['type'] == 'message':
-            sender = await database_sync_to_async(User.objects.get)(username=data['sender'])
-            receiver = await database_sync_to_async(User.objects.get)(username=data['receiver'])
-
-            # Save message to database
-            await database_sync_to_async(Messages.objects.create)(
-                    sender=sender,
-                    receiver=receiver,
-                    content=data['content']
-                    )
-
-            # Send to receiver's group
-            receiver_group = f"user_{data['receiver']}"
-            await self.channel_layer.group_send(
-                    receiver_group,
-                    {
-                        'type': 'chat_message',
-                        'message_type': 'message',
-                        'sender': data['sender'],
-                        'receiver': data['receiver'],
-                        'content': data['content']
-                        }
-                    )
-
-            # Also send back to sender's group
-            sender_group = f"user_{data['sender']}"
-            await self.channel_layer.group_send(
-                    sender_group,
-                    {
-                        'type': 'chat_message',
-                        'message_type': 'message',
-                        'sender': data['sender'],
-                        'receiver': data['receiver'],
-                        'content': data['content']
-                        }
-                    )
-        elif data['type'] == 'add_friend':
-            try:
-                user = self.scope["user"]
-                friend = await database_sync_to_async(User.objects.get)(username=data['friend_name'])
-
-                await database_sync_to_async(user.friends.add)(friend)
-                await self.send(text_data=json.dumps({
-                    'type': 'friend_added',
-                    'success': True,
-                    'friend_name': friend.username
-                    }))
-            except Exception as e:
-                await self.send(text_data=json.dumps({
-                    'type': 'friend_added',
-                    'success': False,
-                    'error': str(e)
-                    }))
-        elif data['type'] == 'unfriend':
-            try:
-                user = self.scope["user"]
-                contact = await database_sync_to_async(User.objects.get)(username=data['contact_name'])
-
-                # Remove contact from user's friends
-                await database_sync_to_async(user.friends.remove)(contact)
-
-                await self.send(text_data=json.dumps({
-                    'type': 'unfriended',
-                    'success': True
-                    }))
-            except User.DoesNotExist:
-                await self.send(text_data=json.dumps({
-                    'type': 'unfriended',
-                    'success': False,
-                    'error': 'User not found'
-                    }))
-            except Exception as e:
-                await self.send(text_data=json.dumps({
-                    'type': 'unfriended',
-                    'success': False,
-                    'error': str(e)
-                    }))
-
-    # async def chat_message(self, event):
-    #     await self.send(text_data=json.dumps({
-    #         'type': 'message',
-    #         'sender': event['sender'],
-    #         'receiver': event['receiver'],
-    #         'content': event['content']
-    #     }))
-
-    async def chat_message(self, event):
-        print("\n[DEBUG WEBSOCKET] Message reçu dans chat_message:", event)
-
-        if 'sender' not in event:
-            print("❌ ERREUR: 'sender' absent dans event:", event)
-
-        await self.send(text_data=json.dumps({
-            'type': event.get('message_type', 'message'),
-            'sender': event.get('sender'),
-            'sender_id': event.get('sender_id'),
-            'receiver': event.get('receiver'),
-            'receiver_id': event.get('receiver_id'),
-            'game_url': event.get('game_url'),
-            'content': event.get('content')
-            }))
+	async def match_found(self, event):
+		await self.send(text_data=json.dumps(event))
 
 
 class ChatboxConsumer(AsyncWebsocketConsumer):

@@ -4,18 +4,10 @@ export default class OnlineGame extends Game {
 
 	constructor(fieldValue, mode) {
 		super(fieldValue);
-<<<<<<< HEAD
-
-=======
->>>>>>> 5e531d6d9cec9d92794d34f4da6936f64de9d986
 		if (mode == "tournament")
 			this.socket = new WebSocket("wss://" + window.location.host + "/wss/" + mode + "/" + tournamentId + "/"+ gameId + "/");
 		else
 			this.socket = new WebSocket("wss://" + window.location.host + "/wss/" + mode + "/" + gameId + "/");
-<<<<<<< HEAD
-=======
-
->>>>>>> 5e531d6d9cec9d92794d34f4da6936f64de9d986
 		this.isSocketOpen = false;
 		this.isBallMover = false;
 		this.#initOnOpen();

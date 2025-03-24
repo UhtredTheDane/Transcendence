@@ -494,49 +494,35 @@ def signup(request):
 def	aimode(request):
 	return render(request, 'AIMode.html')
 
-def add_match(request):
-	if request.method == "POST":
-		try:
-			# Parse JSON data from request body
-			data = json.loads(request.body)
-		except json.JSONDecodeError:
-			return JsonResponse({"status": "error", "message": "Invalid JSON payload"})
-		
-		# Extract values from the parsed JSON data
-		tournament_id = data.get("tournament_id")
-		player1 = data.get("player1")
-		player2 = data.get("player2")
-		score1 = data.get("score1")
-		score2 = data.get("score2")
-		date = data.get("date")  # Extract the date
+def add_match(tournament_id, player1, player2, score1, score2, date):
+    # Check if all required fields are present, including the date
+    if not all([tournament_id, player1, player2, score1, score2, date]):
+        return JsonResponse({"status": "error", "message": "Missing required fields."})
+    
+    # Prepare payload for Express request, including the date
+    payload = {
+        "tournamentid": tournament_id,
+        "player1": player1,
+        "player2": player2,
+        "score1": score1,
+        "score2": score2,
+        "date": date,
+    }
+    
+    try:
+        # Send POST request to Express server
+        response = requests.post(
+            "http://blockchain-node:3000/add-match", 
+            json=payload,  # Send as JSON
+            headers={"Content-Type": "application/json"}
+        )
+        
+        return JsonResponse(response.json())
+    except Exception as e:
+        return JsonResponse({"status": "error", "message": str(e)})
 
-		# Check if all required fields are present, including the date
-		if not all([tournament_id, player1, player2, score1, score2, date]):
-			return JsonResponse({"status": "error", "message": "Missing required fields."})
-		
-		# Prepare payload for Express request, including the date
-		payload = {
-			"tournamentid": tournament_id,
-			"player1": player1,
-			"player2": player2,
-			"score1": score1,
-			"score2": score2,
-			"date": date  # Add the date to the payload
-		}
-		
-		try:
-			# Send POST request to Express server
-			response = requests.post(
-				"http://blockchain-node:3000/add-match", 
-				json=payload,  # Send as JSON
-				headers={"Content-Type": "application/json"}
-			)
-			
-			return JsonResponse(response.json())
-		except Exception as e:
-			return JsonResponse({"status": "error", "message": str(e)})
-	
-	return JsonResponse({"status": "error", "message": "Invalid request method"})
+# Example call:
+# add_match(tournament_id=1, player1="John", player2="Doe", score1=2, score2=1, date="2023-12-25")
 
 
 def check_matches(request, tournament_id):  # Accepter tournament_id ici
@@ -662,7 +648,11 @@ def create_tournament(request):
 		shuffled_players = random.sample(list(existing_users), len(existing_users))
 
 		tournament = Tournament.objects.create(creator=request.user, name=tournament_name)
+		
 		bracket = create_bracket(tournament, list(existing_users))
+		tournament_response = create_tournament_request(request)
+		if tournament_response.get('status') == 'error':
+			return JsonResponse({'status': 'error', 'message': tournament_response.get('message')})
 
 		for idx, user in enumerate(existing_users):
 			TournamentPlayer.objects.create(tournament=tournament, user=user, position=idx + 1)
@@ -782,7 +772,15 @@ def tournamentpage(request, tournament_id):
 		'tournament_id': tournament.id,
 		'tournament_name': tournament.name,
 	})
+	
+from datetime import datetime
 
+def convert_date_to_unix(date_string):
+    # Assuming the date_string is in the format '2025-03-24 14:29:12.057151+00:00'
+    dt = datetime.strptime(date_string.split('.')[0], '%Y-%m-%d %H:%M:%S')
+    # Convert to Unix timestamp
+    return int(dt.timestamp())
+	
 @login_required
 def	invitetournament(request):
 	return render(request, 'InviteTournament.html')

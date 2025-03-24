@@ -14,10 +14,6 @@ export default class MaxScoreGame extends OnlineGame{
         
         let tempoGame = this;
         let docu = document;
-<<<<<<< HEAD
-        
-=======
->>>>>>> 5e531d6d9cec9d92794d34f4da6936f64de9d986
         // Gérer l'événement de réception de messages du serveur
         this.socket.onmessage = function (event) {
             const data = JSON.parse(event.data);
@@ -74,18 +70,10 @@ export default class MaxScoreGame extends OnlineGame{
         if (playerRole === "player1") {
             // Empêcher l'interaction avec le reste de la page jusqu'à ce que player1 valide
             showModal();
-<<<<<<< HEAD
-        }
-        else {
-            this.disableInteractions(true);
-        }
-
-=======
         } 
         else {
             this.disableInteractions(true);
         }
->>>>>>> 5e531d6d9cec9d92794d34f4da6936f64de9d986
         // Fermer la modale si l'utilisateur clique sur le X
         closeBtn.onclick = (event) => {
             const modal = document.getElementById("modal");
