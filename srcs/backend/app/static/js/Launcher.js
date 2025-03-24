@@ -1,10 +1,8 @@
-import Game from './Game.js';
+import AIGame from './AIGame.js';
 import OnlineGame from './OnlineGame.js';
 import Field from './field.js';
 import Player from './player.js';
 import Ball from './ball.js';
-import AI from './AI.js';
-import TimerGame from './TimerGame.js';
 import RushGame from './RushGame.js';
 import MaxScoreGame from './MaxScoreGame.js';
 
@@ -27,12 +25,11 @@ export default class Launcher {
         this._fieldPong = new Field(this._player, this._opponent, this._ball);
         if (this._mode == 'AI')
         {
-            this._game = new Game(this._fieldPong);
-            this._ai = new AI();
+            this._game = new AIGame(this._fieldPong);
             this._idIntervalle = setInterval(() => {
                 this._game.updateBall(this._fieldPong, this._game);
                 this._fieldPong.draw();
-                this._ai.moveAI(this._fieldPong, this._ball, this._opponent);
+                this._game.moveAI(this._fieldPong);
                 this._game.updateScore();
             }, 16);
         }

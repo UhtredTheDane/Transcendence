@@ -96,12 +96,19 @@
 			<canvas id="field" width="802px" height="455px">
 				Votre Navigateur ne supporte pas la balise canvas.
 			</canvas>
-			<script>
+			<script> 
 				const gameId = '{{ game_id }}';
-				const playerRole = '{{player_role }}';
-				var typegame = '/RankedMode/'
+				const playerRole = '{{ player_role }}';
 			</script>
-			<script type="module" src="{% static 'js/RankedMode.js' %}"></script>
+			<script type="module" src="{% static 'js/Launcher.js' %}"></script>
+			<script type="module">
+				import Launcher from "{% static 'js/Launcher.js' %}";
+				let launcher = null;
+				if (typeof Launcher !== "undefined")
+            		launcher = new Launcher('RankedMode');
+				else
+            		console.error("La classe Launcher n'a pas été définie.");
+			</script>
 		</div>
 	</div>
 	

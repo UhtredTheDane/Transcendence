@@ -9,7 +9,7 @@ export default class Ball {
 		this.xSpeed = -0.5;
 		this.ySpeed = -0.5;
 		this.ballSpeed = 1.5;
-		this.multSpeed = 3;
+		this.multSpeed = 3.5;
 		this.ballSpeedIncrement = 0.05;
 		this.ballSpeedMax = 2.0;
 		this.diameter = 30.0;
@@ -17,7 +17,7 @@ export default class Ball {
 		this.img.src = imgSrc;
 		this.resetBall();
 	}
-
+	
 	get multSpeed() {
 		return this._multSpeed;
 	}

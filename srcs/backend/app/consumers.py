@@ -280,7 +280,7 @@ class GameConsumer(AsyncWebsocketConsumer):
             if not tournament_id:
                 print("❌ ERREUR: Aucun ID de tournoi fourni.")
                 return
-
+            print("sa rentre dans tournaement")
             payload = {
                     "tournamentid": tournament_id,
                     "player1": self.game.player1,
