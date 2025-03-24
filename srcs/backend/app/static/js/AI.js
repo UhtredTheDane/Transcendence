@@ -49,21 +49,21 @@ export default class AI {
 		this._aiReactionCounter = value;
 	}
 
-    moveAI(field, ball, AIopponent) {
+    moveAI(field) {
         if (this._aiReactionCounter >= this._aiReactionDelay) {
             // Déplacer la raquette de l'IA (pos2y) pour suivre la balle
-            if (ball.yPos + 15 > AIopponent.yPos + AIopponent.height / 2) {
+            if (field.ball.yPos + 15 > field.opponent.yPos + field.opponent.height / 2) {
                 // Si la balle est en dessous du centre de la raquette, déplacer vers le bas
-                AIopponent.yPos += 3; // Vitesse de déplacement de l'IA
-            } else if (ball.yPos + 15 < AIopponent.yPos + AIopponent.height / 2) {
+                field.opponent.yPos += 3; // Vitesse de déplacement de l'IA
+            } else if (field.ball.yPos + 15 < field.opponent.yPos + field.opponent.height / 2) {
                 // Si la balle est au-dessus du centre de la raquette, déplacer vers le haut
-                AIopponent.yPos -= 3; // Vitesse de déplacement de l'IA
+                field.opponent.yPos -= 3; // Vitesse de déplacement de l'IA
             }
             // Empêcher la raquette de l'IA de sortir du canvas
-            AIopponent.yPos = Math.max(0, Math.min(field.canevas.height - AIopponent.height, AIopponent.yPos));
+            field.opponent.yPos = Math.max(0, Math.min(field.canevas.height - field.opponent.height, field.opponent.yPos));
             this._aiReactionCounter = 0; // Réinitialiser le compteur
-        } 
+        }
         else 
-        this._aiReactionCounter++; // Incrémenter le compteur
+            this._aiReactionCounter++; // Incrémenter le compteur
     }
 }

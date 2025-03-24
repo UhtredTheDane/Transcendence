@@ -1,22 +1,14 @@
-import Field from './field.js';
-import Player from './player.js';
+import Game from './Game.js';
+import AI from './AI.js';
 
-export default class Game {
+export default class AIGame extends Game {
 
 	constructor(fieldValue) {
-		this.field = fieldValue;
-		this.isPaused = false;
+		super(fieldValue)
 		this.isBallMover = false;
-		this.isGameEnded = false;
+		this._ai = new AI();
 	}
 
-	get field() {
-		return this._field;
-	}
-	set field(value)
-	{
-		this._field = value;
-	}
 	get isBallMover() {
 		return this._isBallMover;
 	}
@@ -25,39 +17,7 @@ export default class Game {
 		this._isBallMover = value;
 	}
 
-	get isGameEnded() {
-		return this._isGameEnded;
+	moveAI(AIopponent) {
+		this._ai.moveAI(this.field, AIopponent)
 	}
-
-	set isGameEnded(value) {
-		this._isGameEnded = value;
-	}
-
-	get isPaused() {
-		return this._isPaused;
-	}
-
-	set isPaused(value) {
-		this._isPaused = value;
-	}
-
-	togglePauseGame() {
-		this._isPaused = !this._isPaused;
-		if (this._isGameEnded)
-			return;
-	}
-
-	updateBall() {
-		if (this._isPaused || this._isGameEnded)
-			return;
-		this._field.ball.updateBall(this._field, this);
-	}
-
-	makeMove(position) {
-		if (this._isGameEnded)
-			return;
-		this._field.player.yPos = position;
-	}
-
-
 }

@@ -15,12 +15,22 @@ export default class Game {
     {
         let tempoGame = this;
         document.addEventListener("keydown", function (event) {
-        if (tempoGame.isPaused || tempoGame.isGameEnded) return;
-        if (event.key === "w" || event.key === "z")
-            tempoGame.sendMove(Math.max(0, tempoGame.field.player.yPos - 10));
-        if (event.key === "s")
-            tempoGame.sendMove(Math.min(tempoGame.field.canevas.height - tempoGame.field.player.height - 10, tempoGame.field.player.yPos + 10));
-        });  
+        	if (tempoGame.isPaused || tempoGame.isGameEnded) return;
+        	if (event.key === "w" || event.key === "z")
+            {
+				if (tempoGame.field.player.yPos - 20 <= 0)
+					tempoGame.sendMove(0);
+				else
+					tempoGame.sendMove(tempoGame.field.player.yPos - 20);
+			}
+        	if (event.key === "s")
+			{
+            	if (tempoGame.field.player.yPos + tempoGame.field.player.height + 20 >= tempoGame.field.canevas.height)
+					tempoGame.sendMove(tempoGame.field.canevas.height - tempoGame.field.player.height);
+				else
+					tempoGame.sendMove(tempoGame.field.player.yPos + 20);
+			}
+		});  
     }
 
 	get field() {
@@ -72,11 +82,11 @@ export default class Game {
         //   console.log("opponentScore: ", opponentScore);
         //   console.log("MaxScore: ", this.maxScore);
         //   console.log("game will end now");
-          this.endGame();
+        	this.endGame();
         }
       }
 
-	  endGame() {
+	endGame() {
 		if (!this._isGameEnded)
 		{
 			this._isGameEnded = true;

@@ -1,11 +1,11 @@
 import Game from './Game.js';
 
-export default class OnlineGame extends Game{
+export default class OnlineGame extends Game {
 
 	constructor(fieldValue, mode) {
 		super(fieldValue);
 		this.socket = new WebSocket("wss://" + window.location.host + "/wss/" + mode + "/" + gameId + "/");
-
+		//this.field.ball.multSpeed = 5;
 		this.isSocketOpen = false;
 		this.isBallMover = false;
 		this.#initOnOpen();
@@ -65,7 +65,6 @@ export default class OnlineGame extends Game{
 					tempoGame.isBallMover = (playerRole === "player1");
 			} else if (data.type === "game_over")
 			{
-				//tempoGame.socket.close(1000, "Fermeture normale");
 				window.location.href = "/";
 				return;
 			}
@@ -82,29 +81,69 @@ export default class OnlineGame extends Game{
                 document.addEventListener("keydown", function (event) {
                 if (tempoGame.isPaused || tempoGame.isGameEnded) return;
                 if (event.key === "w" || event.key === "z")
-                    tempoGame.sendMove(Math.max(0, tempoGame.field.player.yPos - 20), "player1");
-                if (event.key === "s")
-                    tempoGame.sendMove(Math.min(tempoGame.field.canevas.height - tempoGame.field.player.height - 20, tempoGame.field.player.yPos + 20), "player1");
-                if (event.key === "ArrowUp")
-                    tempoGame.sendMove(Math.max(0, tempoGame.field.opponent.yPos - 20), "player2");
-                if (event.key === "ArrowDown")
-                    tempoGame.sendMove(Math.min(tempoGame.field.canevas.height - tempoGame.field.opponent.height - 20, tempoGame.field.opponent.yPos + 20), "player2");
+				{
+					if (tempoGame.field.player.yPos - 20 <= 0)
+                    	tempoGame.sendMove(0, "player1");
+					else
+						tempoGame.sendMove(tempoGame.field.player.yPos - 20, "player1");
+				}
+				if (event.key === "s")
+				{
+                    if (tempoGame.field.player.yPos + tempoGame.field.player.height + 20 >= tempoGame.field.canevas.height)
+                    	tempoGame.sendMove(tempoGame.field.canevas.height - tempoGame.field.player.height, "player1");
+					else
+						tempoGame.sendMove(tempoGame.field.player.yPos + 20, "player1");
+				}
+				if (event.key === "ArrowUp")
+				{
+					if (tempoGame.field.opponent.yPos - 20 <= 0)
+                    	tempoGame.sendMove(0, "player2");
+					else
+						tempoGame.sendMove(tempoGame.field.opponent.yPos - 20, "player2");
+				}
+				if (event.key === "ArrowDown")
+				{
+					if (tempoGame.field.opponent.yPos + tempoGame.field.opponent.height + 20 >= tempoGame.field.canevas.height)
+                    	tempoGame.sendMove(tempoGame.field.canevas.height - tempoGame.field.opponent.height, "player2");
+					else
+						tempoGame.sendMove(tempoGame.field.opponent.yPos + 20, "player2");
+				}
                 });
             }
            else if (playerRole == 'player2')
-                {
+            {
                     document.addEventListener("keydown", function (event) {
                     if (tempoGame.isPaused || tempoGame.isGameEnded) return;
                     if (event.key === "ArrowUp")
-                        tempoGame.sendMove(Math.max(0, tempoGame.field.player.yPos - 20), "player2");
-                    if (event.key === "ArrowDown")
-                        tempoGame.sendMove(Math.min(tempoGame.field.canevas.height - tempoGame.field.player.height - 20, tempoGame.field.player.yPos + 20), "player2");
-                    if (event.key === "w" || event.key === "z")
-                        tempoGame.sendMove(Math.max(0, tempoGame.field.opponent.yPos - 20), "player1");
-                    if (event.key === "s")
-                        tempoGame.sendMove(Math.min(tempoGame.field.canevas.height - tempoGame.field.opponent.height - 20, tempoGame.field.opponent.yPos + 20), "player1");
-                    });
-                }
+					{
+						if (tempoGame.field.player.yPos - 20 <= 0)
+							tempoGame.sendMove(0, "player2");
+						else
+							tempoGame.sendMove(tempoGame.field.player.yPos - 20, "player2");
+					}
+					if (event.key === "ArrowDown")
+					{
+						if (tempoGame.field.player.yPos + tempoGame.field.player.height + 20 >= tempoGame.field.canevas.height)
+							tempoGame.sendMove(tempoGame.field.canevas.height - tempoGame.field.player.height, "player2");
+						else
+							tempoGame.sendMove(tempoGame.field.player.yPos + 20, "player2");
+					}
+					if (event.key === "w" || event.key === "z")
+					{
+                        if (tempoGame.field.opponent.yPos - 20 <= 0)
+							tempoGame.sendMove(0, "player1");
+						else
+							tempoGame.sendMove(tempoGame.field.opponent.yPos - 20, "player1");
+					}
+					if (event.key === "s")
+					{
+						if (tempoGame.field.opponent.yPos + tempoGame.field.player.height + 20 >= tempoGame.field.canevas.height)
+							tempoGame.sendMove(tempoGame.field.canevas.height - tempoGame.field.opponent.height, "player1");
+						else
+							tempoGame.sendMove(tempoGame.field.opponent.yPos + 20, "player1");
+					}
+					});
+            }
     }
 
 	get socket() {

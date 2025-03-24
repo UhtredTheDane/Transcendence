@@ -171,12 +171,19 @@
             </div>
         </div>
 
-            <script>
-                const gameId = '{{ game_id }}';
-                const playerRole = '{{player_role }}';
-                var typegame = '/RushMode/';
-            </script>
-            <script type="module" src="{% static 'js/RushMode.js' %}"></script>
+        <script> 
+            const gameId = '{{ game_id }}';
+            const playerRole = '{{ player_role }}';
+        </script>
+        <script type="module" src="{% static 'js/Launcher.js' %}"></script>
+        <script type="module">
+            import Launcher from "{% static 'js/Launcher.js' %}";
+            let launcher = null;
+            if (typeof Launcher !== "undefined")
+                launcher = new Launcher('RushMode');
+            else
+                console.error("La classe Launcher n'a pas été définie.");
+        </script>
         </div>
 
     </div>

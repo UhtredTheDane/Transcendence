@@ -97,7 +97,15 @@
             <canvas id="field" width="802px" height="455px">
                 Votre Navigateur ne supporte pas la balise canvas.
             </canvas>
-            <script type="module" src="{% static 'js/AIMode.js' %}"></script>
+            <script type="module" src="{% static 'js/Launcher.js' %}"></script>
+			<script type="module">
+				import Launcher from "{% static 'js/Launcher.js' %}";
+				let launcher = null;
+				if (typeof Launcher !== "undefined")
+            		launcher = new Launcher('AI');
+				else
+            		console.error("La classe Launcher n'a pas été définie.");
+			</script>
         </div>
     </div>
 

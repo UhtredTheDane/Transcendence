@@ -2,16 +2,6 @@ function redirectToProfile() {
 	window.location.href = "/ProfilePage";
 }
 
-// function showLeaderboard() {
-// 	console.log("showLeaderboard");
-// 	console.log(top_players);
-// 	document.getElementById("leaderboardPopup").classList.add("show");
-// }
-
-// function closeLeaderboard() {
-// 	document.getElementById("leaderboardPopup").classList.remove("show");
-// }
-
 function getUrl() {
     return window.location.href;
 }
