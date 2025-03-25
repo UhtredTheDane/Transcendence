@@ -33,7 +33,6 @@ function loadTemplate() {
             .then(data => {
                 const element = document.getElementById(template.elementId);
                 if (element) {
-                    console.log(`Inserting content into #${template.elementId}`);
                     element.innerHTML = data;
 
                     // Réexécuter les scripts après injection du leaderboard

@@ -747,13 +747,15 @@ def tournamentpage(request, tournament_id):
 				"id": tg.game.player1.id if tg.game.player1 else None,
 				"username": tg.game.player1.username if tg.game.player1 else "To Be Determined",
 				"avatar": tg.game.player1.avatar.url if tg.game.player1 else "/media/default/avatar.png",
-				"score": tg.game.score_player1
+				"score": tg.game.score_player1,
+				"is_determined": True if tg.game.player1 else None
 			},
 			"player2": {
 				"id": tg.game.player2.id if tg.game.player2 else None,
 				"username": tg.game.player2.username if tg.game.player2 else "To Be Determined",
 				"avatar": tg.game.player2.avatar.url if tg.game.player2 else "/media/default/avatar.png",
-				"score": tg.game.score_player2
+				"score": tg.game.score_player2,
+				"is_determined": True if tg.game.player2 else None
 			},
 			"is_ended": tg.game.is_ended,
 			"created_at": tg.game.created_at.isoformat(),
@@ -796,8 +798,27 @@ def	invitetournament(request):
 	return render(request, 'InviteTournament.html')
 
 @login_required
-def	jointournament(request):
-	return render(request, 'JoinTournament.html')
+def jointournament(request):
+	created_tournaments = Tournament.objects.filter(creator=request.user)
+	joined_tournaments = Tournament.objects.filter(players__user=request.user)
+
+	all_tournaments = (created_tournaments | joined_tournaments).distinct()
+
+	tournaments_data = [
+		{
+			"id": tournament.id,
+			"name": tournament.name or f"Tournament {tournament.id}",
+			"created_at": tournament.created_at.isoformat()
+		}
+		for tournament in all_tournaments
+	]
+
+	print(tournaments_data)
+
+	return render(request, 'JoinTournament.html', {
+		"tournaments": json.dumps(tournaments_data)
+	})
+
 
 @login_required
 def	myfriends(request):

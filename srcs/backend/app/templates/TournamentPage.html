@@ -169,6 +169,7 @@
 				(match.player1 && match.player1.id === currentUserId) ||
 				(match.player2 && match.player2.id === currentUserId)
 		);
+	  console.log("User Match: ", userMatch.id);
 	  const tournamentSocket = new WebSocket(`wss://${window.location.host}/wss/tournament/${tournamentId}/${userMatch.id}`);
 
 	  tournamentSocket.onmessage = function(event) {
@@ -205,7 +206,7 @@
 			roundDiv.className = "round col";
 			
 			let roundTitle = document.createElement("div");
-			roundTitle.className = "round-title";
+			roundTitle.className = "round-title primary-font";
 			roundTitle.textContent = getRoundName(roundIndex, roundsData.length);
 			roundDiv.appendChild(roundTitle);
 			
@@ -214,8 +215,7 @@
 					`${roundIndex}-${matchIndex}`,
 					[match.player1, match.player2],
 					currentUserId,
-					match.is_ended,
-					match.id
+					match
 				);
 				roundDiv.appendChild(matchElement);
 			});
@@ -233,9 +233,9 @@
 		return typeof value === 'number' && isFinite(value);
 	  }
 
-      function createMatch(matchId, players, currentUserId, isEnded, matchDataId) {
+      function createMatch(matchId, players, currentUserId, matchData) {
 		let match = document.createElement("div");
-		match.className = "match";
+		match.className = "match secondary-font";
 		match.id = `match-${matchId}`;
 
 		players.forEach((player, index) => {
@@ -247,17 +247,17 @@
 					<img src="${player.avatar}" 
 						style="width: 50px; height: 50px; border-radius: 50%;">
 					<span class="player-name">${player.username}</span>
-					${!player.is_determined && player.score !== undefined ? `<span class="player-score">${player.score}</span>` : ''}
+					${player.is_determined && player.score !== undefined ? `<span class="player-score">${player.score}</span>` : ''}
 				</div>`;
 
 			match.appendChild(playerDiv);
 		});
 
-		if (players.some(p => p && p.id === currentUserId) && !isEnded) {
-			let button = document.createElement("button");
-			button.className = "btn btn-primary";
-			button.textContent = "Ready";
-			button.onclick = () => handleReadyClick(matchDataId);
+		if (players.some(p => p && p.id === currentUserId) && !matchData.is_ended && matchData.player1.is_determined && matchData.player2.is_determined) {
+			let button = document.createElement("a");
+			button.classList.add("small-first-btn");
+			button.setAttribute("data", "Ready");
+			button.onclick = () => handleReadyClick(matchData.id);
 			match.appendChild(button);
 		}
 
