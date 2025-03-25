@@ -290,154 +290,82 @@ document.addEventListener('DOMContentLoaded', function() {
 document.addEventListener('DOMContentLoaded', function() {
     changeCategory('Ranked');
 });
-
-
-    // async function fetchPlayerMatches() {
-    //     const playerName = "{{ user_data.username }}";
-    //     const tournamentGames = JSON.parse('{{ tournaments|escapejs }}');
-    //     const matchesContainer = document.getElementById("matches-container");
-        
-    //     matchesContainer.innerHTML = "Loading matches...";
-
-    //     try {
-    //         for (let i = 0; i < tournamentGames.length; i++) {
-    //             const tournamentId = tournamentGames[i].tournament_id;
-
-    //             const response = await fetch(`/getPlayerMatches/${tournamentId}/${playerName}`);
-
-    //             if (!response.ok) {
-    //                 throw new Error(`Failed to fetch matches for tournament ${tournamentId}: ${response.statusText}`);
-    //             }
-
-    //             const result = await response.json();
-    //             const matches = result.matches; 
-
-    //             if (matches.length === 0) {
-    //                 matchesContainer.innerHTML += `<p class='secondary-font'>No recent matches found for tournament ${tournamentId}.</p>`;
-    //                 continue;
-    //             }
-
-    //             matches.forEach((match, index) => {
-    //                 const gameDiv = document.createElement("div");
-    //                 gameDiv.className = "";
-
-    //                 let opponent = match.player1 === playerName ? match.player2 : match.player1;
-    //                 let userScore = match.player1 === playerName ? match.score1 : match.score2;
-    //                 let opponentScore = match.player1 === playerName ? match.score2 : match.score1;
-
-    //                 let resultText;
-    //                 if (userScore > opponentScore) {
-    //                     resultText = "Victory";
-    //                 } else if (userScore < opponentScore) {
-    //                     resultText = "Defeat";
-    //                 } else {
-    //                     resultText = "Draw";
-    //                 }
-
-    //                 const matchDate = match.date;
-
-    //                 gameDiv.innerHTML = `
-    //                 <p class="secondary-font"> ${matchDate} </p>
-    //                 <div class="game-display">
-    //                     <div class="primary-font ${resultText.toLowerCase()}">
-    //                         ${resultText} 
-    //                     </div>
-    //                     <div class="vertical-bar"></div>
-    //                     <div class="secondary-font player-name">
-    //                         ${opponent}
-    //                     </div>
-    //                     <div class="secondary-font score">
-    //                         ${userScore} - ${opponentScore}
-    //                     </div>
-    //                 </div>
-    //                 `;
-
-    //                 matchesContainer.appendChild(gameDiv);
-    //             });
-    //         }
-    //     } 
-	// 	catch (error) {
-    //         console.error('Error fetching matches:', error);
-    //         matchesContainer.innerHTML = "<p class='secondary-font'>Failed to load matches.</p>";
-    //     }
-    // }
-
-	async function fetchPlayerMatches() {
+async function fetchPlayerMatches() {
     const playerId = "{{ user_data.id }}";  // Player ID from template
-    const tournamentGames = JSON.parse('{{ tournaments|escapejs }}');  // List of tournaments
-	console.log(tournamentGames[0].tournament_id)
+    const tournamentGames = JSON.parse('{{ tournaments|escapejs }}');  // List of tournaments passed from the backend
+    console.log(tournamentGames);  // To check the structure of the passed data
+
     const matchesContainer = document.getElementById("matches-container");
 
-    // Clear the matches container before fetching new data
-    matchesContainer.innerHTML = "Loading matches...";
+    // Start with a loading message
+    // matchesContainer.innerHTML = "Loading matches...";  
 
     try {
-        // Loop through each tournament in tournamentGames
+        // Loop through each tournament in the array
         for (let i = 0; i < tournamentGames.length; i++) {
             const tournamentId = tournamentGames[i].tournament_id;
-            const games = tournamentGames[i].games; // Get all games for the current tournament
+            
+            // Fetch the player matches for the current tournament
+            const response = await fetch(`/getPlayerMatches/${tournamentId}/${playerId}`);
 
-            // If no games in the tournament, continue to the next tournament
-            if (games.length === 0) {
-                matchesContainer.innerHTML += `<p class='secondary-font'>No recent matches found for tournament ${tournamentId}.</p>`;
-                continue;
+            if (!response.ok) {
+                throw new Error(`Failed to fetch matches for tournament ${tournamentId}: ${response.statusText}`);
             }
 
-            // Loop through each game in the tournament and display match details
-            games.forEach((match, index) => {
-                const gameDiv = document.createElement("div");
-                gameDiv.className = "match";
+            const result = await response.json();
+            const matches = result.matches; // Extract the matches from the response
 
-                // Determine if the current player is player1 or player2
-                let opponent, userScore, opponentScore;
+            // Clear the "Loading matches..." message after the response
+            matchesContainer.innerHTML = "";
 
-                // Display usernames instead of player ids
-                if (match.player1_id === playerId) {
-                    opponent = match.player2_username;  // Assuming you have usernames stored
-                    userScore = match.score1;
-                    opponentScore = match.score2;
-                } else if (match.player2_id === playerId) {
-                    opponent = match.player1_username;  // Assuming you have usernames stored
-                    userScore = match.score2;
-                    opponentScore = match.score1;
-                } else {
-                    return;  // If the current player is not part of this match, skip
-                }
+            // If no matches for this tournament, display a message
+            if (matches.length === 0) {
+                matchesContainer.innerHTML = "<p class='secondary-font'>No recent matches found.</p>";
+            } else {
+                // Loop through the matches to display them
+                matches.forEach((match) => {
+                    const gameDiv = document.createElement("div");
+                    gameDiv.className = "match";
 
-                // Determine match result (Win, Loss, or Draw)
-                let resultText;
-                if (userScore > opponentScore) {
-                    resultText = "Victory";
-                } else if (userScore < opponentScore) {
-                    resultText = "Defeat";
-                } else {
-                    resultText = "Draw";
-                }
+                    // Determine if current player is player1 or player2
+                    let opponent = match.player1 === playerId ? match.player2 : match.player1;
+                    let userScore = match.player1 === playerId ? match.score1 : match.score2;
+                    let opponentScore = match.player1 === playerId ? match.score2 : match.score1;
 
-                // Get the match date and format it to a readable format
-                const matchDate = new Date(match.date); // Convert to Date object
-                const formattedDate = matchDate.toLocaleString(); // Adjust this format as needed
+                    // Determine match result (Win, Loss, or Draw)
+                    let resultText;
+                    if (userScore > opponentScore) {
+                        resultText = "Victory";
+                    } else if (userScore < opponentScore) {
+                        resultText = "Defeat";
+                    } else {
+                        resultText = "Draw";
+                    }
 
-                // Insert the match result, opponent, scores, and date into the gameDiv
-                gameDiv.innerHTML = `
-                    <p class="secondary-font"> ${formattedDate} </p>
-                    <div class="game-display">
-                        <div class="primary-font ${resultText.toLowerCase()}">
-                            ${resultText} 
+                    // Get the match date
+                    const matchDate = match.date;
+
+                    // Insert the match result, opponent, scores, and date into the gameDiv
+                    gameDiv.innerHTML = `
+                        <p class="secondary-font"> ${matchDate} </p>
+                        <div class="game-display">
+                            <div class="primary-font ${resultText.toLowerCase()}">
+                                ${resultText} 
+                            </div>
+                            <div class="vertical-bar"></div>
+                            <div class="secondary-font player-name">
+                                ${opponent}
+                            </div>
+                            <div class="secondary-font score">
+                                ${userScore} - ${opponentScore}
+                            </div>
                         </div>
-                        <div class="vertical-bar"></div>
-                        <div class="secondary-font player-name">
-                            ${opponent}
-                        </div>
-                        <div class="secondary-font score">
-                            ${userScore} - ${opponentScore}
-                        </div>
-                    </div>
-                `;
+                    `;
 
-                // Append the match data to the container
-                matchesContainer.appendChild(gameDiv);
-            });
+                    // Append the match data to the container
+                    matchesContainer.appendChild(gameDiv);
+                });
+            }
         }
     } catch (error) {
         console.error('Error fetching matches:', error);
@@ -445,9 +373,10 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 }
 
-// Call the function to fetch matches on page load
-fetchPlayerMatches();
 
+
+
+fetchPlayerMatches();
 </script>
 
 		<!-- Chatbox -->

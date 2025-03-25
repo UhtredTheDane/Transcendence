@@ -9,8 +9,7 @@ contract PongTournament {
         uint256 score1;
         uint256 score2;
         uint256 date; // Ajout du champ date dans la structure Match
-}
-
+    }
 
     // Structure pour représenter un tournoi
     struct Tournament {
@@ -25,6 +24,7 @@ contract PongTournament {
 
     // Admin du contrat
     address public admin;
+    bool private isInitialized = false;  // New flag to check if the contract has already been deployed
 
     // Événements
     event TournamentCreated(uint256 indexed tournamentId, string name);
@@ -39,11 +39,13 @@ contract PongTournament {
 
     // Constructeur : définit l'admin comme le déployeur du contrat
     constructor() {
+        require(!isInitialized, "Contract has already been deployed!");
         admin = msg.sender;
+        isInitialized = true;  // Mark contract as deployed
     }
 
     // Créer un nouveau tournoi (restreint à l'admin)
-    function createTournament(string memory _name) public {
+    function createTournament(string memory _name) public onlyAdmin {
         tournamentCounter++; // Incrémente le compteur de tournoi
         tournaments[tournamentCounter] = Tournament({
             id: tournamentCounter,
@@ -66,13 +68,12 @@ contract PongTournament {
             tournamentId: _tournamentId,
             player1: _player1,
             player2: _player2,
-                score1: _score1,
+            score1: _score1,
             score2: _score2,
             date: _date // Stockage de la date dans le match
-    }));
-    emit MatchAdded(_tournamentId, _player1, _player2, _score1, _score2, _date); // Modification de l'événement pour inclure la date
-}
-
+        }));
+        emit MatchAdded(_tournamentId, _player1, _player2, _score1, _score2, _date); // Modification de l'événement pour inclure la date
+    }
 
     // Récupérer les informations d'un tournoi
     function getTournament(uint256 _tournamentId) public view returns (Tournament memory) {

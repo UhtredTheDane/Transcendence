@@ -354,66 +354,76 @@ def update_avatar(request):
 
 @login_required
 def profile(request, username=None):
-	try:
-		if username is None:
-			user_data = request.user
-		else:
-			user_data = User.objects.get(username=username)
+    try:
+        if username is None:
+            user_data = request.user
+        else:
+            user_data = User.objects.get(username=username)
 
-		user_games = Game.objects.filter((Q(player1=user_data) | Q(player2=user_data)) & Q(is_ended=True))
+        user_games = Game.objects.filter((Q(player1=user_data) | Q(player2=user_data)) & Q(is_ended=True))
 
-		wins = user_games.filter(
-			(Q(player1=user_data) & Q(score_player1__gt=F('score_player2'))) |
-			(Q(player2=user_data) & Q(score_player2__gt=F('score_player1')))
-		).count()
+        wins = user_games.filter(
+            (Q(player1=user_data) & Q(score_player1__gt=F('score_player2'))) |
+            (Q(player2=user_data) & Q(score_player2__gt=F('score_player1')))
+        ).count()
 
-		losses = user_games.filter(
-			(Q(player1=user_data) & Q(score_player1__lt=F('score_player2'))) |
-			(Q(player2=user_data) & Q(score_player2__lt=F('score_player1')))
-		).count()
+        losses = user_games.filter(
+            (Q(player1=user_data) & Q(score_player1__lt=F('score_player2'))) |
+            (Q(player2=user_data) & Q(score_player2__lt=F('score_player1')))
+        ).count()
 
-		ranked_games = user_games.filter(mode='ranked')
-		unranked_games = user_games.filter(mode='unranked')
-		tournament_games = user_games.filter(mode='tournament')
-		tictactoe_games = user_games.filter(mode='tictactoe')
+        ranked_games = user_games.filter(mode='ranked')
+        unranked_games = user_games.filter(mode='unranked')
+        tournament_games = user_games.filter(mode='tournament')
+        tictactoe_games = user_games.filter(mode='tictactoe')
 
-		def format_game_list(games):
-			formatted_games = []
-			for game in games:
-				if game.player1 == user_data:
-					user_score = game.score_player1
-					opponent = game.player2
-					opponent_score = game.score_player2
-				else:
-					user_score = game.score_player2
-					opponent = game.player1
-					opponent_score = game.score_player1
+        def format_game_list(games):
+            formatted_games = []
+            for game in games:
+                if game.player1 == user_data:
+                    user_score = game.score_player1
+                    opponent = game.player2
+                    opponent_score = game.score_player2
+                else:
+                    user_score = game.score_player2
+                    opponent = game.player1
+                    opponent_score = game.score_player1
 
-				result = "Victory" if user_score > opponent_score else "Defeat"
-				formatted_games.append({
-					'result': result,
-					'user_score': user_score,
-					'opponent_score': opponent_score,
-					'opponent': opponent.username if opponent else 'AI'
-				})
-			return formatted_games
+                result = "Victory" if user_score > opponent_score else "Defeat"
+                formatted_games.append({
+                    'result': result,
+                    'user_score': user_score,
+                    'opponent_score': opponent_score,
+                    'opponent': opponent.username if opponent else 'AI'
+                })
+            return formatted_games
 
-		context = {
-			'user_data': user_data,
-			'wins': wins,
-			'losses': losses,
-			'scores': format_game_list(user_games),
-			'ranked_scores': format_game_list(ranked_games),
-			'unranked_scores': format_game_list(unranked_games),
-			'tournament_scores': format_game_list(tournament_games),
-			'tictactoe_scores': format_game_list(tictactoe_games),
-			'is_own_profile': user_data == request.user,
-			'viewing_username': username
-		}
+        tournaments = Tournament.objects.filter(players__user=user_data).distinct()
 
-		return render(request, 'ProfilePage.html', context)
-	except User.DoesNotExist:
-		return redirect('Error404')
+        context = {
+            'user_data': user_data,
+            'wins': wins,
+            'losses': losses,
+            'scores': format_game_list(user_games),
+            'ranked_scores': format_game_list(ranked_games),
+            'unranked_scores': format_game_list(unranked_games),
+            'tictactoe_scores': format_game_list(tictactoe_games),
+            'tournament_scores': format_game_list(tournament_games),
+            'tournaments': json.dumps([
+                {
+                    'tournament_id': tournament.id,
+                    'name': tournament.name,
+                    'date': tournament.created_at.isoformat() if tournament.created_at else None,
+                    # Ajoute d'autres champs si besoin
+                } for tournament in tournaments
+            ]),
+            'is_own_profile': user_data == request.user,
+            'viewing_username': username
+        }
+
+        return render(request, 'ProfilePage.html', context)
+    except User.DoesNotExist:
+        return redirect('Error404')
 
 def get_messages(request, contact_username):
 	if not request.user.is_authenticated:
@@ -808,11 +818,12 @@ def	matchmaking(request):
 def	ChallengeMode(request):
 	return render(request, 'ChallengeMode.html')
 
-def profile_view(request):
-	context = {
-		'ranked_scores': Game.objects.filter(game_type='ranked'),
-		'unranked_scores': Game.objects.filter(game_type='unranked'),
-		'tournament_scores': Game.objects.filter(game_type='tournament'),
-		'tictactoe_scores': Game.objects.filter(game_type='tictactoe'),
-	}
-	return render(request, 'ProfilePage.html', context)
+# def profile_view(request):
+# 	context = {
+# 		'ranked_scores': Game.objects.filter(game_type='ranked'),
+# 		'unranked_scores': Game.objects.filter(game_type='unranked'),
+# 		'tournament_scores': Game.objects.filter(game_type='tournament'),
+# 		'tournaments': Game.objects.filter(game_type='tournament'),
+# 		'tictactoe_scores': Game.objects.filter(game_type='tictactoe'),
+# 	}
+# 	return render(request, 'ProfilePage.html', context)

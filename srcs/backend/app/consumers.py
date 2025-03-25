@@ -272,12 +272,12 @@ class GameConsumer(AsyncWebsocketConsumer):
 			# 		"date": str(self.game.created_at)
 			# 	}
 			
-			add_match(tournament_id, self.game.player1.id, self.game.player2.id, self.game.score_player1, self.game.score_player2,
+			add_response = add_match(tournament_id, self.game.player1.id, self.game.player2.id, self.game.score_player1, self.game.score_player2,
 				convert_date_to_unix(str(self.game.created_at)))
 			print(f"\request sent is:\n")
 
-			# if add_response.get('status') == 'error':
-			# 	return JsonResponse({'status': 'error', 'message': add_response.get('message')})
+			if add_response.get('status') == 'error':
+				return JsonResponse({'status': 'error', 'message': add_response.get('message')})
 		await sync_to_async(self.game.save)(update_fields=["score_player1", "score_player2", "is_active", "is_ended"])
 
 		await self.channel_layer.group_send(

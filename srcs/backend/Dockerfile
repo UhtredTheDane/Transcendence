@@ -7,8 +7,8 @@ ENV PYTHONUNBUFFERED 1
 ENV DJANGO_SETTINGS_MODULE=base.settings
 
 RUN apk update \
-&& apk add postgresql-dev gcc python3-dev musl-dev openssl\
-&& pip install --upgrade pip
+&& apk add postgresql-dev gcc python3-dev musl-dev openssl
+RUN pip install --upgrade pip
 
 COPY . /app/
 
