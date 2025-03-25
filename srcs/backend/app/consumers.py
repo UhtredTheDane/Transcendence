@@ -240,6 +240,8 @@ class GameConsumer(AsyncWebsocketConsumer):
 			try:
 				tournament_game = await sync_to_async(TournamentGame.objects.select_related('tournament').get)(game=self.game)
 				tournament_id = tournament_game.tournament.id
+				add_match(tournament_id, self.game.player1.id, self.game.player2.id, self.game.score_player1, self.game.score_player2,
+				 convert_date_to_unix(str(self.game.created_at)))
 			except TournamentGame.DoesNotExist:
 				print("❌ ERREUR: Aucun tournoi trouvé pour ce match.")
 				return
@@ -256,28 +258,8 @@ class GameConsumer(AsyncWebsocketConsumer):
 
 			if winner:
 				await insert_winner_in_next_match(tournament_id, self.game, winner)
-
-			# payload = {
-			# 		"tournamentid": tournament_id,
-			# 		"player1": {
-			# 			"id": self.game.player1.id,
-			# 			"username": self.game.player1.username
-			# 		} if self.game.player1 else None,
-			# 		"player2": {
-			# 			"id": self.game.player2.id,
-			# 			"username": self.game.player2.username
-			# 		} if self.game.player2 else None,
-			# 		"score1": self.game.score_player1,
-			# 		"score2": self.game.score_player2,
-			# 		"date": str(self.game.created_at)
-			# 	}
 			
-			add_response = add_match(tournament_id, self.game.player1.id, self.game.player2.id, self.game.score_player1, self.game.score_player2,
-				convert_date_to_unix(str(self.game.created_at)))
-			print(f"\request sent is:\n")
 
-			if add_response.get('status') == 'error':
-				return JsonResponse({'status': 'error', 'message': add_response.get('message')})
 		await sync_to_async(self.game.save)(update_fields=["score_player1", "score_player2", "is_active", "is_ended"])
 
 		await self.channel_layer.group_send(

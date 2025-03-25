@@ -291,6 +291,7 @@ document.addEventListener('DOMContentLoaded', function() {
     changeCategory('Ranked');
 });
 async function fetchPlayerMatches() {
+    const playerName = "{{ user_data.username }}";
     const playerId = "{{ user_data.id }}";  // Player ID from template
     const tournamentGames = JSON.parse('{{ tournaments|escapejs }}');  // List of tournaments passed from the backend
     console.log(tournamentGames);  // To check the structure of the passed data
@@ -373,10 +374,6 @@ async function fetchPlayerMatches() {
     }
 }
 
-
-
-
-fetchPlayerMatches();
 </script>
 
 		<!-- Chatbox -->
