@@ -73,7 +73,7 @@
             </div>
         </div>
     </nav>
-
+ 
     <!-- Background Title -->
 	<div class=" position-absolute top-50 start-50 translate-middle" style="z-index: -1;">
         <img class="transcendence-icon" alt="" src="{% static 'images/bg-text.svg' %}">
@@ -97,6 +97,9 @@
             <canvas id="field" width="802px" height="455px">
                 Votre Navigateur ne supporte pas la balise canvas.
             </canvas>
+            <script> 
+				const playerRole = 'player1';
+			</script>
             <script type="module" src="{% static 'js/Launcher.js' %}"></script>
 			<script type="module">
 				import Launcher from "{% static 'js/Launcher.js' %}";

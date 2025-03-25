@@ -17,7 +17,7 @@ export default class Ball {
 		this.img.src = imgSrc;
 		this.resetBall();
 	}
-	
+
 	get multSpeed() {
 		return this._multSpeed;
 	}
@@ -94,7 +94,6 @@ export default class Ball {
 		this._img = value;
 	}
 
-
 	resetBall() {
 		this._xPos = 802 / 2;
 		this._yPos = 455 / 2;
@@ -102,136 +101,98 @@ export default class Ball {
 		this._ySpeed = (Math.random() > 0.5 ? 1 : -1) * this._multSpeed;
 	}
 
-	increaseBallSpeed() {
-		// Augmenter la vitesse de la balle sans dépasser la vitesse maximale
-		if (this._ballSpeed < this._ballSpeedMax) {
-			this._ballSpeed += this._ballSpeedIncrement;
-		}
-
-		// Recalculer les composantes de la vitesse pour conserver la direction
-		let angle = Math.atan2(this._ySpeed, this._xSpeed); // Calculer l'angle actuel
-		this._xSpeed = this._ballSpeed * Math.cos(angle); // Mettre à jour la composante horizontale
-		this._ySpeed = this._ballSpeed * Math.sin(angle); // Mettre à jour la composante verticale
-	}
-
-	updateBall(fieldPong, game) {
+	updateBall(fieldPong) {
 		let player;
 		let opponent;
-		this._xPos += this._xSpeed;
-		this._yPos += this._ySpeed;
-
+	
 		player = fieldPong.player;
 		opponent = fieldPong.opponent;
-		if (this._xPos <= 30 && (this._yPos >= player.yPos - 5 && this._yPos <= player.yPos + player.height + 5 || this._yPos + this._diameter >= player.YPos - 5 && this._yPos + this._diameter <= player.YPos + player.height + 5) || this._xPos + this._diameter >= 770 && (this._yPos >= opponent.yPos - 5 && this._yPos <= opponent.yPos + opponent.height + 5 || this._yPos + this._diameter >= opponent.yPos - 5 && this._yPos + this._diameter <= opponent.yPos + opponent.height + 5))
-		{	
-			this._xSpeed *= -1; // Inverser la direction horizontale de la balle	
-			var newSpeedx = this._xSpeed;
-			var newSpeedy = this._ySpeed;
-			if (this._xPos <= 30 && this._yPos + this._diameter / 2 >= player.yPos - 5 && this._yPos + this._diameter/2 < player.yPos + 42)
-				{
-					if (this._ySpeed < 0.0)
-					{
-					
-						newSpeedx = this._xSpeed * Math.cos(Math.PI / 180 * -15) - this._ySpeed * Math.sin(Math.PI/180 * -15);
-						newSpeedy = this._xSpeed * Math.sin(Math.PI / 180 * -15) + this._ySpeed * Math.cos(Math.PI/180 * -15);
-					}
-					else
-						newSpeedy = this._ySpeed * -1;
-					//hautraquette1
-				}
-				else if (this._xPos <= 30 && this._yPos + this._diameter/2 >= player.yPos + 42 && this._yPos + this._diameter/2 <= player.yPos + 82) {}
-					//milieuraquette1
-				else if (this._xPos <= 30 && this._yPos + this._diameter/2 > player.yPos + 82 && this._yPos + this._diameter/2 <= player.yPos + 122)
-				{	
-					//basraquette1
-					if (this._ySpeed >= 0.0)
-					{
-						
-						newSpeedx = this._xSpeed * Math.cos(Math.PI / 180 * 15) - this._ySpeed * Math.sin(Math.PI/180 * 15);
-						newSpeedy = this._xSpeed * Math.sin(Math.PI / 180 * 15) + this._ySpeed * Math.cos(Math.PI/180 * 15);
-					}
-					else
-						newSpeedy = this._ySpeed * -1;
-				}
-				else if (this._xPos >= 770 && this._yPos + this._diameter / 2 >= opponent.yPos - 5 && this._yPos + this._diameter / 2 < opponent.yPos + 40)
-					{
-						if (this._ySpeed < 0.0)
-						{
-							
-							newSpeedx = this._xSpeed * Math.cos(Math.PI / 180 * 15) - this._ySpeed * Math.sin(Math.PI/180 * 15);
-							newSpeedy = this._xSpeed * Math.sin(Math.PI / 180 * 15) + this._ySpeed * Math.cos(Math.PI/180 * 15);
-						}
-						else
-							newSpeedy = this._ySpeed * -1;
-						//hautraquette2
-					}
-				else if (this._xPos >= 770 && this._yPos + this._diameter / 2 >= opponent.yPos + 40 && this._yPos + this._diameter / 2 <= opponent.yPos + 80)
-				{}	//milieuraquette2
-				else if (this._xPos >= 770 && this._yPos + this._diameter / 2 > opponent.yPos + 80 && this._yPos + this._diameter / 2 <= opponent.yPos + 125)
-				{
-					//basraquette2
-					if (this._ySpeed >= 0.0)
-					{
-						//Angle de deviation de -40 degre
-						newSpeedx = this._xSpeed * Math.cos(Math.PI / 180 * -15) - this._ySpeed * Math.sin(Math.PI/180 * -15);
-						newSpeedy = this._xSpeed * Math.sin(Math.PI / 180 * -15) + this._ySpeed * Math.cos(Math.PI/180 * -15);
-					}
-					else
-						newSpeedy = this._ySpeed * -1;
-				}
-				this._ballSpeed = Math.sqrt(Math.pow(newSpeedx, 2) + Math.pow(newSpeedy, 2));
-				this._xSpeed = newSpeedx/this._ballSpeed * this._multSpeed;
-				this._ySpeed = newSpeedy/this._ballSpeed * this._multSpeed;
-			if (this._xPos <= 30)
-				this._xPos = 31;
-			else
-				this._xPos = 739;
+		
+		// Collision avec la raquette du joueur
+		if (this._xPos <= 16 && this._yPos + this._diameter >= player.yPos && this._yPos <= player.yPos + player.height) {
+			// Calculer l'impact : distance du centre de la raquette
+			let impactY = this._yPos + this._diameter / 2 - (player.yPos + player.height / 2);
+			let normalizedImpact = impactY / (player.height / 2); // Normaliser l'impact entre -1 et 1
+	
+			// Modifier la vitesse verticale de la balle en fonction du point d'impact
+			this._ySpeed = normalizedImpact * 5; // 5 est un facteur de force pour le rebond, ajustable
+	
+			this._xSpeed *= -1; // Inverser la direction horizontale de la balle
+			this._xPos = 17; // Réinitialiser la position de la balle après collision
 		}
-		if (this._yPos <= 0 || this._yPos + this._diameter >= fieldPong.canevas.height)
-		{
+		
+		// Collision avec la raquette de l'adversaire
+		else if (this._xPos + this._diameter >= 786 && this._yPos + this._diameter >= opponent.yPos && this._yPos <= opponent.yPos + opponent.height) {
+			// Calculer l'impact : distance du centre de la raquette
+			let impactY = this._yPos + this._diameter / 2 - (opponent.yPos + opponent.height / 2);
+			let normalizedImpact = impactY / (opponent.height / 2); // Normaliser l'impact entre -1 et 1
+	
+			// Modifier la vitesse verticale de la balle en fonction du point d'impact
+			this._ySpeed = normalizedImpact * 5; // 5 est un facteur de force pour le rebond, ajustable
+	
+			this._xSpeed *= -1; // Inverser la direction horizontale de la balle
+			this._xPos = 755; // Réinitialiser la position de la balle après collision
+		}
+	
+		// Collision avec le haut et le bas du terrain
+		if (this._yPos <= 0 || this._yPos + this._diameter >= fieldPong.canevas.height) {
 			this._ySpeed *= -1;
-		} 	    
+		}
+		
+		// Mise à jour des scores si la balle sort des limites
 		if (this._xPos + this._diameter / 2 <= 0 || this._xPos + this._diameter >= fieldPong.canevas.width) {
 			if (this._xPos <= 0)
 				opponent.playerScore++;
 			else
 				player.playerScore++;
 			this.resetBall();
-			//game.sendUpdateGameScore();
-			//if (player.playerScore >= 2 || opponent.playerScore >= 2)
-			//	game.endGame();
 		}
-				//game.sendBallPosition();
+	
+		// Mise à jour de la position de la balle
+		this._xPos += this._xSpeed;
+		this._yPos += this._ySpeed;
 	}
+	
 
 	updateOnlineBall(fieldPong, game) {
 		let player;
 		let opponent;
-		this._xPos += this._xSpeed;
-		this._yPos += this._ySpeed;
-
-		if (playerRole == "player1")
-		{
-			player = fieldPong.player;
-			opponent = fieldPong.opponent;
+	
+		player = fieldPong.player;
+		opponent = fieldPong.opponent;
+		
+		// Collision avec la raquette du joueur
+		if (this._xPos <= 16 && this._yPos + this._diameter >= player.yPos && this._yPos <= player.yPos + player.height) {
+			// Calculer l'impact : distance du centre de la raquette
+			let impactY = this._yPos + this._diameter / 2 - (player.yPos + player.height / 2);
+			let normalizedImpact = impactY / (player.height / 2); // Normaliser l'impact entre -1 et 1
+	
+			// Modifier la vitesse verticale de la balle en fonction du point d'impact
+			this._ySpeed = normalizedImpact * 5; // 5 est un facteur de force pour le rebond, ajustable
+	
+			this._xSpeed *= -1; // Inverser la direction horizontale de la balle
+			this._xPos = 17; // Réinitialiser la position de la balle après collision
 		}
-		else
-		{
-			player = fieldPong.opponent;
-			opponent = fieldPong.player;
+		
+		// Collision avec la raquette de l'adversaire
+		else if (this._xPos + this._diameter >= 786 && this._yPos + this._diameter >= opponent.yPos && this._yPos <= opponent.yPos + opponent.height) {
+			// Calculer l'impact : distance du centre de la raquette
+			let impactY = this._yPos + this._diameter / 2 - (opponent.yPos + opponent.height / 2);
+			let normalizedImpact = impactY / (opponent.height / 2); // Normaliser l'impact entre -1 et 1
+	
+			// Modifier la vitesse verticale de la balle en fonction du point d'impact
+			this._ySpeed = normalizedImpact * 5; // 5 est un facteur de force pour le rebond, ajustable
+	
+			this._xSpeed *= -1; // Inverser la direction horizontale de la balle
+			this._xPos = 755; // Réinitialiser la position de la balle après collision
 		}
-		if (this._xPos <= 30 && (this._yPos >= player.yPos - 5 && this._yPos <= player.yPos + player.height + 5 || this._yPos + this._diameter >= player.YPos - 5 && this._yPos + this._diameter <= player.YPos + player.height + 5) || this._xPos + this._diameter >= 770 && (this._yPos >= opponent.yPos - 5 && this._yPos <= opponent.yPos + opponent.height + 5 || this._yPos + this._diameter >= opponent.yPos - 5 && this._yPos + this._diameter <= opponent.yPos + opponent.height + 5))
-		{	
-			this._xSpeed *= -1; // Inverser la direction horizontale de la balle	
-			if (this._xPos <= 30)
-				this._xPos = 31;
-			else
-				this._xPos = 739;
-		}
-		if (this._yPos <= 0 || this._yPos + this._diameter >= fieldPong.canevas.height)
-		{
+	
+		// Collision avec le haut et le bas du terrain
+		if (this._yPos <= 0 || this._yPos + this._diameter >= fieldPong.canevas.height) {
 			this._ySpeed *= -1;
-		} 	    
+		}
+		
+		// Mise à jour des scores si la balle sort des limites
 		if (this._xPos + this._diameter / 2 <= 0 || this._xPos + this._diameter >= fieldPong.canevas.width) {
 			if (this._xPos <= 0)
 				opponent.playerScore++;
@@ -240,6 +201,8 @@ export default class Ball {
 			this.resetBall();
 			game.sendUpdateGameScore();
 		}
-			game.sendBallPosition();
+		this._xPos += this._xSpeed;
+		this._yPos += this._ySpeed;
+		game.sendBallPosition();
 	}
 }

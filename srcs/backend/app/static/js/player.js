@@ -9,7 +9,54 @@ export default class Player {
 		this.playerScore = 0;
 		this.img = new Image();
 		this.img.src = imgSrc;
+		this.keyStatesPlayer = null; 
+		if (playerRole == "player1")
+		{
+			this.keyStates = {
+			w: false,
+			z: false,
+			s: false,
+			};
+		}
+		else
+		{
+			this.keyStates = {
+				ArrowUp: false,
+				ArrowDown: false,
+			};
+		}
 	}
+
+	movePlayer(game) {
+		if (this.keyStates.w || this.keyStates.s) {
+			this.ySpeed = this.keyStates.w ? -10 : 10; // Mouvement vers le haut ou vers le bas
+			if (this.yPos + this.ySpeed <= 0 && this.keyStates.w)
+				game.sendMove(0, "player1");
+			else if (this.yPos + this.height + this.ySpeed >= game.field.canevas.height && this.keyStates.s)
+				game.sendMove(game.field.canevas.height - this.height, "player1");
+			else
+				game.sendMove(this.yPos + this.ySpeed, "player1");
+		}
+		else if (this.keyStates.ArrowUp || this.keyStates.ArrowDown) {
+			this.ySpeed = this.keyStates.ArrowUp ? -10 : 10; // Mouvement vers le haut ou vers le bas
+			if (this.yPos + this.ySpeed <= 0 && this.keyStates.ArrowUp)
+				game.sendMove(0, "player2");
+			else if (this.yPos + this.height + this.ySpeed >= game.field.canevas.height && this.keyStates.ArrowDown)
+				game.sendMove(game.field.canevas.height - this.height, "player2");
+			else
+				game.sendMove(this.yPos + this.ySpeed, "player2");
+		}
+		else
+			this.ySpeed = 0;
+	}
+
+	get keyStatesPlayer() {
+		return this._keyStatesPlayer;
+	}
+	
+	set keyStatesPlayer(value) {
+        	this._keyStatesPlayer = value;
+    }
 
 	get xPos() {
 		return this._xPos;

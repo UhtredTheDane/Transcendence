@@ -75,76 +75,130 @@ export default class OnlineGame extends Game {
 
 	initControls()
     {
-        let tempoGame = this;
-        if (playerRole == 'player1')
-            {
-                document.addEventListener("keydown", function (event) {
-                if (tempoGame.isPaused || tempoGame.isGameEnded) return;
-                if (event.key === "w" || event.key === "z")
-				{
-					if (tempoGame.field.player.yPos - 20 <= 0)
-                    	tempoGame.sendMove(0, "player1");
-					else
-						tempoGame.sendMove(tempoGame.field.player.yPos - 20, "player1");
-				}
-				if (event.key === "s")
-				{
-                    if (tempoGame.field.player.yPos + tempoGame.field.player.height + 20 >= tempoGame.field.canevas.height)
-                    	tempoGame.sendMove(tempoGame.field.canevas.height - tempoGame.field.player.height, "player1");
-					else
-						tempoGame.sendMove(tempoGame.field.player.yPos + 20, "player1");
-				}
-				if (event.key === "ArrowUp")
-				{
-					if (tempoGame.field.opponent.yPos - 20 <= 0)
-                    	tempoGame.sendMove(0, "player2");
-					else
-						tempoGame.sendMove(tempoGame.field.opponent.yPos - 20, "player2");
-				}
-				if (event.key === "ArrowDown")
-				{
-					if (tempoGame.field.opponent.yPos + tempoGame.field.opponent.height + 20 >= tempoGame.field.canevas.height)
-                    	tempoGame.sendMove(tempoGame.field.canevas.height - tempoGame.field.opponent.height, "player2");
-					else
-						tempoGame.sendMove(tempoGame.field.opponent.yPos + 20, "player2");
-				}
-                });
-            }
-           else if (playerRole == 'player2')
-            {
-                    document.addEventListener("keydown", function (event) {
-                    if (tempoGame.isPaused || tempoGame.isGameEnded) return;
-                    if (event.key === "ArrowUp")
-					{
-						if (tempoGame.field.player.yPos - 20 <= 0)
-							tempoGame.sendMove(0, "player2");
-						else
-							tempoGame.sendMove(tempoGame.field.player.yPos - 20, "player2");
-					}
-					if (event.key === "ArrowDown")
-					{
-						if (tempoGame.field.player.yPos + tempoGame.field.player.height + 20 >= tempoGame.field.canevas.height)
-							tempoGame.sendMove(tempoGame.field.canevas.height - tempoGame.field.player.height, "player2");
-						else
-							tempoGame.sendMove(tempoGame.field.player.yPos + 20, "player2");
-					}
-					if (event.key === "w" || event.key === "z")
-					{
-                        if (tempoGame.field.opponent.yPos - 20 <= 0)
-							tempoGame.sendMove(0, "player1");
-						else
-							tempoGame.sendMove(tempoGame.field.opponent.yPos - 20, "player1");
-					}
-					if (event.key === "s")
-					{
-						if (tempoGame.field.opponent.yPos + tempoGame.field.player.height + 20 >= tempoGame.field.canevas.height)
-							tempoGame.sendMove(tempoGame.field.canevas.height - tempoGame.field.opponent.height, "player1");
-						else
-							tempoGame.sendMove(tempoGame.field.opponent.yPos + 20, "player1");
-					}
-					});
-            }
-    }
+		let tempoGame = this;
+		document.addEventListener("keydown", function (event) {
+			if (tempoGame.isPaused || tempoGame.isGameEnded) return;
+		
+			// Gérer les touches pressées pour player1 (w, z, s)
+			if (event.key === "w" || event.key === "z" || event.key === "s") {
+				tempoGame.field.player.keyStates[event.key] = true;
+			}
+		
+			// Gérer les touches pressées pour player2 (ArrowUp, ArrowDown)
+			if (event.key === "ArrowUp" || event.key === "ArrowDown") {
+				tempoGame.field.opponent.keyStates[event.key] = true;
+			}
+		});
+		
+		document.addEventListener("keyup", function (event) {
+			if (tempoGame.isPaused || tempoGame.isGameEnded) return;
+		
+			// Gérer les touches relâchées pour player1 (w, z, s)
+			if (event.key === "w" || event.key === "z" || event.key === "s")
+				tempoGame.field.player.keyStates[event.key] = false;
+		
+			// Gérer les touches relâchées pour player2 (ArrowUp, ArrowDown)
+			if (event.key === "ArrowUp" || event.key === "ArrowDown")
+				tempoGame.field.opponent.keyStates[event.key] = false;
+		});	
+	}
+	
+
+	// initControls()
+    // {
+    //     let tempoGame = this;
+    //     if (playerRole == 'player1')
+    //         {
+    //             document.addEventListener("keydown", function (event) {
+    //             if (tempoGame.isPaused || tempoGame.isGameEnded) return;
+    //             if (event.key === "w" || event.key === "z")
+	// 			{
+	// 				tempoGame.field.player.xSpeed = -10;
+	// 				if (tempoGame.field.player.yPos + tempoGame.field.player.xSpeed <= 0)
+    //                 	tempoGame.sendMove(0, "player1");
+	// 				else
+	// 					tempoGame.sendMove(tempoGame.field.player.yPos + tempoGame.field.player.xSpeed, "player1");
+	// 			}
+	// 			if (event.key === "s")
+	// 			{
+	// 				tempoGame.field.player.xSpeed = 10;
+    //                 if (tempoGame.field.player.yPos + tempoGame.field.player.height + tempoGame.field.player.xSpeed >= tempoGame.field.canevas.height)
+    //                 	tempoGame.sendMove(tempoGame.field.canevas.height - tempoGame.field.player.height, "player1");
+	// 				else
+	// 					tempoGame.sendMove(tempoGame.field.player.yPos + tempoGame.field.player.xSpeed, "player1");
+	// 			}
+	// 			if (event.key === "ArrowUp")
+	// 			{
+	// 				tempoGame.field.opponent.xSpeed = -10;
+	// 				if (tempoGame.field.opponent.yPos + tempoGame.field.opponent.xSpeed <= 0)
+    //                 	tempoGame.sendMove(0, "player2");
+	// 				else
+	// 					tempoGame.sendMove(tempoGame.field.opponent.yPos + tempoGame.field.opponent.xSpeed, "player2");
+	// 			}
+	// 			if (event.key === "ArrowDown")
+	// 			{
+	// 				tempoGame.field.opponent.xSpeed = 10;
+	// 				if (tempoGame.field.opponent.yPos + tempoGame.field.opponent.height + tempoGame.field.opponent.xSpeed >= tempoGame.field.canevas.height)
+    //                 	tempoGame.sendMove(tempoGame.field.canevas.height - tempoGame.field.opponent.height, "player2");
+	// 				else
+	// 					tempoGame.sendMove(tempoGame.field.opponent.yPos + tempoGame.field.opponent.xSpeed, "player2");
+	// 			}
+    //             });
+
+	// 			document.addEventListener("keyup", function (event) {
+	// 				if (tempoGame.isPaused || tempoGame.isGameEnded) return;
+	// 				if (event.key === "w" || event.key === "z" || event.key === "s")
+	// 					tempoGame.field.player.xSpeed = 0;
+	// 				if (event.key === "ArrowUp" || event.key === "ArrowDown")
+	// 					tempoGame.field.opponent.xSpeed = 0;
+	// 				});
+    //         }
+    //        else if (playerRole == 'player2')
+    //         {
+    //                 document.addEventListener("keydown", function (event) {
+    //                 if (tempoGame.isPaused || tempoGame.isGameEnded) return;
+    //                 if (event.key === "ArrowUp")
+	// 				{
+	// 					tempoGame.field.player.xSpeed = -10;
+	// 					if (tempoGame.field.player.yPos + tempoGame.field.player.xSpeed <= 0)
+	// 						tempoGame.sendMove(0, "player2");
+	// 					else
+	// 						tempoGame.sendMove(tempoGame.field.player.yPos + tempoGame.field.player.xSpeed, "player2");
+	// 				}
+	// 				if (event.key === "ArrowDown")
+	// 				{
+	// 					tempoGame.field.player.xSpeed = 10;
+	// 					if (tempoGame.field.player.yPos + tempoGame.field.player.height + tempoGame.field.player.xSpeed >= tempoGame.field.canevas.height)
+	// 						tempoGame.sendMove(tempoGame.field.canevas.height - tempoGame.field.player.height, "player2");
+	// 					else
+	// 						tempoGame.sendMove(tempoGame.field.player.yPos + 20, "player2");
+	// 				}
+	// 				if (event.key === "w" || event.key === "z")
+	// 				{
+	// 					tempoGame.field.opponent.xSpeed = -10;
+    //                     if (tempoGame.field.opponent.yPos + tempoGame.field.opponent.xSpeed <= 0)
+	// 						tempoGame.sendMove(0, "player1");
+	// 					else
+	// 						tempoGame.sendMove(tempoGame.field.opponent.yPos + tempoGame.field.opponent.xSpeed, "player1");
+	// 				}
+	// 				if (event.key === "s")
+	// 				{
+	// 					tempoGame.field.opponent.xSpeed = 10;
+	// 					if (tempoGame.field.opponent.yPos + tempoGame.field.player.height + tempoGame.field.opponent.xSpeed >= tempoGame.field.canevas.height)
+	// 						tempoGame.sendMove(tempoGame.field.canevas.height - tempoGame.field.opponent.height, "player1");
+	// 					else
+	// 						tempoGame.sendMove(tempoGame.field.opponent.yPos + tempoGame.field.opponent.xSpeed, "player1");
+	// 				}
+	// 				});
+	// 				document.addEventListener("keyup", function (event) {
+	// 					if (tempoGame.isPaused || tempoGame.isGameEnded) return;
+	// 					if (event.key === "w" || event.key === "z" || event.key === "s")
+	// 						tempoGame.field.opponent.xSpeed = 0;
+	// 					if (event.key === "ArrowUp" || event.key === "ArrowDown")
+	// 						tempoGame.field.player.xSpeed = 0;
+	// 					});
+    //         }
+    // }
 
 	get socket() {
 		return this._socket;

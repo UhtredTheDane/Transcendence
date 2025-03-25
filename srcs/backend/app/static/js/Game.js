@@ -10,7 +10,7 @@ export default class Game {
 		this.maxScore = 2;
 		this.initControls();
 	}
-
+ 
 	initControls()
     {
         let tempoGame = this;
@@ -18,19 +18,26 @@ export default class Game {
         	if (tempoGame.isPaused || tempoGame.isGameEnded) return;
         	if (event.key === "w" || event.key === "z")
             {
-				if (tempoGame.field.player.yPos - 20 <= 0)
+				tempoGame.field.player.xSpeed = -10;
+				if (tempoGame.field.player.yPos + tempoGame.field.player.xSpeed <= 0)
 					tempoGame.sendMove(0);
 				else
-					tempoGame.sendMove(tempoGame.field.player.yPos - 20);
+					tempoGame.sendMove(tempoGame.field.player.yPos + tempoGame.field.player.xSpeed);
 			}
         	if (event.key === "s")
 			{
-            	if (tempoGame.field.player.yPos + tempoGame.field.player.height + 20 >= tempoGame.field.canevas.height)
+				tempoGame.field.player.xSpeed = 10;
+            	if (tempoGame.field.player.yPos + tempoGame.field.player.height + tempoGame.field.player.xSpeed >= tempoGame.field.canevas.height)
 					tempoGame.sendMove(tempoGame.field.canevas.height - tempoGame.field.player.height);
 				else
-					tempoGame.sendMove(tempoGame.field.player.yPos + 20);
+					tempoGame.sendMove(tempoGame.field.player.yPos + tempoGame.field.player.xSpeed);
 			}
-		});  
+		});
+		document.addEventListener("keyup", function (event) {
+        	if (tempoGame.isPaused || tempoGame.isGameEnded) return;
+        	if (event.key === "w" || event.key === "z" || event.key === "s")
+				tempoGame.field.player.xSpeed = 0;
+		});
     }
 
 	get field() {
