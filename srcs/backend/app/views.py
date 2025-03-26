@@ -3,6 +3,7 @@ import requests
 import random
 import math
 from math import log2
+from datetime import datetime
 from django.conf import settings
 from django.shortcuts import get_object_or_404, render, redirect
 from django.http import HttpResponseNotFound, HttpResponseRedirect, HttpResponseForbidden, Http404, JsonResponse
@@ -354,76 +355,82 @@ def update_avatar(request):
 
 @login_required
 def profile(request, username=None):
-    try:
-        if username is None:
-            user_data = request.user
-        else:
-            user_data = User.objects.get(username=username)
+	try:
+		if username:
+			user_data = get_object_or_404(User, username=username)
+		else:
+			user_data = request.user
 
-        user_games = Game.objects.filter((Q(player1=user_data) | Q(player2=user_data)) & Q(is_ended=True))
+		user_games = Game.objects.filter((Q(player1=user_data) | Q(player2=user_data)) & Q(is_ended=True))
 
-        wins = user_games.filter(
-            (Q(player1=user_data) & Q(score_player1__gt=F('score_player2'))) |
-            (Q(player2=user_data) & Q(score_player2__gt=F('score_player1')))
-        ).count()
+		wins = user_games.filter(
+			(Q(player1=user_data) & Q(score_player1__gt=F('score_player2'))) |
+			(Q(player2=user_data) & Q(score_player2__gt=F('score_player1')))
+		).count()
 
-        losses = user_games.filter(
-            (Q(player1=user_data) & Q(score_player1__lt=F('score_player2'))) |
-            (Q(player2=user_data) & Q(score_player2__lt=F('score_player1')))
-        ).count()
+		losses = user_games.filter(
+			(Q(player1=user_data) & Q(score_player1__lt=F('score_player2'))) |
+			(Q(player2=user_data) & Q(score_player2__lt=F('score_player1')))
+		).count()
 
-        ranked_games = user_games.filter(mode='ranked')
-        unranked_games = user_games.filter(mode='unranked')
-        tournament_games = user_games.filter(mode='tournament')
-        tictactoe_games = user_games.filter(mode='tictactoe')
+		ranked_games = user_games.filter(mode='ranked')
+		unranked_games = user_games.filter(mode='unranked')
+		tournament_games = user_games.filter(mode='tournament')
+		tictactoe_games = user_games.filter(mode='tictactoe')
 
-        def format_game_list(games):
-            formatted_games = []
-            for game in games:
-                if game.player1 == user_data:
-                    user_score = game.score_player1
-                    opponent = game.player2
-                    opponent_score = game.score_player2
-                else:
-                    user_score = game.score_player2
-                    opponent = game.player1
-                    opponent_score = game.score_player1
+		def format_game_list(games):
+			formatted_games = []
+			for game in games:
+				if game.player1 == user_data:
+					user_score = game.score_player1
+					opponent = game.player2
+					opponent_score = game.score_player2
+				else:
+					user_score = game.score_player2
+					opponent = game.player1
+					opponent_score = game.score_player1
 
-                result = "Victory" if user_score > opponent_score else "Defeat"
-                formatted_games.append({
-                    'result': result,
-                    'user_score': user_score,
-                    'opponent_score': opponent_score,
-                    'opponent': opponent.username if opponent else 'AI'
-                })
-            return formatted_games
+				if (user_score > opponent_score):
+					result = 'Victory'
+				elif (user_score < opponent_score):
+					result = 'Defeat'
+				else:
+					result = 'Draw'
+				
+				formatted_games.append({
+					'result': result,
+					'user_score': user_score,
+					'opponent_score': opponent_score,
+					'opponent': opponent.username if opponent else 'AI'
+				})
+			return formatted_games
 
-        tournaments = Tournament.objects.filter(players__user=user_data).distinct()
+		tournaments = Tournament.objects.filter(players__user=user_data).distinct()
 
-        context = {
-            'user_data': user_data,
-            'wins': wins,
-            'losses': losses,
-            'scores': format_game_list(user_games),
-            'ranked_scores': format_game_list(ranked_games),
-            'unranked_scores': format_game_list(unranked_games),
-            'tictactoe_scores': format_game_list(tictactoe_games),
-            'tournament_scores': format_game_list(tournament_games),
-            'tournaments': json.dumps([
-                {
-                    'tournament_id': tournament.id,
-                    'name': tournament.name,
-                    'date': tournament.created_at.isoformat() if tournament.created_at else None,
-                    # Ajoute d'autres champs si besoin
-                } for tournament in tournaments
-            ]),
-            'is_own_profile': user_data == request.user,
-            'viewing_username': username
-        }
+		context = {
+			'user_data': user_data,
+			'wins': wins,
+			'losses': losses,
+			'scores': format_game_list(user_games),
+			'ranked_scores': format_game_list(ranked_games),
+			'unranked_scores': format_game_list(unranked_games),
+			'tictactoe_scores': format_game_list(tictactoe_games),
+			'tournament_scores': format_game_list(tournament_games),
+			'tournaments': json.dumps([
+				{
+					'tournament_id': tournament.id,
+					'name': tournament.name,
+					'date': tournament.created_at.isoformat() if tournament.created_at else None,
+					# Ajoute d'autres champs si besoin
+				} for tournament in tournaments
+			]),
+			'is_own_profile': user_data == request.user,
+			'viewing_username': username
+		}
 
-        return render(request, 'ProfilePage.html', context)
-    except User.DoesNotExist:
-        return redirect('Error404')
+		return render(request, 'ProfilePage.html', context)
+	except User.DoesNotExist:
+		return redirect('Error404')
 
 def get_messages(request, contact_username):
 	if not request.user.is_authenticated:
@@ -454,17 +461,6 @@ def create_tournament_request(request):
 		return response.json()
 	except Exception as e:
 		return {'status': 'error', 'message': str(e)}
-
-# @csrf_exempt
-# def create_tournament(request):
-#     if request.method == 'POST':
-#         try:
-#             response = requests.post(f"{EXPRESS_SERVER_URL}/create-tournament")
-			
-#             return JsonResponse(response.json(), safe=False)
-#         except Exception as e:
-#             return JsonResponse({'status': 'error', 'message': str(e)})
-#     return JsonResponse({'status': 'error', 'message': 'Invalid request method'})
 
 def leaderboard(request):
 	leaderboard = User.objects.order_by('-elo_rating')[:10]
@@ -505,31 +501,35 @@ def	aimode(request):
 	return render(request, 'AIMode.html')
 
 def add_match(tournament_id, player1, player2, score1, score2, date):
-    # Check if all required fields are present, including the date
-    if not all([tournament_id, player1, player2, score1, score2, date]):
-        return JsonResponse({"status": "error", "message": "Missing required fields."})
-    
-    # Prepare payload for Express request, including the date
-    payload = {
-        "tournamentid": tournament_id,
-        "player1": player1,
-        "player2": player2,
-        "score1": score1,
-        "score2": score2,
-        "date": date,
-    }
+	# Check if all required fields are present, explicitly checking for None
+	# required_fields = [tournament_id, player1, player2, date]  # Don't include scores in the check
+	# if any(field is None for field in required_fields):  # Explicitly check for None
+	#     return JsonResponse({"status": "error", "message": "Missing required fields."})
 	
-    try:
-        # Send POST request to Express server
-        response = requests.post(
-            "http://blockchain-node:3000/add-match", 
-            json=payload,  # Send as JSON
-            headers={"Content-Type": "application/json"}
-        )
-        
-        return JsonResponse(response.json())
-    except Exception as e:
-        return JsonResponse({"status": "error", "message": str(e)})
+	# Prepare payload for Express request, including the date
+	payload = {
+		"tournamentid": tournament_id,
+		"player1": player1,
+		"player2": player2,
+		"score1": score1,
+		"score2": score2,
+		"date": date,
+	}
+	
+	try:
+		# Send POST request to Express server with a timeout
+		response = requests.post(
+			"http://blockchain-node:3000/add-match", 
+			json=payload,
+			headers={"Content-Type": "application/json"},
+			timeout=10  # Set a timeout for the request
+		)
+		
+		return JsonResponse(response.json())
+
+	except Exception as e:
+		return JsonResponse({"status": "error", "message": str(e)})
+
 
 # Example call:
 # add_match(tournament_id=1, player1="John", player2="Doe", score1=2, score2=1, date="2023-12-25")
@@ -668,7 +668,7 @@ def create_bracket(tournament, players):
 def create_tournament(request):
 	if request.method == "POST":
 		data = json.loads(request.body)
-		tournament_name = data.get("name", "")
+		tournament_name = data.get("name", None)
 		selected_players = data.get("players", [])
 
 		# Vérification du nombre de joueurs
@@ -802,8 +802,6 @@ def tournamentpage(request, tournament_id):
 	else:
 		round_names = [f"Round {i+1}" for i in range(len(rounds))]
 
-	# print(rounds)
-
 	return render(request, 'TournamentPage.html', {
 		'players': json.dumps(players_data),
 		'matches': json.dumps(matches_data),
@@ -812,14 +810,12 @@ def tournamentpage(request, tournament_id):
 		'tournament_id': tournament.id,
 		'tournament_name': tournament.name,
 	})
-	
-from datetime import datetime
 
 def convert_date_to_unix(date_string):
-    # Assuming the date_string is in the format '2025-03-24 14:29:12.057151+00:00'
-    dt = datetime.strptime(date_string.split('.')[0], '%Y-%m-%d %H:%M:%S')
-    # Convert to Unix timestamp
-    return int(dt.timestamp())
+	# Assuming the date_string is in the format '2025-03-24 14:29:12.057151+00:00'
+	dt = datetime.strptime(date_string.split('.')[0], '%Y-%m-%d %H:%M:%S')
+	# Convert to Unix timestamp
+	return int(dt.timestamp())
 	
 @login_required
 def	invitetournament(request):
@@ -835,13 +831,11 @@ def jointournament(request):
 	tournaments_data = [
 		{
 			"id": tournament.id,
-			"name": tournament.name or f"Tournament {tournament.id}",
+			"name": tournament.name or "Tournament",
 			"created_at": tournament.created_at.isoformat()
 		}
 		for tournament in all_tournaments
 	]
-
-	print(tournaments_data)
 
 	return render(request, 'JoinTournament.html', {
 		"tournaments": json.dumps(tournaments_data)

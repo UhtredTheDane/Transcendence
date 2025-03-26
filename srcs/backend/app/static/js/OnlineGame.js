@@ -67,7 +67,7 @@ export default class OnlineGame extends Game {
 					tempoGame.isBallMover = (playerRole === "player1");
 			} else if (data.type === "game_over")
 			{
-				tempoGame.socket.close(1000, "Fermeture normale");
+				//tempoGame.socket.close(1000, "Fermeture normale");
 				if (data.mode === "tournament")
 					window.location.href = `/TournamentPage/${tournamentId}/`;
 				else
