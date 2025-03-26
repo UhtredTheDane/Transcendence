@@ -240,8 +240,8 @@ class GameConsumer(AsyncWebsocketConsumer):
 			try:
 				tournament_game = await sync_to_async(TournamentGame.objects.select_related('tournament').get)(game=self.game)
 				tournament_id = tournament_game.tournament.id
-				add_match(tournament_id, self.game.player1.id, self.game.player2.id, self.game.score_player1, self.game.score_player2,
-				 convert_date_to_unix(str(self.game.created_at)))
+				# add_match(tournament_id, self.game.player1.id, self.game.player2.id, self.game.score_player1, self.game.score_player2,
+				#  convert_date_to_unix(str(self.game.created_at)))
 			except TournamentGame.DoesNotExist:
 				print("❌ ERREUR: Aucun tournoi trouvé pour ce match.")
 				return
