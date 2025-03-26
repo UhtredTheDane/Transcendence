@@ -68,7 +68,7 @@ body {
 		 </script>
 		
 	</head>
-	<body onload="loadTemplate();  fetchPlayerMatches();">
+	<body onload="loadTemplate();">
 		<!-- Navbar -->
 
 		<img class="transcendence-icon position-absolute top-50 start-50 translate-middle" alt="" src="{% static 'images/bg-text.svg' %}" style="z-index: -1;">
@@ -161,7 +161,7 @@ body {
 				<div class="col primary-font category" onclick="changeCategory('Unranked')">
 					Unranked
 				</div>
-				<div class="col primary-font category" onclick="changeCategory('Tournament')">
+				<div class="col primary-font category" onclick="changeCategory('Tournament'); fetchPlayerMatches();">
 					Tournament
 				</div>
 				<div class="col primary-font category" onclick="changeCategory('TicTacToe')">
