@@ -559,19 +559,47 @@ def check_matches(request, tournament_id):  # Accepter tournament_id ici
 	return JsonResponse({"status": "error", "message": "Invalid request method"})
 
 def get_player_matches(request, tournament_id, player_name):
-	# Make a request to the Express server using blockchain-node
 	url = f"http://blockchain-node:3000/getPlayerMatches/{tournament_id}/{player_name}"
 	response = requests.get(url)
 
-	# Check if the response is successful
-	if response.status_code == 200:
-		return JsonResponse(response.json())  # Return matches from Express server
-	else:
+	if response.status_code != 200:
 		return JsonResponse({
 			'status': 'error',
 			'message': 'Failed to fetch player matches from Express server',
 			'error': response.json()
 		})
+
+	print(f"\nResponse:\n{response.json()}\n\n")
+	matches = response.json().get('matches', [])
+	user_ids = set()
+
+	for match in matches:
+		user_ids.add(int(match.get('player1')))
+		user_ids.add(int(match.get('player2')))
+
+	users = User.objects.filter(id__in=user_ids)
+	for user in users:
+		print(f"User: {user.username}")
+	id_to_data = {
+		user.id: {
+			"username": user.username,
+			"avatar": user.avatar.url if user.avatar else "/media/default/avatar.png"
+		}
+		for user in users
+	}
+
+	for match in matches:
+		match['player1'] = int(match['player1']) if match.get('player1') else None
+		match['player2'] = int(match['player2']) if match.get('player2') else None
+
+		match['player1_username'] = id_to_data.get(match.get('player1'), {}).get('username', 'Unknown')
+		match['player2_username'] = id_to_data.get(match.get('player2'), {}).get('username', 'Unknown')
+		match['player1_avatar'] = id_to_data.get(match.get('player1'), {}).get('avatar', '/media/default/avatar.png')
+		match['player2_avatar'] = id_to_data.get(match.get('player2'), {}).get('avatar', '/media/default/avatar.png')
+
+	print(f"\nMatches:\n{matches}\n\n")
+	return JsonResponse({ "matches": matches })
+
 
 @login_required
 def set_ready_status(request, tournament_id):
