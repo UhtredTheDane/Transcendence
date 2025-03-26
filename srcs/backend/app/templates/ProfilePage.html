@@ -332,9 +332,10 @@ async function fetchPlayerMatches() {
                     gameDiv.className = "match";
 
                     // Determine if current player is player1 or player2
-                    let opponent = match.player1 === playerId ? match.player2 : match.player1;
+                    let opponent = match.player1 == playerId ? match.player2_username : match.player1_username;
                     let userScore = match.player1 === playerId ? match.score1 : match.score2;
                     let opponentScore = match.player1 === playerId ? match.score2 : match.score1;
+					let opponentAvatar = match.player1 === playerId ? match.player2_avatar : match.player1_avatar;
 
                     // Determine match result (Win, Loss, or Draw)
                     let resultText;
@@ -346,12 +347,8 @@ async function fetchPlayerMatches() {
                         resultText = "Draw";
                     }
 
-                    // Get the match date
-                    const matchDate = match.date;
-
-                    // Insert the match result, opponent, scores, and date into the gameDiv
+                    // Insert the match result, opponent, scores, into the gameDiv
                     gameDiv.innerHTML = `
-                        <p class="secondary-font"> ${matchDate} </p>
                         <div class="game-display">
                             <div class="primary-font ${resultText.toLowerCase()}">
                                 ${resultText} 
@@ -373,7 +370,7 @@ async function fetchPlayerMatches() {
         }
     } catch (error) {
         console.error('Error fetching matches:', error);
-        matchesContainer.innerHTML = "<p class='secondary-font'>No recent tournament matches.</p>";
+        matchesContainer.innerHTML = "<p class='secondary-font'>No Tournament matches.</p>";
     }
 }
 

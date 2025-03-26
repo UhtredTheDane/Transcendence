@@ -242,6 +242,7 @@ class GameConsumer(AsyncWebsocketConsumer):
 				tournament_id = tournament_game.tournament.id
 				add_match(tournament_id, self.game.player1.id, self.game.player2.id, self.game.score_player1, self.game.score_player2,
 				 convert_date_to_unix(str(self.game.created_at)))
+				print(f"Match {tournament_game.id} dans le tournoi {tournament_id} ajouté")
 			except TournamentGame.DoesNotExist:
 				print("❌ ERREUR: Aucun tournoi trouvé pour ce match.")
 				return
