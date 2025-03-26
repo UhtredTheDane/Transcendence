@@ -9,6 +9,7 @@ services:
       dockerfile: Dockerfile
     container_name: blockchain-node
     volumes:
+      - blockchain_data:/app/data  # Persist blockchain data here
       - ./blockchain:/app
       - ./artifacts:/app/artifacts
     ports:
@@ -52,3 +53,4 @@ volumes:
   db_data:
   site_static:
   site_media:
+  blockchain_data:

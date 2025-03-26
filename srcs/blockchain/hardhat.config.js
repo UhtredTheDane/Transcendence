@@ -8,6 +8,10 @@ module.exports = {
       url: "http://localhost:8545",  // Make sure this URL is correct for your setup
     },
   },
+  paths: {
+    artifacts: "/app/artifacts",
+    cache: "/app/"
+  }
 };
 
 require("dotenv").config();  // Add dotenv to load environment variables from .env
