@@ -240,9 +240,19 @@ class GameConsumer(AsyncWebsocketConsumer):
 			try:
 				tournament_game = await sync_to_async(TournamentGame.objects.select_related('tournament').get)(game=self.game)
 				tournament_id = tournament_game.tournament.id
-				add_match(tournament_id, self.game.player1.id, self.game.player2.id, self.game.score_player1, self.game.score_player2,
-				 convert_date_to_unix(str(self.game.created_at)))
-				print(f"Match {tournament_game.id} dans le tournoi {tournament_id} ajouté")
+				response = add_match(tournament_id, self.game.player1.id, self.game.player2.id, self.game.score_player1, self.game.score_player2,
+				convert_date_to_unix(str(self.game.created_at)))
+				response_data = json.loads(response.content.decode('utf-8'))
+				print(f"RESPONSE DATA HERE: {response_data}\n")
+				payload = {
+    			"tournamentid": tournament_id,
+   				"player1": self.game.player1.id,
+    			"player2": self.game.player2.id,
+    			"score1": self.game.score_player1,
+    			"score2": self.game.score_player2,
+    			"date": convert_date_to_unix(str(self.game.created_at))
+				}
+				print(f"Payload being sent: {payload}")
 			except TournamentGame.DoesNotExist:
 				print("❌ ERREUR: Aucun tournoi trouvé pour ce match.")
 				return
@@ -290,7 +300,8 @@ class GameConsumer(AsyncWebsocketConsumer):
 
 	async def game_over(self, event):
 		try:
-			await self.send(text_data=json.dumps(event))
+			if self.scope.get("type") == "websocket":
+				await self.send(text_data=json.dumps(event))
 		except Exception as e:
 			print(f"Error sending game over message: {e}")
 			pass

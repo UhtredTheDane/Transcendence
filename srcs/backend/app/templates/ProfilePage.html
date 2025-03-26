@@ -314,9 +314,9 @@ async function fetchPlayerMatches() {
             }
 
             const result = await response.json();
-			if(!result.ok){
-				throw new Error(`No recent tournament matches.`);
-			}
+			// if(!result.ok){
+			// 	throw new Error(`No recent tournament matches.`);
+			// }
             const matches = result.matches; // Extract the matches from the response
 
             // Clear the "Loading matches..." message after the response
@@ -324,7 +324,7 @@ async function fetchPlayerMatches() {
 
             // If no matches for this tournament, display a message
             if (matches.length === 0) {
-                matchesContainer.innerHTML = "<p class='secondary-font'>No recent tournament matches.</p>";
+                matchesContainer.innerHTML = "<p class='secondary-font'>Tournament games in progress.</p>";
             } else {
                 // Loop through the matches to display them
                 matches.forEach((match) => {

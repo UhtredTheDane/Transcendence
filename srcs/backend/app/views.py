@@ -505,9 +505,10 @@ def	aimode(request):
 	return render(request, 'AIMode.html')
 
 def add_match(tournament_id, player1, player2, score1, score2, date):
-    # Check if all required fields are present, including the date
-    if not all([tournament_id, player1, player2, score1, score2, date]):
-        return JsonResponse({"status": "error", "message": "Missing required fields."})
+    # Check if all required fields are present, explicitly checking for None
+    # required_fields = [tournament_id, player1, player2, date]  # Don't include scores in the check
+    # if any(field is None for field in required_fields):  # Explicitly check for None
+    #     return JsonResponse({"status": "error", "message": "Missing required fields."})
     
     # Prepare payload for Express request, including the date
     payload = {
@@ -518,18 +519,21 @@ def add_match(tournament_id, player1, player2, score1, score2, date):
         "score2": score2,
         "date": date,
     }
-	
+    
     try:
-        # Send POST request to Express server
+        # Send POST request to Express server with a timeout
         response = requests.post(
             "http://blockchain-node:3000/add-match", 
-            json=payload,  # Send as JSON
-            headers={"Content-Type": "application/json"}
+            json=payload,
+            headers={"Content-Type": "application/json"},
+            timeout=10  # Set a timeout for the request
         )
         
         return JsonResponse(response.json())
+
     except Exception as e:
         return JsonResponse({"status": "error", "message": str(e)})
+
 
 # Example call:
 # add_match(tournament_id=1, player1="John", player2="Doe", score1=2, score2=1, date="2023-12-25")
