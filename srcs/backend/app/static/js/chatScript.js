@@ -6,13 +6,15 @@
 /*   By: ykeciri <ykeciri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/26 13:13:57 by ykeciri           #+#    #+#             */
-/*   Updated: 2025/03/26 15:42:16 by ykeciri          ###   ########.fr       */
+/*   Updated: 2025/03/27 21:32:29 by ykeciri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 window.user = typeof username !== "undefined" ? username : null;
 // let user = typeof username !== 'undefined' ? username : null;
 window.messages = {};
+
+let 
 
 if (!user) {
   console.error("Username not defined");
@@ -22,6 +24,7 @@ window.chatSocket = new WebSocket(`wss://${window.location.host}/wss/chatbox/`);
 
 chatSocket.onopen = function (event) {
   console.log("WebSocket is connected.");
+  getUserStatus(userId);
 };
 
 function getUserStatus(userId) {
@@ -33,6 +36,7 @@ function getUserStatus(userId) {
 			statusIcon.style.backgroundColor = data.status === "online" ? "green" : "gray";
 		}
 	});
+	
 }
 
 /* ************************************************************************** */
