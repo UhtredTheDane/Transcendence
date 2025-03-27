@@ -63,13 +63,13 @@ function enableEditing(field){
     }
 }
 
-document
-  .getElementById("inputToEnter")
-  .addEventListener("keydown", function (event) {
-    if (event.key === "Enter") {
-		saveEdits();
-    }
-  });
+// document
+//   .getElementById("inputToEnter")
+//   .addEventListener("keydown", function (event) {
+//     if (event.key === "Enter") {
+// 		saveEdits();
+//     }
+//   });
 
 function getCSRFToken() {
     return document.cookie.split('; ')
