@@ -4,8 +4,7 @@
   "description": "A smart contract for managing Pong tournaments",
   "main": "index.js",
   "scripts": {
-    "start": "npx hardhat node --hostname 0.0.0.0 & sleep 5 && node server.js & npx hardhat run scripts/deploy.js --network localhost && tail -f /dev/null",
-    "deploy": "npx hardhat run scripts/deploy.js --network localhost"
+    "start": "npx hardhat node --hostname 0.0.0.0 & sleep 5 && node server.js & npx hardhat run scripts/deploy.js --network localhost && tail -f /dev/null"
   },
   "dependencies": {
     "dotenv": "^16.4.7",

@@ -76,4 +76,4 @@ re: down clean all
 mre: down all
 
 logs:
-	@$(DOCKERCOMPOSE) logs site
+	@$(DOCKERCOMPOSE) logs $(if $(c),$(c),site)

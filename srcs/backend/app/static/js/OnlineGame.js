@@ -4,8 +4,10 @@ export default class OnlineGame extends Game {
 
 	constructor(fieldValue, mode) {
 		super(fieldValue);
-		this.socket = new WebSocket("wss://" + window.location.host + "/wss/" + mode + "/" + gameId + "/");
-		//this.field.ball.multSpeed = 5;
+		if (mode == "tournament")
+			this.socket = new WebSocket("wss://" + window.location.host + "/wss/" + mode + "/" + tournamentId + "/"+ gameId + "/");
+		else
+			this.socket = new WebSocket("wss://" + window.location.host + "/wss/" + mode + "/" + gameId + "/");
 		this.isSocketOpen = false;
 		this.isBallMover = false;
 		this.#initOnOpen();
@@ -65,7 +67,11 @@ export default class OnlineGame extends Game {
 					tempoGame.isBallMover = (playerRole === "player1");
 			} else if (data.type === "game_over")
 			{
-				window.location.href = "/";
+				tempoGame.socket.close(1000, "Fermeture normale");
+				if (data.mode === "tournament")
+					window.location.href = `/TournamentPage/${tournamentId}/`;
+				else
+					window.location.href = "/";
 				return;
 			}
 

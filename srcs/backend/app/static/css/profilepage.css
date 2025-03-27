@@ -13,7 +13,7 @@
 }
 
 .draw {
-	color: #fcfcfc;
+	color: #f0f0f0;
 }
 
 .head-category {
@@ -179,6 +179,14 @@ height: 100%;
 
 .game-display .defeat{
 	color: #F6102F;
+	font-size: 42px;
+	font-weight: 400;
+	padding-left: 42px;
+	padding-right: 21px;
+}
+
+.game-display .draw{
+	color: #f0f0f0;
 	font-size: 42px;
 	font-weight: 400;
 	padding-left: 42px;

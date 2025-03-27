@@ -22,7 +22,6 @@ function loadTemplate() {
             .then(data => {
                 const element = document.getElementById(template.elementId);
                 if (element) {
-                    console.log(`Inserting content into #${template.elementId}`);
                     element.innerHTML = data;
                 } /* else { */
                 //     console.error(`Element with ID ${template.elementId} not found`);

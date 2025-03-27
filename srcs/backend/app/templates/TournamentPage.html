@@ -152,7 +152,7 @@
 
     <div class="container position-absolute top-50 start-50 translate-middle">
       {% if tournament_name %}
-      <h1 class="mb-4 primary-font">{{ tournament_name }}</h1>
+      <h1 class="mb-4 primary-font">Tournoi: {{ tournament_name }}</h1>
       {% else %}
       <h1 class="mb-4 primary-font">Tournament: Challenge Players</h1>
       {% endif %}
@@ -161,32 +161,49 @@
       <div class="bracket row" id="bracket"></div>
     </div>
 
+    {% include 'ChatBox.html' %}
+
     <script>
       let playersList = "{{ players|escapejs }}";
       let matchesList = JSON.parse("{{ matches|escapejs }}");
+      let roundsData = JSON.parse("{{ rounds|escapejs }}");
       let currentUserId = parseInt("{{ request.user.id }}");
       let tournamentId = parseInt("{{ tournament_id }}");
-      let userMatch = matchesList.find(
-        (match) =>
-          match.player1_id === currentUserId ||
-          match.player2_id === currentUserId
-      );
-      console.log(userMatch);
-      console.log(tournamentId);
+      let userMatch = [...matchesList]
+        .reverse()
+        .find(
+          (match) =>
+            (match.player1 && match.player1.id === currentUserId) ||
+            (match.player2 && match.player2.id === currentUserId)
+        );
+
+      let cookie = "hasVisited" + tournamentId + user;
+      console.log("----------------");
+      console.log(cookie);
+      console.log("----------------");
+      if (!sessionStorage.getItem(cookie)) {
+        chatSocket.addEventListener("open", (ev) => {
+          console.log("in tournament message");
+          addTournament();
+        });
+        sessionStorage.setItem(cookie, "true");
+      }
+
+      console.log("User Match: ", userMatch.id);
       const tournamentSocket = new WebSocket(
-        `ws://${window.location.host}/ws/tournament/${tournamentId}/${userMatch.id}`
+        `wss://${window.location.host}/wss/tournament/${tournamentId}/${userMatch.id}`
       );
-      //   console.log("------ List matches ------------");
-      //   console.log(matchesList);
-      //   console.log("------------------");
 
       tournamentSocket.onmessage = function (event) {
         const data = JSON.parse(event.data);
-        console.log(`Received data:\n${JSON.stringify(data)}`);
         if (data.type === "ready_update") {
           updateReadyButton(data.match_id, data.player_id, data.ready);
+          //   chatSocket.addEventListener("open", (ev) => {
+          // 	console.log("in tournament message");
+          // 	sendMessageTournament("The next match is ready !");
+          //   });
         } else if (data.type === "match_start") {
-          window.location.href = `/UnrankedMode/${data.match_id}/`;
+          window.location.href = `/TournamentMode/${data.match_id}/`;
         }
       };
 
@@ -202,272 +219,103 @@
         console.error("WebSocket Tournament error:\n" + JSON.stringify(error));
       };
 
-      // Initialize bracket once the DOM is fully loaded
       document.addEventListener("DOMContentLoaded", function () {
         initializeBracket();
       });
 
       function initializeBracket() {
         let bracketContainer = document.getElementById("bracket");
-        if (!bracketContainer) {
-          console.error("Bracket container not found");
-          return;
-        }
         bracketContainer.innerHTML = "";
-        console.log("initbracket called");
 
-        let numPlayers = matchesList.length * 2;
-        console.log(`Number of players: ${numPlayers}`);
+        roundsData.forEach((roundMatches, roundIndex) => {
+          let roundDiv = document.createElement("div");
+          roundDiv.className = "round col";
 
-        if (numPlayers === 16) {
-          console.log("Setting up Eight Finals for 16 players");
-          createEightFinals(bracketContainer);
-        } else if (numPlayers === 8) {
-          console.log("Setting up Quarter Finals for 8 players");
-          createQuarterFinals(bracketContainer);
-        } else if (numPlayers === 4) {
-          console.log("Setting up Semi Finals for 4 players");
-          createSemiFinals(bracketContainer);
-        }
-        // You can add other conditions for 4 or 8 players if needed
+          let roundTitle = document.createElement("div");
+          roundTitle.className = "round-title primary-font";
+          roundTitle.textContent = getRoundName(roundIndex, roundsData.length);
+          roundDiv.appendChild(roundTitle);
+
+          roundMatches.forEach((match, matchIndex) => {
+            let matchElement = createMatch(
+              `${roundIndex}-${matchIndex}`,
+              [match.player1, match.player2],
+              currentUserId,
+              match
+            );
+            roundDiv.appendChild(matchElement);
+          });
+
+          bracketContainer.appendChild(roundDiv);
+        });
       }
 
-      function createEightFinals(bracketContainer) {
-        // Create Eight Finals round
-        let round1 = document.createElement("div");
-        round1.classList.add("round");
-        round1.classList.add("col");
-        let roundTitle = document.createElement("div");
-        roundTitle.classList.add("round-title");
-        roundTitle.innerText = "Eight Finals";
-        round1.appendChild(roundTitle);
-
-        // Create matches for the 8 finals
-        for (let i = 0; i < 8; i++) {
-          let match = createMatch(
-            i + 1,
-            [
-              {
-                id: matchesList[i].player1_id,
-                name: matchesList[i].player1 || "No name",
-                avatar:
-                  matchesList[i].player1_avatar || "/media/default/avatar.png",
-                score: matchesList[i].player1_score,
-                type: "player",
-              },
-              {
-                id: matchesList[i].player2_id,
-                name: matchesList[i].player2 || "No name",
-                avatar:
-                  matchesList[i].player2_avatar || "/media/default/avatar.png",
-                score: matchesList[i].player2_score,
-                type: "player",
-              },
-            ],
-            currentUserId
-          );
-          round1.appendChild(match);
-        }
-
-        // Add the first round to the container
-        bracketContainer.appendChild(round1);
-
-        // Create next rounds (Quarter Finals, Semi Finals, Finals)
-        createQuarterFinals(bracketContainer);
+      function getRoundName(roundIndex) {
+        const roundNames = JSON.parse("{{ round_names|escapejs }}");
+        return roundNames[roundIndex] || `Round ${roundIndex + 1}`;
       }
 
-      function createQuarterFinals(bracketContainer) {
-        let round2 = document.createElement("div");
-        round2.classList.add("round");
-        round2.classList.add("col");
-        let roundTitle = document.createElement("div");
-        roundTitle.classList.add("round-title");
-        roundTitle.classList.add("primary-font");
-        roundTitle.innerText = "Quarter Finals";
-        round2.appendChild(roundTitle);
-
-        for (let i = 0; i < 4; i++) {
-          let match = createMatch(
-            i + 9,
-            [
-              {
-                id: matchesList[i].player1_id,
-                name: matchesList[i].player1 || "No name",
-                avatar:
-                  matchesList[i].player1_avatar || "/media/default/avatar.png",
-                score: matchesList[i].player1_score,
-                type: "player",
-              },
-              {
-                id: matchesList[i].player2_id,
-                name: matchesList[i].player2 || "No name",
-                avatar:
-                  matchesList[i].player2_avatar || "/media/default/avatar.png",
-                score: matchesList[i].player2_score,
-                type: "player",
-              },
-            ],
-            currentUserId
-          );
-          round2.appendChild(match);
-        }
-
-        bracketContainer.appendChild(round2);
-
-        createSemiFinals(bracketContainer);
+      function isNumber(value) {
+        return typeof value === "number" && isFinite(value);
       }
 
-      function createSemiFinals(bracketContainer) {
-        let round3 = document.createElement("div");
-        round3.classList.add("round");
-        round3.classList.add("col");
-        let roundTitle = document.createElement("div");
-        roundTitle.classList.add("round-title");
-        roundTitle.classList.add("primary-font");
-        roundTitle.innerText = "Semi Finals";
-        round3.appendChild(roundTitle);
-
-        // Create placeholder matches for the Semi Finals
-        for (let i = 0; i < 2; i++) {
-          let match = createMatch(
-            i + 13,
-            [
-              {
-                id: matchesList[i].player1_id,
-                name: matchesList[i].player1 || "No name",
-                avatar:
-                  matchesList[i].player1_avatar || "/media/default/avatar.png",
-                score: matchesList[i].player1_score,
-                type: "player",
-              },
-              {
-                id: matchesList[i].player2_id,
-                name: matchesList[i].player2 || "No name",
-                avatar:
-                  matchesList[i].player2_avatar || "/media/default/avatar.png",
-                score: matchesList[i].player2_score,
-                type: "player",
-              },
-            ],
-            currentUserId
-          );
-          round3.appendChild(match);
-        }
-
-        bracketContainer.appendChild(round3);
-
-        createFinals(bracketContainer);
-      }
-
-      function createFinals(bracketContainer, playersList) {
-        let round4 = document.createElement("div");
-        round4.classList.add("round", "primary-font", "col", "finals");
-        let roundTitle = document.createElement("div");
-        roundTitle.classList.add("round-title", "primary-font");
-        roundTitle.innerText = "Finals";
-        round4.appendChild(roundTitle);
-
-        if (!playersList || playersList.length < 2) {
-          playersList = [
-            {
-              id: null,
-              name: "To Be Determined",
-              avatar: "/media/default/avatar.png",
-              score: "0",
-              type: "auto",
-            },
-            {
-              id: null,
-              name: "To Be Determined",
-              avatar: "/media/default/avatar.png",
-              score: "0",
-              type: "auto",
-            },
-          ];
-        }
-
-        let finalMatch = createMatch(15, playersList);
-        round4.appendChild(finalMatch);
-
-        bracketContainer.appendChild(round4);
-      }
-
-      function createMatch(matchNumber, playersList, currentUserId) {
+      function createMatch(matchId, players, currentUserId, matchData) {
         let match = document.createElement("div");
-        match.classList.add("match");
-        match.id = `match${matchNumber}`;
+        match.className = "match secondary-font";
+        match.id = `match-${matchId}`;
 
-        // if (!playersList[0])
-        // 	playersList[0] = "TBD";
-        // if (!playersList[1])
-        // 	playersList[1] = "TBD";
+        players.forEach((player, index) => {
+          let playerDiv = document.createElement("div");
+          playerDiv.className = `player ${index === 0 ? "player1" : "player2"}`;
 
-        let player1 = document.createElement("div");
-        player1.classList.add("player");
-        // console.log(`\n\nPlayersList: ${JSON.stringify(playersList)}\n\n`);
-        player1.innerHTML = `
-        <div class="player-info secondary-font">
-            <img src="${playersList[0].avatar}" style="
-                width: 50px;
-                height: 50px;
-                border-radius: 50%;
-                margin-right: 10px;">
-            <span class="player-name">${playersList[0].name}</span>
-			${
-        playersList[0].type !== "auto"
-          ? '<span class="player-score">' + playersList[0].score + "</span>"
-          : ""
-      }
-        </div>
-    `;
+          playerDiv.innerHTML = `
+				<div class="player-info">
+					<img src="${player.avatar}" 
+						style="width: 50px; height: 50px; border-radius: 50%;">
+					<span class="player-name">${player.username}</span>
+					${
+            player.is_determined && player.score !== undefined
+              ? `<span class="player-score">${player.score}</span>`
+              : ""
+          }
+				</div>`;
 
-        let player2 = document.createElement("div");
-        player2.classList.add("player");
-        player2.innerHTML = `
-        <div class="player-info secondary-font">
-            <img src="${playersList[1].avatar}" style="
-                width: 50px;
-                height: 50px;
-                border-radius: 50%;
-                margin-right: 10px;">
-            <span class="player-name">${playersList[1].name}</span>
-            ${
-              playersList[1].type !== "auto"
-                ? '<span class="player-score">' +
-                  playersList[1].score +
-                  "</span>"
-                : ""
-            }
-        </div>
-    `;
-
-        // console.log(playersList[0].id, currentUserId, "\n", playersList[1].id, currentUserId);
-
-        match.appendChild(player1);
-        match.appendChild(player2);
+          match.appendChild(playerDiv);
+        });
 
         if (
-          playersList[0].id === currentUserId ||
-          playersList[1].id === currentUserId
+          players.some((p) => p && p.id === currentUserId) &&
+          !matchData.is_ended &&
+          matchData.player1.is_determined &&
+          matchData.player2.is_determined
         ) {
           let button = document.createElement("a");
-          button.classList.add(
-            "small-first-btn"
-          );
+          button.classList.add("small-first-btn");
           button.setAttribute("data", "Ready");
-          button.onclick = function () {
-            tournamentSocket.send(
-              JSON.stringify({
-                event: "toggle_ready",
-                match_id: matchNumber,
-                player_id: currentUserId,
-              })
-            );
-          };
+          button.onclick = () => handleReadyClick(matchData);
           match.appendChild(button);
+
+		let buttoncookie = "hasSent" + matchData.matchId + user.username;
+          if (!sessionStorage.getItem(buttoncookie)) {
+            chatSocket.addEventListener("open", (ev) => {
+              console.log("in tournament message");
+              sendMessageTournament("Your match is ready to be played !");
+            });
+            sessionStorage.setItem(buttoncookie, "true");
+          }
         }
 
         return match;
+      }
+
+      function handleReadyClick(matchData) {
+        tournamentSocket.send(
+          JSON.stringify({
+            type: "toggle_ready",
+            match_id: matchData.id,
+          })
+        );
+        console.log("in the handleClick");
       }
 
       function startMatch(matchNumber, playersList) {
@@ -477,10 +325,9 @@
       }
 
       function updateReadyButton(matchId, playerId, isReady) {
-        const matchElement = document.getElementById(`match${matchId}`);
+        const matchElement = document.getElementById(`match-${matchId}`);
         if (!matchElement) return;
 
-        // Mettre à jour le statut visuel
         const player1Ready = matchElement.querySelector(".player1-ready");
         const player2Ready = matchElement.querySelector(".player2-ready");
 

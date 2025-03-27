@@ -26,7 +26,15 @@ app.post("/add-match", async (req, res) => {
   try {
     const { tournamentid, player1, player2, score1, score2, date } = req.body;
 
-    if (!tournamentid || !player1 || !player2 || !score1 || !score2 || !date) {
+    // Explicitly check if any required field is missing, but allow 0 for scores
+    if (
+      tournamentid == null ||  // Check if undefined or null
+      player1 == null ||
+      player2 == null ||
+      score1 == null ||
+      score2 == null ||
+      date == null
+    ) {
       return res.status(400).json({ status: "error", message: "Missing required fields" });
     }
 
@@ -46,6 +54,7 @@ app.post("/add-match", async (req, res) => {
     res.status(500).json({ status: "error", message: "Failed to add match" });
   }
 });
+
 
 
 

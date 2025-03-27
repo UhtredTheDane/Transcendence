@@ -9,12 +9,12 @@ services:
       dockerfile: Dockerfile
     container_name: blockchain-node
     volumes:
+      - blockchain_data:/app/data  # Persist blockchain data here
       - ./blockchain:/app
       - ./artifacts:/app/artifacts
     ports:
       - "8545:8545"
       - "3000:3000" # Port du serveur Express
-    #command: ["npx", "hardhat", "node"]
     networks:
       - mynetwork
 
@@ -53,3 +53,4 @@ volumes:
   db_data:
   site_static:
   site_media:
+  blockchain_data:
