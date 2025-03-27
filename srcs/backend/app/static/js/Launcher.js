@@ -31,7 +31,6 @@ export default class Launcher {
                 this._fieldPong.draw();
                 this._game.moveAI(this._fieldPong);
                 this._game.updateScore();
-                this._game.field.player.movePlayer(this._game);
             }, 16);
         }
         else
@@ -47,7 +46,6 @@ export default class Launcher {
                     this._game.updateBall(this._fieldPong, this._game);
                     this._fieldPong.draw();
                     this._game.updateScore();
-                    this._game.field.player.movePlayer(this._game);
                 }, 16);
             }
         }
