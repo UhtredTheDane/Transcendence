@@ -394,6 +394,8 @@ def profile(request, username=None):
 			(Q(player2=user_data) & Q(score_player2__lt=F('score_player1')))
 		).count()
 
+		# print(list(user_games.values()))
+
 		ranked_games = user_games.filter(mode='ranked')
 		unranked_games = user_games.filter(mode='unranked')
 		tournament_games = user_games.filter(mode='tournament')
@@ -411,12 +413,18 @@ def profile(request, username=None):
 					opponent = game.player1
 					opponent_score = game.score_player1
 
-				if (user_score > opponent_score):
-					result = 'Victory'
-				elif (user_score < opponent_score):
-					result = 'Defeat'
+				if (game.mode == 'tictactoe'):
+					if (game.winner_tictactoe == user_data):
+						result = 'Victory'
+					elif (game.winner_tictactoe == opponent):
+						result = 'Defeat'
 				else:
-					result = 'Draw'
+					if (user_score > opponent_score):
+						result = 'Victory'
+					elif (user_score < opponent_score):
+						result = 'Defeat'
+					else:
+						result = 'Draw'
 				
 				formatted_games.append({
 					'result': result,
@@ -442,7 +450,6 @@ def profile(request, username=None):
 					'tournament_id': tournament.id,
 					'name': tournament.name,
 					'date': tournament.created_at.isoformat() if tournament.created_at else None,
-					# Ajoute d'autres champs si besoin
 				} for tournament in tournaments
 			]),
 			'is_own_profile': user_data == request.user,
@@ -601,7 +608,6 @@ def get_player_matches(request, tournament_id, player_name):
 			'error': response.json()
 		})
 
-	print(f"\nResponse:\n{response.json()}\n\n")
 	matches = response.json().get('matches', [])
 	user_ids = set()
 
@@ -610,8 +616,6 @@ def get_player_matches(request, tournament_id, player_name):
 		user_ids.add(int(match.get('player2')))
 
 	users = User.objects.filter(id__in=user_ids)
-	for user in users:
-		print(f"User: {user.username}")
 	id_to_data = {
 		user.id: {
 			"username": user.username,
@@ -629,7 +633,6 @@ def get_player_matches(request, tournament_id, player_name):
 		match['player1_avatar'] = id_to_data.get(match.get('player1'), {}).get('avatar', '/media/default/avatar.png')
 		match['player2_avatar'] = id_to_data.get(match.get('player2'), {}).get('avatar', '/media/default/avatar.png')
 
-	print(f"\nMatches:\n{matches}\n\n")
 	return JsonResponse({ "matches": matches })
 
 

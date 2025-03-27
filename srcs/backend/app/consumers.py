@@ -353,11 +353,11 @@ class MatchConsumer(AsyncWebsocketConsumer):
 				player1 = game.player1
 				player2 = game.player2
 
-				print(f"User: {user.id} -> Player1: {player1.id} - Player2: {player2.id}")
+				# print(f"User: {user.id} -> Player1: {player1.id} - Player2: {player2.id}")
 
 				# Debug : Afficher l'état initial AVANT modification
-				print(f"[INITIAL] Player1 Ready: {tournament_game.player1_ready}")
-				print(f"[INITIAL] Player2 Ready: {tournament_game.player2_ready}")
+				# print(f"[INITIAL] Player1 Ready: {tournament_game.player1_ready}")
+				# print(f"[INITIAL] Player2 Ready: {tournament_game.player2_ready}")
 
 				if user.id == player1.id:
 					tournament_game.player1_ready = not tournament_game.player1_ready
@@ -390,8 +390,8 @@ class MatchConsumer(AsyncWebsocketConsumer):
 						}
 					)
 
-				print(f"[DEBUG] Player 1 ready: {tournament_game.player1_ready}")
-				print(f"[DEBUG] Player 2 ready: {tournament_game.player2_ready}")
+				# print(f"[DEBUG] Player 1 ready: {tournament_game.player1_ready}")
+				# print(f"[DEBUG] Player 2 ready: {tournament_game.player2_ready}")
 
 			except ObjectDoesNotExist:
 				pass
@@ -469,10 +469,12 @@ class TicTacToeConsumer(AsyncWebsocketConsumer):
 		winner = await sync_to_async(self.check_winner)(board)
 
 		if winner:
-			self.game.winner = winner
+			self.game.winner_tictactoe = winner
+			self.game.is_active = False
+			self.game.is_ended = True
 
 		await self.update_turn(user)
-		await sync_to_async(self.game.save)()
+		await sync_to_async(self.game.save)(update_fields=["board", "current_turn", "winner_tictactoe", "is_ended", "is_active"])
 
 		await self.channel_layer.group_send(
 				self.game_group_name,

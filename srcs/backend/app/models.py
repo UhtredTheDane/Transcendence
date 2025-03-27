@@ -69,6 +69,7 @@ class Game(models.Model):
 
 	# For TicTacToe
 
+	winner_tictactoe = models.ForeignKey('User', on_delete=models.SET_NULL, null=True, blank=True, related_name='tictactoe_wins')
 	board = models.CharField(max_length=9, default=" " * 9)
 	current_turn = models.ForeignKey('User', on_delete=models.CASCADE, related_name="current_games", null=True, blank=True)
 

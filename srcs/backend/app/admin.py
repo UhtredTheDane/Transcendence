@@ -16,8 +16,8 @@ class UserAdmin(admin.ModelAdmin):
 	display_friends.short_description = 'Friends'
 
 class GameAdmin(admin.ModelAdmin):
-	list_display = ['id', 'is_active', 'is_ended', 'mode', 'player1', 'player2', 'score_player1', 'score_player2', 'maxScore', 'timer', 'speed', 'created_at']
-	list_editable = ['is_active', 'is_ended', 'mode', 'player1', 'player2', 'score_player1', 'score_player2', 'maxScore', 'timer', 'speed']
+	list_display = ['id', 'is_active', 'is_ended', 'mode', 'player1', 'player2', 'score_player1', 'score_player2', 'winner_tictactoe', 'maxScore', 'timer', 'speed', 'created_at']
+	list_editable = ['is_active', 'is_ended', 'mode', 'player1', 'player2', 'score_player1', 'score_player2', 'winner_tictactoe', 'maxScore', 'timer', 'speed']
 
 class TournamentAdmin(admin.ModelAdmin):
 	list_display = ['id', 'name', 'creator', 'created_at']
