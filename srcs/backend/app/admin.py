@@ -4,8 +4,16 @@ from app import models
 # Register your models here.
 
 class UserAdmin(admin.ModelAdmin):
-	list_display = ['id', 'username', "first_name", "last_name", 'email', 'is_waiting', 'elo_rating', 'is_active', 'avatar', 'channel_name', 'is_staff', 'is_superuser', 'date_joined']
-	list_editable = ['first_name', 'last_name', 'email', 'is_waiting', 'elo_rating', 'is_active', 'channel_name', 'avatar', 'is_staff', 'is_superuser']
+	list_display = ['id', 'username', "first_name", "last_name", 'email', 'is_waiting',
+'elo_rating', 'is_active', 'avatar', 'channel_name', 'display_friends',
+'is_staff', 'is_superuser', 'date_joined']
+	list_editable = ['first_name', 'last_name', 'email', 'is_waiting', 'elo_rating',
+ 'is_active', 'avatar', 'channel_name', 'is_staff', 'is_superuser']
+
+def display_friends(self, obj):
+	return ", ".join([friend.username for friend in obj.friends.all()])
+
+display_friends.short_description = 'Friends'
 
 class GameAdmin(admin.ModelAdmin):
 	list_display = ['id', 'is_active', 'is_ended', 'mode', 'player1', 'player2', 'score_player1', 'score_player2', 'maxScore', 'timer', 'speed', 'created_at']
@@ -22,14 +30,14 @@ class TournamentPlayerAdmin(admin.ModelAdmin):
 class TournamentGameAdmin(admin.ModelAdmin):
 	list_display = ['id', 'tournament', 'game', 'player1_ready', 'player2_ready', 'created_at']
 	list_editable = ['tournament', 'game', 'player1_ready', 'player2_ready']
-
+	
 class ChannelAdmin(admin.ModelAdmin):
 	list_display = ['id', 'name', 'topic', 'created_at']
 	list_editable = ['name', 'topic']
 
 class ChannelUserAdmin(admin.ModelAdmin):
-	list_display = ['id', 'channel', 'user', 'joined_at']
-	list_editable = ['channel', 'user']
+		list_display = ['id', 'channel', 'user', 'joined_at']
+list_editable = ['channel', 'user']
 
 class MessageAdmin(admin.ModelAdmin):
 	list_display = ['id', 'channel', 'user', 'content', 'created_at']
