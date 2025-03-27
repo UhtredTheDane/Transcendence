@@ -61,7 +61,7 @@ try {
 		});
 	}
 } catch (error) {
-	console.error('Error fetching matches:', error);
+	console.log('Error fetching matches:', error);
 	matchesContainer.innerHTML = "<p class='secondary-font'>Failed to load matches.</p>";
 }
 }

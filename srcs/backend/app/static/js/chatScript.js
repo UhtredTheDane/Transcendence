@@ -15,7 +15,7 @@ window.user = typeof username !== "undefined" ? username : null;
 window.messages = {};
 
 if (!user) {
-  console.error("Username not defined");
+  console.log("Username not defined");
 }
 
 window.chatSocket = new WebSocket(`wss://${window.location.host}/wss/chatbox/`);
@@ -75,7 +75,7 @@ chatSocket.onclose = function (event) {
 };
 
 chatSocket.onerror = function (error) {
-  console.error("WebSocket error:", error);
+  console.log("WebSocket error:", error);
 };
 
 /* ************************************************************************** */
@@ -154,7 +154,7 @@ function selectContact(contact) {
       }
     })
     .catch((error) => {
-      console.error("Error fetching messages:", error);
+      console.log("Error fetching messages:", error);
       alert("Failed to load messages. Please try again.");
     });
 

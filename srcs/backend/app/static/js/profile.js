@@ -18,7 +18,7 @@ function uploadProfilePicture(input) {
     formData.append('avatar', file);
 
     const csrftoken = getCSRFToken();
-    if (!csrftoken) return console.error('CSRF token not found');
+    if (!csrftoken) return console.log('CSRF token not found');
 
     fetch(updateAvatarUrl, {
         method: 'POST',
@@ -41,7 +41,7 @@ function uploadProfilePicture(input) {
             alert('Error uploading image: ' + (data.errors || data.message));
         }
     })
-    .catch(error => console.error('Error:', error));
+    .catch(error => console.log('Error:', error));
 }
 
 function enableEditing(field){

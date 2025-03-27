@@ -216,7 +216,7 @@
       };
 
       tournamentSocket.onerror = function (error) {
-        console.error("WebSocket Tournament error:\n" + JSON.stringify(error));
+        console.log("WebSocket Tournament error:\n" + JSON.stringify(error));
       };
 
       document.addEventListener("DOMContentLoaded", function () {

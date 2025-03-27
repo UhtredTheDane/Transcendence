@@ -33,13 +33,13 @@ async function main() {
         const tournament = await pongTournament.getTournament(tournamentId);
         console.log(`Tournoi récupéré: ${tournament.name}`);
     } catch (error) {
-        console.error("Erreur lors de la récupération du tournoi:", error);
+        console.log("Erreur lors de la récupération du tournoi:", error);
     }
 }
 
 main()
     .then(() => process.exit(0))
     .catch((error) => {
-        console.error(error);
+        console.log(error);
         process.exit(1);
     });

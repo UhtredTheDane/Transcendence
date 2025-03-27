@@ -24,11 +24,11 @@ function loadTemplate() {
                 if (element) {
                     element.innerHTML = data;
                 } /* else { */
-                //     console.error(`Element with ID ${template.elementId} not found`);
+                //     console.log(`Element with ID ${template.elementId} not found`);
                 // }
             })
             // .catch(error => {
-            //     console.error(`Error loading ${template.url}:`, error);
+            //     console.log(`Error loading ${template.url}:`, error);
             // });
     });
 }

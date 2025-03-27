@@ -17,7 +17,7 @@ async function main() {
     // Vérifie si tous les arguments nécessaires sont fournis
     const args = process.argv.slice(2);
     if (args.length < 5) {
-        console.error("Usage: node script.js <tournamentId> <player1> <player2> <score1> <score2>");
+        console.log("Usage: node script.js <tournamentId> <player1> <player2> <score1> <score2>");
         process.exit(1);
     }
 
@@ -31,7 +31,7 @@ async function main() {
 
     // Vérifier si tournamentId et les scores sont valides
     if (isNaN(parsedTournamentId) || isNaN(parsedScore1) || isNaN(parsedScore2)) {
-        console.error("Invalid tournamentId or scores. They must be valid numbers.");
+        console.log("Invalid tournamentId or scores. They must be valid numbers.");
         process.exit(1);
     }
 
@@ -49,6 +49,6 @@ async function main() {
 main()
     .then(() => process.exit(0))
     .catch((error) => {
-        console.error(error);
+        console.log(error);
         process.exit(1);
     });

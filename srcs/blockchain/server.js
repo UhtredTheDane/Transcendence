@@ -9,11 +9,11 @@ app.use(express.json());
 app.post("/create-tournament", (req, res) => {
   exec("npx hardhat run scripts/createTournament.js --network localhost", (err, stdout, stderr) => {
     if (err) {
-      console.error("Error executing create tournament:", err);
+      console.log("Error executing create tournament:", err);
       return res.status(500).json({ status: "error", message: "Error executing create tournament" });
     }
     if (stderr) {
-      console.error("stderr:", stderr);
+      console.log("stderr:", stderr);
       return res.status(500).json({ status: "error", message: stderr });
     }
     console.log("stdout:", stdout);
@@ -44,13 +44,13 @@ app.post("/add-match", async (req, res) => {
     
     exec(command, (error, stdout, stderr) => {
       if (error) {
-        console.error(`Error executing add match: ${error.message}`);
+        console.log(`Error executing add match: ${error.message}`);
         return res.status(500).json({ status: "error", message: error.message });
       }
       res.json({ status: "success", message: "Match added successfully", result: stdout });
     });
   } catch (error) {
-    console.error(error);
+    console.log(error);
     res.status(500).json({ status: "error", message: "Failed to add match" });
   }
 });
@@ -66,11 +66,11 @@ app.get("/checkMatches/:tournamentId", (req, res) => {
 
   exec(command, (err, stdout, stderr) => {
     if (err) {
-      console.error("Error executing check matches:", err);
+      console.log("Error executing check matches:", err);
       return res.status(500).json({ status: "error", message: "Error executing check matches" });
     }
     if (stderr) {
-      console.error("stderr:", stderr);
+      console.log("stderr:", stderr);
       return res.status(500).json({ status: "error", message: stderr });
     }
     console.log("stdout:", stdout);
@@ -87,7 +87,7 @@ app.get("/getPlayerMatches/:tournamentId/:playerName", (req, res) => {
   // Execute the command using exec
   exec(command, (error, stdout, stderr) => {
     if (error) {
-      console.error(`exec error: ${error}`);
+      console.log(`exec error: ${error}`);
       return res.status(500).json({
         status: "error",
         message: "Failed to execute Hardhat task",
@@ -96,7 +96,7 @@ app.get("/getPlayerMatches/:tournamentId/:playerName", (req, res) => {
     }
 
     if (stderr) {
-      console.error(`stderr: ${stderr}`);
+      console.log(`stderr: ${stderr}`);
       return res.status(500).json({
         status: "error",
         message: "Error in Hardhat task execution",
@@ -112,7 +112,7 @@ app.get("/getPlayerMatches/:tournamentId/:playerName", (req, res) => {
         matches: matches,
       });
     } catch (parseError) {
-      console.error("Error parsing Hardhat output:", parseError);
+      console.log("Error parsing Hardhat output:", parseError);
       return res.status(500).json({
         status: "error",
         message: "Error parsing Hardhat task output",

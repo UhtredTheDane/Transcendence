@@ -86,7 +86,7 @@ task("getPlayerMatches", "Get matches for a player in a tournament")
       // Log the result as a JSON string with dates
       console.log(JSON.stringify(matchesJson, null, 2));
     } catch (error) {
-      console.error("Error fetching player matches:", error);
+      console.log("Error fetching player matches:", error);
       process.exit(1); // Exit with error code
     }
   });

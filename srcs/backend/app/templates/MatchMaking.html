@@ -87,11 +87,11 @@
 		};
 	
 		matchmakingSocket.onclose = function (e) {
-			console.error("❌ WebSocket matchmaking fermé :", e);
+			console.log("❌ WebSocket matchmaking fermé :", e);
 		};
 	
 		matchmakingSocket.onerror = function (e) {
-			console.error("❌ Erreur WebSocket :", e);
+			console.log("❌ Erreur WebSocket :", e);
 		};
 	</script>
 		
