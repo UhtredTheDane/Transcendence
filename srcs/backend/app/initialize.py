@@ -47,3 +47,6 @@ if not User.objects.filter(username='sami').exists():
     
 if not User.objects.filter(username='enis').exists():
     User.objects.create_superuser(username='enis', email='enis@mail.fr', password='toto752631')
+    
+if not User.objects.filter(username='tournament').exists():
+    User.objects.create_superuser(username='tournament', email='admin@mail.fr', password='toto752631')

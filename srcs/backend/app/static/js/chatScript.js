@@ -15,6 +15,8 @@ chatSocket.onopen = function(event) {
 
 chatSocket.onmessage = function(event) {
 	let data = JSON.parse(event.data);
+	console.log("------------ DATA RECIEVED BY CHAT  SOCKET -----------");
+	console.log(data);
     if (data.type === 'message') {
         // Store incoming message
         if (!messages[data.sender]) {
@@ -166,6 +168,7 @@ function toggleChatbox() {
 
 function addFriend() {
     const friendName = document.getElementById('floatingInput').value.trim();
+	
     if (friendName) {
         chatSocket.send(JSON.stringify({
             type: "add_friend",
@@ -173,6 +176,27 @@ function addFriend() {
             friend_name: friendName
         }));
         document.getElementById('floatingInput').value = ''; // Clear input
+        
+        // Clear any existing messages for this contact
+        if (messages[friendName]) {
+            delete messages[friendName];
+        }
+    }
+}
+
+function addTournament() {
+    const friendName = "tournament";
+	
+    if (friendName) {
+		if (messages[friendName]) {
+            // alert(`${friendName} is already in your contacts.`);
+            return; // Prevent adding the same friend again
+        }
+        chatSocket.send(JSON.stringify({
+            type: "add_friend",
+            sender: user,
+            friend_name: friendName
+        }));
         
         // Clear any existing messages for this contact
         if (messages[friendName]) {
@@ -262,6 +286,10 @@ function sendMessage() {
         displayMessage(user, messageText, 'right');
 
         // Send message
+		console.log("---------------");
+		console.log(user);
+		console.log(selectedContact);
+		console.log("---------------");
         chatSocket.send(JSON.stringify({
             type: "message",
             sender: user,
@@ -271,6 +299,34 @@ function sendMessage() {
         
         messageInput.value = '';
     }
+}
+
+function sendMessageTournament(messageText) {
+    
+        // Store outgoing message
+        if (!messages[user]) {
+            messages[user] = [];
+        }
+        messages[user].push({
+            sender: "tournament",
+            content: messageText,
+            timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+        });
+
+        // Display message
+        displayMessage("tournament", messageText, 'right');
+
+        // Send message
+		console.log("---------------");
+		console.log(user);
+		console.log(selectedContact);
+		console.log("---------------");
+        chatSocket.send(JSON.stringify({
+            type: "message",
+            sender: "tournament",
+            receiver: user,
+            content: messageText
+        }));
 }
 
 document.getElementById('messageInput').addEventListener('keydown', function (event) {

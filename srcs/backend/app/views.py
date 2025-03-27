@@ -726,6 +726,7 @@ def tournamentpage(request, tournament_id):
 	tournament = get_object_or_404(Tournament, id=tournament_id)
 	players = TournamentPlayer.objects.filter(tournament=tournament).select_related("user")
 	games = TournamentGame.objects.filter(tournament=tournament).select_related("game")
+	user = request.user
 
 	players_data = [
 		{
@@ -815,6 +816,7 @@ def tournamentpage(request, tournament_id):
 		'round_names': json.dumps(round_names),
 		'tournament_id': tournament.id,
 		'tournament_name': tournament.name,
+		'user': request.user,
 	})
 	
 from datetime import datetime
