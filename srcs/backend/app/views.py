@@ -876,8 +876,15 @@ def jointournament(request):
 
 
 @login_required
-def	myfriends(request):
-	return render(request, 'MyFriends.html')
+def myfriends(request):
+	user = request.user
+	friends = user.friends.all().values('username', 'status')
+
+	friends_list = list(friends)
+
+	return render(request, 'MyFriends.html', {
+	'friends': json.dumps(friends_list)
+	})
 
 def	error404(request):
 	return render(request, 'Error404.html')
@@ -943,3 +950,8 @@ def save_profile(request):
     
 def error404(request):
     return render(request, 'Error404.html')
+
+
+
+
+

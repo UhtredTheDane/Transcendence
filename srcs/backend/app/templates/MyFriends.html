@@ -6,10 +6,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Invite to Tournament</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-     <link rel="icon" href="{% static 'icons/42_logo.ico' %}"  >
-     
+    <link rel="icon" type="image/png" href="{% static 'icons/42_logo.png' %}" />
     <link rel="stylesheet" href="{% static 'css/index.css' %}">
-     <script src="{% static 'js/index.js' %}"></script>
+
     <style>
         body {
             background-color: black;
@@ -60,7 +59,7 @@
 	<link rel="stylesheet" href="{% static 'css/index.css' %}">
     <link rel="stylesheet" href="{% static 'css/chatbox.css' %}">
 </head>
-<body onload="loadTemplate()" >
+<body>
 
     <!-- Navbar with Profile Page go back button -->
     <nav class="navbar navbar-expand-lg navbar-dark">
@@ -92,11 +91,7 @@
 
     <script>
         // Example friends data with online status
-        const friends = [
-            { name: 'Friend 1', online: true },
-            { name: 'Friend 2', online: false },
-            { name: 'Friend 3', online: true }
-        ];
+        const friends = JSON.parse('{{ friends|escapejs }}') || [];
 
         function displayFriends() {
             const friendsListContainer = document.getElementById('friendsList');
@@ -108,7 +103,7 @@
                 friendItem.classList.add(friend.online ? 'online' : 'offline'); // Add online/offline class
 
                 friendItem.innerHTML = `
-                    <span>${friend.name}</span>
+                    <span>${friend.username}</span>
                     <span>${friend.online ? 'Online' : 'Offline'}</span>
                 `;
                 
@@ -123,4 +118,3 @@
 
 </body>
 </html>
-
