@@ -6,7 +6,7 @@
 /*   By: ykeciri <ykeciri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/26 13:13:57 by ykeciri           #+#    #+#             */
-/*   Updated: 2025/03/27 21:32:29 by ykeciri          ###   ########.fr       */
+/*   Updated: 2025/03/27 21:37:58 by ykeciri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,7 +24,6 @@ window.chatSocket = new WebSocket(`wss://${window.location.host}/wss/chatbox/`);
 
 chatSocket.onopen = function (event) {
   console.log("WebSocket is connected.");
-  getUserStatus(userId);
 };
 
 function getUserStatus(userId) {
