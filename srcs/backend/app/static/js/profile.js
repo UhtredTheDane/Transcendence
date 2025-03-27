@@ -48,6 +48,8 @@ function enableEditing(field){
 	document.getElementById('saveButton').style.display = 'inline-block';
 	const   textElement = field.previousElementSibling;
     const   inputElement = document.createElement('input');
+	inputElement.id = "inputToEnter"
+	
     inputElement.value = textElement.innerText || textElement.innerHTML;
     textElement.style.display = 'none';
     field.style.display = 'none';
@@ -60,6 +62,14 @@ function enableEditing(field){
         textElement.style.display = 'block';
     }
 }
+
+document
+  .getElementById("inputToEnter")
+  .addEventListener("keydown", function (event) {
+    if (event.key === "Enter") {
+		saveEdits();
+    }
+  });
 
 function getCSRFToken() {
     return document.cookie.split('; ')
