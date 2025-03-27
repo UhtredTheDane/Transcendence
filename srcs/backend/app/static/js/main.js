@@ -8,7 +8,6 @@ function redirectToProfile() {
 }
 
 function setGameMode(mode) {
-	document.getElementById('selectedMode').textContent = "Current Mode: " + mode;
 	console.log("Mode: " + mode);
 	switch (mode) {
 		case "AI":

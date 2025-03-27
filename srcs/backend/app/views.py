@@ -14,6 +14,7 @@ from django.contrib.auth.decorators import login_required
 from django.db.models import F, Q
 from django.views.decorators.csrf import csrf_exempt
 from .models import User, Channel,  Message, Messages, Game, Tournament, TournamentGame, TournamentPlayer
+from .utils import is_user_online
 from allauth.account.forms import LoginForm
 from allauth.account.forms import SignupForm
 from allauth.account.views import login as allauth_login
@@ -48,6 +49,11 @@ def leaderboard(request):
 	data = list(top_players.values('username', 'elo_rating'))
 
 	return JsonResponse(data, safe=False)
+
+@login_required
+def get_user_status(request, user_id):
+	online = is_user_online(user_id)
+	return JsonResponse({"user_id": user_id, "status": "online" if online else "offline" })
 
 # Live Chat
 @login_required
@@ -176,7 +182,7 @@ def TicTacToeMode(request, game_id):
 		'username': request.user.username
 	})
 
-@login_required # ! POUR REVIEW LES FONCTIONS ET POUVOIRS LES DISPLAY DANS LE PROFIL
+@login_required
 def aimode(request):
 	player1_username = request.user
 	print(player1_username)
@@ -375,76 +381,76 @@ def update_avatar(request):
 
 @login_required
 def profile(request, username=None):
-    try:
-        if username is None:
-            user_data = request.user
-        else:
-            user_data = User.objects.get(username=username)
+	try:
+		if username is None:
+			user_data = request.user
+		else:
+			user_data = User.objects.get(username=username)
 
-        user_games = Game.objects.filter((Q(player1=user_data) | Q(player2=user_data)) & Q(is_ended=True))
+		user_games = Game.objects.filter((Q(player1=user_data) | Q(player2=user_data)) & Q(is_ended=True))
 
-        wins = user_games.filter(
-            (Q(player1=user_data) & Q(score_player1__gt=F('score_player2'))) |
-            (Q(player2=user_data) & Q(score_player2__gt=F('score_player1')))
-        ).count()
+		wins = user_games.filter(
+			(Q(player1=user_data) & Q(score_player1__gt=F('score_player2'))) |
+			(Q(player2=user_data) & Q(score_player2__gt=F('score_player1')))
+		).count()
 
-        losses = user_games.filter(
-            (Q(player1=user_data) & Q(score_player1__lt=F('score_player2'))) |
-            (Q(player2=user_data) & Q(score_player2__lt=F('score_player1')))
-        ).count()
+		losses = user_games.filter(
+			(Q(player1=user_data) & Q(score_player1__lt=F('score_player2'))) |
+			(Q(player2=user_data) & Q(score_player2__lt=F('score_player1')))
+		).count()
 
-        ranked_games = user_games.filter(mode='ranked')
-        unranked_games = user_games.filter(mode='unranked')
-        tournament_games = user_games.filter(mode='tournament')
-        tictactoe_games = user_games.filter(mode='tictactoe')
+		ranked_games = user_games.filter(mode='ranked')
+		unranked_games = user_games.filter(mode='unranked')
+		tournament_games = user_games.filter(mode='tournament')
+		tictactoe_games = user_games.filter(mode='tictactoe')
 
-        def format_game_list(games):
-            formatted_games = []
-            for game in games:
-                if game.player1 == user_data:
-                    user_score = game.score_player1
-                    opponent = game.player2
-                    opponent_score = game.score_player2
-                else:
-                    user_score = game.score_player2
-                    opponent = game.player1
-                    opponent_score = game.score_player1
+		def format_game_list(games):
+			formatted_games = []
+			for game in games:
+				if game.player1 == user_data:
+					user_score = game.score_player1
+					opponent = game.player2
+					opponent_score = game.score_player2
+				else:
+					user_score = game.score_player2
+					opponent = game.player1
+					opponent_score = game.score_player1
 
-                result = "Victory" if user_score > opponent_score else "Defeat"
-                formatted_games.append({
-                    'result': result,
-                    'user_score': user_score,
-                    'opponent_score': opponent_score,
-                    'opponent': opponent.username if opponent else 'AI'
-                })
-            return formatted_games
+				result = "Victory" if user_score > opponent_score else "Defeat"
+				formatted_games.append({
+					'result': result,
+					'user_score': user_score,
+					'opponent_score': opponent_score,
+					'opponent': opponent.username if opponent else 'AI'
+				})
+			return formatted_games
 
-        tournaments = Tournament.objects.filter(players__user=user_data).distinct()
+		tournaments = Tournament.objects.filter(players__user=user_data).distinct()
 
-        context = {
-            'user_data': user_data,
-            'wins': wins,
-            'losses': losses,
-            'scores': format_game_list(user_games),
-            'ranked_scores': format_game_list(ranked_games),
-            'unranked_scores': format_game_list(unranked_games),
-            'tictactoe_scores': format_game_list(tictactoe_games),
-            'tournament_scores': format_game_list(tournament_games),
-            'tournaments': json.dumps([
-                {
-                    'tournament_id': tournament.id,
-                    'name': tournament.name,
-                    'date': tournament.created_at.isoformat() if tournament.created_at else None,
-                    # Ajoute d'autres champs si besoin
-                } for tournament in tournaments
-            ]),
-            'is_own_profile': user_data == request.user,
-            'viewing_username': username
-        }
+		context = {
+			'user_data': user_data,
+			'wins': wins,
+			'losses': losses,
+			'scores': format_game_list(user_games),
+			'ranked_scores': format_game_list(ranked_games),
+			'unranked_scores': format_game_list(unranked_games),
+			'tictactoe_scores': format_game_list(tictactoe_games),
+			'tournament_scores': format_game_list(tournament_games),
+			'tournaments': json.dumps([
+				{
+					'tournament_id': tournament.id,
+					'name': tournament.name,
+					'date': tournament.created_at.isoformat() if tournament.created_at else None,
+					# Ajoute d'autres champs si besoin
+				} for tournament in tournaments
+			]),
+			'is_own_profile': user_data == request.user,
+			'viewing_username': username
+		}
 
-        return render(request, 'ProfilePage.html', context)
-    except User.DoesNotExist:
-        return redirect('Error404')
+		return render(request, 'ProfilePage.html', context)
+	except User.DoesNotExist:
+		return redirect('Error404')
 
 def get_messages(request, contact_username):
 	if not request.user.is_authenticated:
@@ -526,34 +532,34 @@ def	aimode(request):
 	return render(request, 'AIMode.html')
 
 def add_match(tournament_id, player1, player2, score1, score2, date):
-    # Check if all required fields are present, explicitly checking for None
-    # required_fields = [tournament_id, player1, player2, date]  # Don't include scores in the check
-    # if any(field is None for field in required_fields):  # Explicitly check for None
-    #     return JsonResponse({"status": "error", "message": "Missing required fields."})
-    
-    # Prepare payload for Express request, including the date
-    payload = {
-        "tournamentid": tournament_id,
-        "player1": player1,
-        "player2": player2,
-        "score1": score1,
-        "score2": score2,
-        "date": date,
-    }
-    
-    try:
-        # Send POST request to Express server with a timeout
-        response = requests.post(
-            "http://blockchain-node:3000/add-match", 
-            json=payload,
-            headers={"Content-Type": "application/json"},
-            timeout=10  # Set a timeout for the request
-        )
-        
-        return JsonResponse(response.json())
+	# Check if all required fields are present, explicitly checking for None
+	# required_fields = [tournament_id, player1, player2, date]  # Don't include scores in the check
+	# if any(field is None for field in required_fields):  # Explicitly check for None
+	#     return JsonResponse({"status": "error", "message": "Missing required fields."})
+	
+	# Prepare payload for Express request, including the date
+	payload = {
+		"tournamentid": tournament_id,
+		"player1": player1,
+		"player2": player2,
+		"score1": score1,
+		"score2": score2,
+		"date": date,
+	}
+	
+	try:
+		# Send POST request to Express server with a timeout
+		response = requests.post(
+			"http://blockchain-node:3000/add-match", 
+			json=payload,
+			headers={"Content-Type": "application/json"},
+			timeout=10  # Set a timeout for the request
+		)
+		
+		return JsonResponse(response.json())
 
-    except Exception as e:
-        return JsonResponse({"status": "error", "message": str(e)})
+	except Exception as e:
+		return JsonResponse({"status": "error", "message": str(e)})
 
 
 # Example call:
@@ -843,10 +849,10 @@ def tournamentpage(request, tournament_id):
 from datetime import datetime
 
 def convert_date_to_unix(date_string):
-    # Assuming the date_string is in the format '2025-03-24 14:29:12.057151+00:00'
-    dt = datetime.strptime(date_string.split('.')[0], '%Y-%m-%d %H:%M:%S')
-    # Convert to Unix timestamp
-    return int(dt.timestamp())
+	# Assuming the date_string is in the format '2025-03-24 14:29:12.057151+00:00'
+	dt = datetime.strptime(date_string.split('.')[0], '%Y-%m-%d %H:%M:%S')
+	# Convert to Unix timestamp
+	return int(dt.timestamp())
 	
 @login_required
 def	invitetournament(request):
@@ -878,12 +884,20 @@ def jointournament(request):
 @login_required
 def myfriends(request):
 	user = request.user
-	friends = user.friends.all().values('username', 'status')
+	friends = user.friends.all()
 
-	friends_list = list(friends)
+	friends_list = []
+	for friend in friends:
+		friends_list.append({
+			'id': friend.id,
+			'username': friend.username,
+			'status': 'online' if is_user_online(friend.id) else 'offline'
+		})
+
+	print(friends_list)
 
 	return render(request, 'MyFriends.html', {
-	'friends': json.dumps(friends_list)
+		'friends': json.dumps(friends_list)
 	})
 
 def	error404(request):
@@ -915,43 +929,38 @@ logger = logging.getLogger(__name__)
 @ensure_csrf_cookie
 @require_http_methods(["POST"])
 def save_profile(request):
-    try:
-        data = json.loads(request.body)
-        user = request.user
-        
-        # Use the new update_profile method
-        updated_user = user.update_profile(
-            username=data.get('username'),
-            email=data.get('email'),
-            password=data.get('password') if data.get('password') != '*********' else None
-        )
-        
-        return JsonResponse({
-            'status': 'success',
-            'message': 'Profile updated successfully',
-            'user': {
-                'username': updated_user.username,
-                'email': updated_user.email
-            }
-        })
-        
-    except ValueError as e:
-        return JsonResponse({
-            'status': 'error',
-            'message': str(e)
-        }, status=400)
-        
-    except Exception as e:
-        logger.error(f"Profile update error: {str(e)}")
-        return JsonResponse({
-            'status': 'error',
-            'message': 'An unexpected error occurred'
-        }, status=500)
-    
+	try:
+		data = json.loads(request.body)
+		user = request.user
+		
+		# Use the new update_profile method
+		updated_user = user.update_profile(
+			username=data.get('username'),
+			email=data.get('email'),
+			password=data.get('password') if data.get('password') != '*********' else None
+		)
+		
+		return JsonResponse({
+			'status': 'success',
+			'message': 'Profile updated successfully',
+			'user': {
+				'username': updated_user.username,
+				'email': updated_user.email
+			}
+		})
+		
+	except ValueError as e:
+		return JsonResponse({
+			'status': 'error',
+			'message': str(e)
+		}, status=400)
+		
+	except Exception as e:
+		logger.error(f"Profile update error: {str(e)}")
+		return JsonResponse({
+			'status': 'error',
+			'message': 'An unexpected error occurred'
+		}, status=500)
+	
 def error404(request):
-    return render(request, 'Error404.html')
-
-
-
-
-
+	return render(request, 'Error404.html')

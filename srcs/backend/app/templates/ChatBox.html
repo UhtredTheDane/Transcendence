@@ -30,11 +30,15 @@
                     justify-content: left;
                     align-items: center;">
                     <div class="">
-                        <img src="{{ friend.avatar.url }}"  style="
+                        <img src="{{ friend.avatar.url }}"
+							style="
                             width: 50px;
                             height: 50px;
                             border-radius: 50%;
-                            margin-right: 10px;">
+                            margin-right: 10px;
+							border: 3px solid;
+							border-color: #17df49;"
+							id="{{ friend.username }}">
                     </div>
                     <div class="">
                         <p style="font-size: 18px; margin-bottom: 2px;">{{ friend.username }}</p>
@@ -44,18 +48,18 @@
     {% endif %}
 </div>
 
-	<!-- Chat Content -->
-	<div class="chatbox-body" id="chatboxBody"></div>
+<!-- Chat Content -->
+<div class="chatbox-body" id="chatboxBody"></div>
 
-	<div class="chatbox-footer">
-		<input type="text" id="messageInput" placeholder="Type a message..." disabled>
-		<button id="sendMessageBtn" onclick="sendMessage()" disabled>Send</button>
-	</div>
+<div class="chatbox-footer">
+	<input type="text" id="messageInput" placeholder="Type a message..." disabled>
+	<button id="sendMessageBtn" onclick="sendMessage()" disabled>Send</button>
+</div>
 </div>
 
 <script>
     const username = "{{ user.username }}"
-
+	const userId = '{{ user.id }}'
 </script>
 <script src="{% static 'js/chatScript.js' %}"></script>
 

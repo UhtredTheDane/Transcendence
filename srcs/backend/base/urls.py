@@ -20,6 +20,7 @@ urlpatterns = [
 	path('update_avatar/', views.update_avatar, name='update_avatar'),
 	path('SignUp/', views.signup, name='signup'),
 	path('PasswordReset/', views.passwordreset, name='passwordreset'),
+	path('get_user_status/<int:user_id>/', views.get_user_status, name='get_user_status'),
 
 	path('GameModes/', views.game_modes, name='game_modes'),
 	path('AIMode/', views.aimode, name='aimode'),

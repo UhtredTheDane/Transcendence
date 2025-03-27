@@ -681,6 +681,8 @@ class ChatboxConsumer(AsyncWebsocketConsumer):
 		if not self.user.is_authenticated:
 			return
 
+		cache.set(f"user_{self.user.id}_online", True)
+
 		self.group_name = f"user_{self.user.username}"
 		await self.channel_layer.group_add(
 				self.group_name,
@@ -690,6 +692,7 @@ class ChatboxConsumer(AsyncWebsocketConsumer):
 		await self.accept()
 
 	async def disconnect(self, close_code):
+		cache.delete(f"user_{self.user.id}_online")
 		if hasattr(self, 'group_name'):
 			await self.channel_layer.group_discard(
 					self.group_name,

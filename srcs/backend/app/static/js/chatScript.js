@@ -24,6 +24,17 @@ chatSocket.onopen = function (event) {
   console.log("WebSocket is connected.");
 };
 
+function getUserStatus(userId) {
+	fetch(`/get_user_status/${userId}/`)
+		.then(response => response.json())
+		.then(data => {
+		const statusIcon = document.querySelector(`#status-icon-${userId}`);
+		if (statusIcon) {
+			statusIcon.style.backgroundColor = data.status === "online" ? "green" : "gray";
+		}
+	});
+}
+
 /* ************************************************************************** */
 /*                                 ON MESSAGE                                 */
 /* ************************************************************************** */

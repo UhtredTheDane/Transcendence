@@ -85,7 +85,11 @@
 		<div class="scores secondary-font">
 			<!-- Player's score container (always on the left) -->
 			<div id="player-side" class="score container px-4 text-center">
-				<p>{{ player1_username }}: <span id="score_player1">0</span></p>
+				{% if player1_username %}
+					<p>{{ player1_username }}: <span id="score_player1">0</span></p>
+				{% else %}
+					<p>You: <span id="score_player1">0</span></p>
+				{% endif %}	
 			</div>
 			<div id="ai-side" class="score container px-4 text-center">
 				<p>AI: <span id="score_player2">0</span></p>
