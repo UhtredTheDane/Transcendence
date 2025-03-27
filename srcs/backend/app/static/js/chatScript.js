@@ -14,8 +14,6 @@ window.user = typeof username !== "undefined" ? username : null;
 // let user = typeof username !== 'undefined' ? username : null;
 window.messages = {};
 
-let 
-
 if (!user) {
   console.error("Username not defined");
 }
@@ -25,18 +23,6 @@ window.chatSocket = new WebSocket(`wss://${window.location.host}/wss/chatbox/`);
 chatSocket.onopen = function (event) {
   console.log("WebSocket is connected.");
 };
-
-function getUserStatus(userId) {
-	fetch(`/get_user_status/${userId}/`)
-		.then(response => response.json())
-		.then(data => {
-		const statusIcon = document.querySelector(`#status-icon-${userId}`);
-		if (statusIcon) {
-			statusIcon.style.backgroundColor = data.status === "online" ? "green" : "gray";
-		}
-	});
-	
-}
 
 /* ************************************************************************** */
 /*                                 ON MESSAGE                                 */

@@ -50,11 +50,6 @@ def leaderboard(request):
 
 	return JsonResponse(data, safe=False)
 
-@login_required
-def get_user_status(request, user_id):
-	online = is_user_online(user_id)
-	return JsonResponse({"user_id": user_id, "status": "online" if online else "offline" })
-
 # Live Chat
 @login_required
 def create_or_get_channel(request, user_id):
