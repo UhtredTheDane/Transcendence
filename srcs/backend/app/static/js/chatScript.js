@@ -6,7 +6,7 @@
 /*   By: ykeciri <ykeciri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/26 13:13:57 by ykeciri           #+#    #+#             */
-/*   Updated: 2025/03/27 22:08:27 by ykeciri          ###   ########.fr       */
+/*   Updated: 2025/03/27 22:39:35 by ykeciri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,18 +23,6 @@ window.chatSocket = new WebSocket(`wss://${window.location.host}/wss/chatbox/`);
 chatSocket.onopen = function (event) {
   console.log("WebSocket is connected.");
 };
-
-// function getUserStatus(userId) {
-// 	fetch(`/get_user_status/${userId}/`)
-// 		.then(response => response.json())
-// 		.then(data => {
-// 		const statusIcon = document.querySelector(`#status-icon-${userId}`);
-// 		if (statusIcon) {
-// 			statusIcon.style.backgroundColor = data.status === "online" ? "green" : "gray";
-// 		}
-// 	});
-	
-// }
 
 /* ************************************************************************** */
 /*                                 ON MESSAGE                                 */

@@ -50,11 +50,6 @@ def leaderboard(request):
 
 	return JsonResponse(data, safe=False)
 
-@login_required
-def get_user_status(request, user_id):
-	online = is_user_online(user_id)
-	return JsonResponse({"user_id": user_id, "status": "online" if online else "offline" })
-
 # Live Chat
 @login_required
 def create_or_get_channel(request, user_id):
@@ -186,7 +181,7 @@ def TicTacToeMode(request, game_id):
 def aimode(request):
 	player1_username = request.user
 	print(player1_username)
-	return render(request, 'AIMode.html', {'player1_username': player1_username})
+	return render(request, 'AIMode.html', { 'player1_username': player1_username })
 
 @login_required # ! POUR REVIEW LES FONCTIONS ET POUVOIRS LES DISPLAY DANS LE PROFIL
 def RankedMode(request, game_id):
@@ -416,7 +411,13 @@ def profile(request, username=None):
 					opponent = game.player1
 					opponent_score = game.score_player1
 
-				result = "Victory" if user_score > opponent_score else "Defeat"
+				if (user_score > opponent_score):
+					result = 'Victory'
+				elif (user_score < opponent_score):
+					result = 'Defeat'
+				else:
+					result = 'Draw'
+				
 				formatted_games.append({
 					'result': result,
 					'user_score': user_score,
@@ -915,14 +916,14 @@ def	matchmaking(request):
 def	ChallengeMode(request):
 	return render(request, 'ChallengeMode.html')
 
-def profile_view(request):
-	context = {
-		'ranked_scores': Game.objects.filter(game_type='ranked'),
-		'unranked_scores': Game.objects.filter(game_type='unranked'),
-		'tournament_scores': Game.objects.filter(game_type='tournament'),
-		'tictactoe_scores': Game.objects.filter(game_type='tictactoe'),
-	}
-	return render(request, 'ProfilePage.html', context)
+# def profile_view(request):
+# 	context = {
+# 		'ranked_scores': Game.objects.filter(game_type='ranked'),
+# 		'unranked_scores': Game.objects.filter(game_type='unranked'),
+# 		'tournament_scores': Game.objects.filter(game_type='tournament'),
+# 		'tictactoe_scores': Game.objects.filter(game_type='tictactoe'),
+# 	}
+# 	return render(request, 'ProfilePage.html', context)
 
 logger = logging.getLogger(__name__)
 
