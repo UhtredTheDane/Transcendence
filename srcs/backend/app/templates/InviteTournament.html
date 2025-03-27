@@ -98,21 +98,21 @@
         <h1 class="mb-4 primary-font">Invite Players to Tournament</h1>
 
         <!-- Username Input Section -->
-		<div class="tournament-input">
-            <input type="text" id="tournamentInput" placeholder="Enter tournament Name" />
-            <button onclick="addPlayerFromInput()">create Tournament</button>
-        </div>
+		<!-- <div class="tournament-input">
+			<button onclick="addPlayerFromInput()">create Tournament</button>
+        </div> -->
         <div class="username-input">
+			<input type="text" id="tournamentInput" placeholder="Enter tournament Name" />
             <input type="text" id="usernameInput" placeholder="Enter Player Name" />
-            <button onclick="addPlayerFromInput()">Add Player</button>
         </div>
+		<a onclick="addPlayerFromInput()" class="small-first-btn primary-font" data="Add Player"></a>
 
         <h3>Players Selected:</h3>
         <div id="selectedPlayers" class="invite-list">
             <!-- Players added to the invite list will all be shown here -->
         </div>
 
-        <button class="btn btn-primary btn-lg small-first-btn" id="startTournamentBtn" onclick="startTournament()" style="margin-top: 20px;">Start Tournament</button>
+        <button class="btn btn-primary btn-lg small-first-btn primary-font" id="startTournamentBtn" onclick="startTournament()" style="margin-top: 20px;">Start Tournament</button>
     </div>
 
     <script>

@@ -22,16 +22,12 @@
   <!-- Contact List -->
   <div class="contact-list" id="contactList" style="overflow: scroll">
     {% if user.is_authenticated %} {% for friend in user.friends.all %}
-	<script>
-		let friendStatus = getUserStatus(friend.id);
-	</script>
     <div
       class="contact-item"
       onclick="selectContact('{{ friend.username }}')"
       style="display: flex; justify-content: left; align-items: center"
     >
       <div class="">
-		{% if friendStatus %}
         <img
           src="{{ friend.avatar.url }}"
           style="
@@ -39,23 +35,8 @@
             height: 50px;
             border-radius: 50%;
             margin-right: 10px;
-            border: 3px solid;
-			border-color: green;
           "
         />
-		{% else %}
-		<img
-          src="{{ friend.avatar.url }}"
-          style="
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            margin-right: 10px;
-            border: 3px solid;
-			border-color: gray;
-          "
-        />
-		{% endif %}
       </div>
       <div class="">
         <p style="font-size: 18px; margin-bottom: 2px">{{ friend.username }}</p>

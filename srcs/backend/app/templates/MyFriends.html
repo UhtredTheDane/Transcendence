@@ -55,6 +55,13 @@
         .block-btn {
             font-size: 8px;
         }
+		.green-border{
+			border-color: #4CAF50;
+		}
+
+		.red-border{
+			border-color: red;
+		}
     </style>
 	<link rel="stylesheet" href="{% static 'css/index.css' %}">
     <link rel="stylesheet" href="{% static 'css/chatbox.css' %}">
@@ -101,13 +108,16 @@
             friends.forEach(friend => {
                 const friendItem = document.createElement('div');
                 friendItem.classList.add('friend-item');
-                friendItem.classList.add(friend.online ? 'online' : 'offline'); // Add online/offline class
+                friendItem.classList.add(friend.status == "online" ? 'Online' : 'Offline'); // Add online/offline class
 
-                friendItem.innerHTML = `
-                    <span>${friend.username}</span>
-                    <span>${friend.status == "online" ? 'Online' : 'Offline'}</span>
-                `;
-                
+				console.log("status for friend " + friend.username);
+				console.log(friend.status);
+                friendItem.innerHTML = `<span>${friend.username}</span>`
+				if (friend.status == "online")
+					friendItem.classList.add('green-border');
+				else
+					friendItem.classList.add('red-border');
+
                 friendsListContainer.appendChild(friendItem);
             });
         }
