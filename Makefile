@@ -41,6 +41,7 @@ start:
 
 # build the containers
 build:
+	@touch srcs/blockchain/.env
 	@echo "$(BLUE)[Containers]$(DEFAULT) Building all containers..."
 	@$(DOCKERCOMPOSE) build
 
