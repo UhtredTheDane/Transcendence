@@ -869,7 +869,7 @@ def jointournament(request):
 	tournaments_data = [
 		{
 			"id": tournament.id,
-			"name": tournament.name or f"Tournament {tournament.id}",
+			"name": tournament.name or "Tournament",
 			"created_at": tournament.created_at.isoformat()
 		}
 		for tournament in all_tournaments
