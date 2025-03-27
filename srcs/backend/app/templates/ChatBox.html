@@ -22,7 +22,7 @@
 	</div>
 
 	<!-- Contact List -->
-	<div class="contact-list" id="contactList">
+	<div class="contact-list" id="contactList" style="overflow:scroll;">
     {% if user.is_authenticated %}
         {% for friend in user.friends.all %}
         <div class="contact-item" onclick="selectContact('{{ friend.username }}')" style="
