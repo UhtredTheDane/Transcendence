@@ -109,95 +109,111 @@
 
         <h3>Players Selected:</h3>
         <div id="selectedPlayers" class="invite-list">
-            <!-- Players added to the invite list will show here -->
+            <!-- Players added to the invite list will all be shown here -->
         </div>
 
         <button class="btn btn-primary btn-lg" id="startTournamentBtn" onclick="startTournament()" style="margin-top: 20px;">Start Tournament</button>
     </div>
 
     <script>
-		const selectedPlayers = [];
-
-		document.addEventListener('DOMContentLoaded', function() {
-    		const usernameInput = document.getElementById('usernameInput');
-			usernameInput.addEventListener('keypress', function(event) {
-				if (event.key === 'Enter') {
-					event.preventDefault(); // Prevent form submission
-					addPlayerFromInput();
-				}
-			});
-		});
-
-		function addPlayerFromInput() {
-			const username = document.getElementById('usernameInput').value.trim();
-			if (username === '') {
-				alert('Please enter a valid username.');
-				return;
-			}
-	
-			if (!selectedPlayers.includes(username)) {
-				selectedPlayers.push(username);
-				updateSelectedPlayers();
-				document.getElementById('usernameInput').value = '';
-			} else {
-				alert('This player is already added.');
-			}
-		}
-	
-		function updateSelectedPlayers() {
-			const selectedListContainer = document.getElementById('selectedPlayers');
-			selectedListContainer.innerHTML = '';
-	
-			selectedPlayers.forEach(player => {
-				const playerElement = document.createElement('div');
-				playerElement.textContent = player;
-				selectedListContainer.appendChild(playerElement);
-			});
-		}
-	
-		function startTournament() {
-			if (![4, 8, 16].includes(selectedPlayers.length)) {
-				alert('You need to select 4, 8, or 16 players to start a tournament.');
-				return;
-			} 
-			
-			let tournamentName = document.getElementById('tournamentInput').value.trim();
-			if (!tournamentName || tournamentName === '') tournamentName = null;
-
-			fetch('/create_tournament/', {
-				method: 'POST',
-				headers: {
-					'X-CSRFToken': getCookie('csrftoken'),
-					'Content-Type': 'application/json'
-				},
-				body: JSON.stringify({ players: selectedPlayers, name: tournamentName })
-			})
-			.then(response => response.json())
-			.then(data => {
-				if (data.status === "success") {
-					window.location.href = "{% url 'TournamentPage' 0 %}".replace("0", data.tournament_id);
-				} else {
-					alert(data.message);
-				}
-			})
-			.catch(error => console.error("Error:", error));
-		}
-	
-		function getCookie(name) {
-			let cookieValue = null;
-			if (document.cookie && document.cookie !== '') {
-				const cookies = document.cookie.split(';');
-				for (let i = 0; i < cookies.length; i++) {
-					const cookie = cookies[i].trim();
-					if (cookie.startsWith(name + '=')) {
-						cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-						break;
-					}
-				}
-			}
-			return cookieValue;
-		}
-	</script>
+        const selectedPlayers = [];
+    
+        document.addEventListener('DOMContentLoaded', function() {
+            const usernameInput = document.getElementById('usernameInput');
+            usernameInput.addEventListener('keypress', function(event) {
+                if (event.key === 'Enter') {
+                    event.preventDefault();
+                    addPlayerFromInput();
+                }
+            });
+        });
+    
+        function addPlayerFromInput() {
+            const username = document.getElementById('usernameInput').value.trim();
+            if (username === '') {
+                alert('Please enter a valid username.');
+                return;
+            }
+    
+            if (!selectedPlayers.includes(username)) {
+                selectedPlayers.push(username);
+                updateSelectedPlayers();
+                document.getElementById('usernameInput').value = '';
+            } else {
+                alert('This player is already added.');
+            }
+        }
+    
+        function updateSelectedPlayers() {
+            const selectedListContainer = document.getElementById('selectedPlayers');
+            selectedListContainer.innerHTML = '';
+    
+            selectedPlayers.forEach(player => {
+                const playerElement = document.createElement('div');
+                playerElement.classList.add('player-button');
+                playerElement.textContent = player;
+                const minusButton = document.createElement('button');
+                minusButton.textContent = '-';
+                minusButton.classList.add('btn', 'btn-danger');
+                minusButton.style.marginLeft = '10px';
+                minusButton.onclick = () => removePlayer(player);
+                playerElement.appendChild(minusButton);
+                selectedListContainer.appendChild(playerElement);
+            });
+        }
+    
+        function removePlayer(player) {
+            const playerIndex = selectedPlayers.indexOf(player);
+            if (playerIndex !== -1) {
+                selectedPlayers.splice(playerIndex, 1);
+                updateSelectedPlayers();
+            }
+        }
+    
+        function startTournament() {
+            if (![4, 8, 16].includes(selectedPlayers.length)) {
+                alert('You need to select 4, 8, or 16 players to start a tournament.');
+                return;
+            }
+    
+            let tournamentName = document.getElementById('tournamentInput').value.trim();
+            if (!tournamentName || tournamentName === '') tournamentName = null;
+    
+            fetch('/create_tournament/', {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': getCookie('csrftoken'),
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ players: selectedPlayers, name: tournamentName })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === "success") {
+                    window.location.href = "{% url 'TournamentPage' 0 %}".replace("0", data.tournament_id);
+                } else {
+                    alert(data.message);
+                }
+            })
+            .catch(error => console.error("Error:", error));
+        }
+    
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.startsWith(name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+    </script>
+    
 	
 
     <!-- Chatbox -->
