@@ -7,7 +7,7 @@ export default class Game {
 		this.field = fieldValue;
 		this.isPaused = false;
 		this.isGameEnded = false;
-		this.maxScore = 2;
+		this.maxScore = 5;
 		this.initControls();
 	}
  
@@ -18,7 +18,7 @@ export default class Game {
         	if (tempoGame.isPaused || tempoGame.isGameEnded) return;
         	if (event.key === "w" || event.key === "z")
             {
-				tempoGame.field.player.xSpeed = -10;
+				tempoGame.field.player.xSpeed = -20;
 				if (tempoGame.field.player.yPos + tempoGame.field.player.xSpeed <= 0)
 					tempoGame.sendMove(0);
 				else
@@ -26,7 +26,7 @@ export default class Game {
 			}
         	if (event.key === "s")
 			{
-				tempoGame.field.player.xSpeed = 10;
+				tempoGame.field.player.xSpeed = 20;
             	if (tempoGame.field.player.yPos + tempoGame.field.player.height + tempoGame.field.player.xSpeed >= tempoGame.field.canevas.height)
 					tempoGame.sendMove(tempoGame.field.canevas.height - tempoGame.field.player.height);
 				else

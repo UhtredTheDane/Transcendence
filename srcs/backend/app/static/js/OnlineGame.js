@@ -119,7 +119,7 @@ export default class OnlineGame extends Game {
                 if (tempoGame.isPaused || tempoGame.isGameEnded) return;
                 if (event.key === "w" || event.key === "z")
 				{
-					tempoGame.field.player.xSpeed = -10;
+					tempoGame.field.player.xSpeed = -20;
 					if (tempoGame.field.player.yPos + tempoGame.field.player.xSpeed <= 0)
                     	tempoGame.sendMove(0, "player1");
 					else
@@ -127,7 +127,7 @@ export default class OnlineGame extends Game {
 				}
 				if (event.key === "s")
 				{
-					tempoGame.field.player.xSpeed = 10;
+					tempoGame.field.player.xSpeed = 20;
                     if (tempoGame.field.player.yPos + tempoGame.field.player.height + tempoGame.field.player.xSpeed >= tempoGame.field.canevas.height)
                     	tempoGame.sendMove(tempoGame.field.canevas.height - tempoGame.field.player.height, "player1");
 					else
@@ -135,7 +135,7 @@ export default class OnlineGame extends Game {
 				}
 				if (event.key === "ArrowUp")
 				{
-					tempoGame.field.opponent.xSpeed = -10;
+					tempoGame.field.opponent.xSpeed = -20;
 					if (tempoGame.field.opponent.yPos + tempoGame.field.opponent.xSpeed <= 0)
                     	tempoGame.sendMove(0, "player2");
 					else
@@ -143,7 +143,7 @@ export default class OnlineGame extends Game {
 				}
 				if (event.key === "ArrowDown")
 				{
-					tempoGame.field.opponent.xSpeed = 10;
+					tempoGame.field.opponent.xSpeed = 20;
 					if (tempoGame.field.opponent.yPos + tempoGame.field.opponent.height + tempoGame.field.opponent.xSpeed >= tempoGame.field.canevas.height)
                     	tempoGame.sendMove(tempoGame.field.canevas.height - tempoGame.field.opponent.height, "player2");
 					else
@@ -165,7 +165,7 @@ export default class OnlineGame extends Game {
                     if (tempoGame.isPaused || tempoGame.isGameEnded) return;
                     if (event.key === "ArrowUp")
 					{
-						tempoGame.field.player.xSpeed = -10;
+						tempoGame.field.player.xSpeed = -20;
 						if (tempoGame.field.player.yPos + tempoGame.field.player.xSpeed <= 0)
 							tempoGame.sendMove(0, "player2");
 						else
@@ -173,7 +173,7 @@ export default class OnlineGame extends Game {
 					}
 					if (event.key === "ArrowDown")
 					{
-						tempoGame.field.player.xSpeed = 10;
+						tempoGame.field.player.xSpeed = 20;
 						if (tempoGame.field.player.yPos + tempoGame.field.player.height + tempoGame.field.player.xSpeed >= tempoGame.field.canevas.height)
 							tempoGame.sendMove(tempoGame.field.canevas.height - tempoGame.field.player.height, "player2");
 						else
@@ -181,7 +181,7 @@ export default class OnlineGame extends Game {
 					}
 					if (event.key === "w" || event.key === "z")
 					{
-						tempoGame.field.opponent.xSpeed = -10;
+						tempoGame.field.opponent.xSpeed = -20;
                         if (tempoGame.field.opponent.yPos + tempoGame.field.opponent.xSpeed <= 0)
 							tempoGame.sendMove(0, "player1");
 						else
@@ -189,7 +189,7 @@ export default class OnlineGame extends Game {
 					}
 					if (event.key === "s")
 					{
-						tempoGame.field.opponent.xSpeed = 10;
+						tempoGame.field.opponent.xSpeed = 20;
 						if (tempoGame.field.opponent.yPos + tempoGame.field.player.height + tempoGame.field.opponent.xSpeed >= tempoGame.field.canevas.height)
 							tempoGame.sendMove(tempoGame.field.canevas.height - tempoGame.field.opponent.height, "player1");
 						else
