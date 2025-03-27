@@ -707,7 +707,7 @@ def create_tournament(request):
 				"status": "error",
 				"message": "One or more players do not exist."
 			})
-
+		print("test\n")
 		shuffled_players = random.sample(list(existing_users), len(existing_users))
 
 		tournament = Tournament.objects.create(creator=request.user, name=tournament_name)

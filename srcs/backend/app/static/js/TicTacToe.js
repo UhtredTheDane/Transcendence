@@ -27,6 +27,7 @@ gameSocket.onmessage = function(event) {
     if (data.winner) {
         alert(`${data.winner} wins!`);
         gameSocket.close();
+        window.location.href = "/";
     }
 };
 
