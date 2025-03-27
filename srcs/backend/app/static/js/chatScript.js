@@ -6,7 +6,7 @@
 /*   By: ykeciri <ykeciri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/26 13:13:57 by ykeciri           #+#    #+#             */
-/*   Updated: 2025/03/27 22:39:35 by ykeciri          ###   ########.fr       */
+/*   Updated: 2025/03/27 23:56:20 by ykeciri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,7 @@ if (!user) {
 window.chatSocket = new WebSocket(`wss://${window.location.host}/wss/chatbox/`);
 
 chatSocket.onopen = function (event) {
-  console.log("WebSocket is connected.");
+  console.log("WebSocket CHAT is connected.");
 };
 
 /* ************************************************************************** */
@@ -30,6 +30,7 @@ chatSocket.onopen = function (event) {
 
 chatSocket.onmessage = function (event) {
   let data = JSON.parse(event.data);
+  console.log("------------ DATA RECIEVED BY CHAT  SOCKET -----------");
   console.log(data);
   if (data.type === "message") {
     // ! MESSAGE
@@ -112,6 +113,57 @@ function addFriend() {
       delete messages[friendName];
     }
   }
+}
+
+function addTournament() {
+  const friendName = "tournament";
+
+  if (friendName) {
+    if (messages[friendName]) {
+      // alert(`${friendName} is already in your contacts.`);
+      return; // Prevent adding the same friend again
+    }
+    chatSocket.send(
+      JSON.stringify({
+        type: "add_friend",
+        sender: user,
+        friend_name: friendName,
+      })
+    );
+
+    // Clear any existing messages for this contact
+    if (messages[friendName]) {
+      delete messages[friendName];
+    }
+  }
+}
+
+function sendMessageTournament(messageText) {
+  // Store outgoing message
+  if (!messages[user]) {
+    messages[user] = [];
+  }
+  messages[user].push({
+    sender: "tournament",
+    content: messageText,
+    timestamp: new Date().toLocaleTimeString([], {
+      hour: "2-digit",
+      minute: "2-digit",
+    }),
+  });
+
+  // Display message
+  displayMessage("tournament", messageText, "right");
+
+  // Send message
+  chatSocket.send(
+    JSON.stringify({
+      type: "message",
+      sender: "tournament",
+      receiver: user,
+      content: messageText,
+    })
+  );
 }
 
 function selectContact(contact) {
@@ -345,7 +397,7 @@ function printChallenge(data) {
   acceptButton.textContent = "Accept Challenge";
   acceptButton.classList.add("btn", "small-first-btn", "primary-font");
   acceptButton.onclick = function () {
-	data.content = "Game Already played!";
+    data.content = "Game Already played!";
     chatSocket.send(
       JSON.stringify({
         type: "challenge_accepted",
@@ -357,8 +409,7 @@ function printChallenge(data) {
 
   messageContainer.appendChild(senderName);
   messageContainer.appendChild(messageContent);
-  if (data.sender !== user)
-	messageContainer.appendChild(acceptButton);
+  if (data.sender !== user) messageContainer.appendChild(acceptButton);
   chatboxBody.appendChild(messageContainer);
   chatboxBody.scrollTop = chatboxBody.scrollHeight;
 
@@ -423,53 +474,3 @@ function displayChatBox() {
 		</div>
 		`;
 }
-
-function addTournament() {
-    const friendName = "tournament";
-	
-    if (friendName) {
-		if (messages[friendName]) {
-            // alert(`${friendName} is already in your contacts.`);
-            return; // Prevent adding the same friend again
-        }
-        chatSocket.send(JSON.stringify({
-            type: "add_friend",
-            sender: user,
-            friend_name: friendName
-        }));
-        
-        // Clear any existing messages for this contact
-        if (messages[friendName]) {
-            delete messages[friendName];
-        }
-    }
-}
-
-function sendMessageTournament(messageText) {
-    
-        // Store outgoing message
-        if (!messages[user]) {
-            messages[user] = [];
-        }
-        messages[user].push({
-            sender: "tournament",
-            content: messageText,
-            timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-        });
-
-        // Display message
-        displayMessage("tournament", messageText, 'right');
-
-        // Send message
-		console.log("---------------");
-		console.log(user);
-		console.log(selectedContact);
-		console.log("---------------");
-        chatSocket.send(JSON.stringify({
-            type: "message",
-            sender: "tournament",
-            receiver: user,
-            content: messageText
-        }));
-}
-

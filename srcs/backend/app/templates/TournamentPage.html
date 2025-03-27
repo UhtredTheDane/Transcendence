@@ -14,13 +14,12 @@
       rel="stylesheet"
     />
 
+    <link rel="icon" type="image/png" href="{% static 'icons/42_logo.png' %}" />
     <link rel="stylesheet" href="{% static 'css/chatbox.css' %}" />
-
+    <link rel="stylesheet" href="{% static 'css/index.css' %}" />
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="{% static 'js/index.js' %}"></script>
-    <link rel="icon" href="{% static 'icons/42_logo.ico' %}" />
-
     <style>
       body {
         background-color: black;
@@ -58,7 +57,6 @@
         background-color: #343a40;
         padding: 15px;
         border-radius: 10px;
-		/* transform: skew(-20deg); */
         width: 300px;
       }
 
@@ -127,9 +125,8 @@
         align-items: center;
       }
     </style>
-	<link rel="stylesheet" href="{% static 'css/index.css' %}" />
   </head>
-  <body onload="loadTemplate()" onload="initializeBracket()">
+  <body onload="initializeBracket()">
     <!-- Navbar with Link to Home -->
     <nav class="navbar navbar-expand-lg navbar-dark">
       <div class="container-fluid">
@@ -216,7 +213,7 @@
       };
 
       tournamentSocket.onerror = function (error) {
-        console.log("WebSocket Tournament error:\n" + JSON.stringify(error));
+        console.error("WebSocket Tournament error:\n" + JSON.stringify(error));
       };
 
       document.addEventListener("DOMContentLoaded", function () {
@@ -295,7 +292,7 @@
           button.onclick = () => handleReadyClick(matchData);
           match.appendChild(button);
 
-		let buttoncookie = "hasSent" + matchData.matchId + user.username;
+		let buttoncookie = "hasSent" + matchData.id + user;
           if (!sessionStorage.getItem(buttoncookie)) {
             chatSocket.addEventListener("open", (ev) => {
               console.log("in tournament message");

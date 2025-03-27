@@ -838,7 +838,7 @@ def tournamentpage(request, tournament_id):
 	else:
 		round_names = [f"Round {i+1}" for i in range(len(rounds))]
 
-	# print(rounds)
+	print(rounds)
 
 	return render(request, 'TournamentPage.html', {
 		'players': json.dumps(players_data),
